@@ -1,0 +1,29 @@
+release.txt
+
+                           SEAWAT-2000 Release Notes
+
+     This file describes changes introduced into SEAWAT-2000 with each
+official release; these changes may substantially affect users. In this file, 
+packages and processes are referred to by their 3-or 4-character 
+abbreviation.
+
+NOTE: Any use of trade, product or firm names is for descriptive purposes 
+      only and does not imply endorsement by the U.S. Government.
+
+o Version 3.10 2/13/2003:
+
+This is the first public release of the SEAWAT-2000 program, which is 
+documented in OFR 03-426.
+
+Since OFR 03-426 was printed and distributed, the FHB and HUF2 packages
+have been incorporated into SEAWAT-2000.  There are no special instructions
+for using the FHB package.  Presently, the Layer Variable-Direction Horizontal 
+Anisotropy (LVDA) capability is not compatible with the VDF process.  The 
+version of MODFLOW-2000 included in this release is Version 1.12.01.  The 
+version of MT3DMS included in this release is Version 4.50.
+
+With this release, there is one known bug: the Variable-Density Flow (VDF)
+Process may not produce accurate results if quasi-three-dimensional layers
+are included in the simulation.  Quasi-three-dimensional layers should not
+be used with the VDF Process.
+

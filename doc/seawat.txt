@@ -3,57 +3,37 @@ U.S. Geological Survey                                             seawat(1)
 
 
 NAME
-     SEAWAT - Three-dimensional variable-density ground-water flow model
+     SEAWAT-2000 - Three-dimensional variable-density ground-water flow model
 
 ABSTRACT
-The SEAWAT program was developed to simulate three-dimensional, variable-
-density, transient ground-water flow in porous media. The source code for SEAWAT 
-was developed by combining MODFLOW and MT3DMS into a single program that solves 
-the coupled flow and solute-transport equations. The SEAWAT code follows a 
-modular structure, and thus, new capabilities can be added with only minor 
-modifications to the main program. SEAWAT reads and writes standard MODFLOW and 
-MT3DMS data sets, although some extra input may be required for some SEAWAT 
-simulations. This means that many of the existing pre- and postprocessors can be 
-used to create input data sets and analyze simulation results. Users familiar 
-with MODFLOW and MT3DMS should have little difficulty applying SEAWAT to 
-problems of variable-density ground-water flow. 
-
-MODFLOW was modified to solve the variable-density flow equation by 
-reformulating the matrix equations in terms of fluid mass rather than fluid 
-volume and by including the appropriate density terms. Fluid density is assumed 
-to be solely a function of the concentration of dissolved constituents; the 
-effects of temperature on fluid density are not considered. Temporally and 
-spatially varying salt concentrations are simulated in SEAWAT using routines 
-from the MT3DMS program. SEAWAT uses either an explicit or implicit procedure to 
-couple the ground-water flow equation with the solute-transport equation.  With 
-the explicit procedure, the flow equation is solved first for each timestep, and 
-the resulting advective velocity field is then used in the solution to the 
-solute-transport equation. This procedure for alternately solving the flow and 
-transport equations is repeated until the stress periods and simulation are 
-complete. With the implicit procedure for coupling, the flow and transport 
-equations are solved multiple times for the same timestep until the maximum 
-difference in fluid density between consecutive iterations is less than a user-
-specified tolerance.
-
-The SEAWAT code was tested by simulating five benchmark problems involving 
-variable-density ground-water flow. These problems include two box problems, the 
-Henry problem, Elder problem, and HYDROCOIN problem. The purpose of the box 
-problems is to verify that fluid velocities are properly calculated by SEAWAT. 
-For each of the box problems, SEAWAT calculates the appropriate velocity 
-distribution. SEAWAT also accurately simulates the Henry problem, and SEAWAT 
-results compare well with those of SUTRA. The Elder problem is a complex flow 
-system in which fluid flow is driven solely by density variations. Results from 
-SEAWAT, for six different times, compare well with results from Elder's original 
-solution and results from SUTRA. The HYDROCOIN problem consists of fresh ground 
-water flowing over a salt dome. Simulated contours of salinity compare well for 
-SEAWAT and MOCDENSE.
+SEAWAT-2000 is the latest release of the SEAWAT computer program for simulation
+of three-dimensional, variable-density, transient ground-water flow in porous 
+media. SEAWAT-2000 was designed by combining a modified version of MODFLOW-2000 
+and MT3DMS into a single computer program. The code was developed using the 
+MODFLOW-2000 concept of a process, which is defined as “part of the code that 
+solves a fundamental equation by a specified numerical method.” SEAWAT-2000 contains
+all of the processes distributed with MODFLOW-2000 and also includes the Variable-
+Density Flow Process (as an alternative to the constant-density Ground-Water Flow 
+Process) and the Integrated MT3DMS Transport Process. Processes may be active or 
+inactive, depending on simulation objectives; however, not all processes are 
+compatible. For example, the Sensitivity and Parameter Estimation Processes are 
+not compatible with the Variable-Density Flow and Integrated MT3DMS Transport 
+Processes. The SEAWAT-2000 computer code was tested with the common variable-
+density benchmark problems and also with problems representing evaporation from 
+a salt lake and rotation of immiscible fluids.
 
 METHOD
 The variable-density ground-water flow equation is solved using a finite-
-difference approximation similar to the one solved by MODFLOW-88.  The solute-
+difference approximation similar to the one solved by MODFLOW-2000.  The solute-
 transport equation is solved using one of the approaches available with MT3DMS.
 
 HISTORY
+
+SEAWAT-2000 Version 3.10 2004/02/13 - This version of SEAWAT contains substantial
+improvements over previous releases.  The program is now based on MODFLOW-2000
+(Version 1.12.01) and MT3DMS (Version 4.500), and uses the concept of a process.
+Details of SEAWAT-2000 are described in U.S. Geological Survey Open-File Report
+03-426.
 
 SEAWAT Version 2.12 2002/09/13 - Fixed problem with calculation of EVT fluid
 density.  Thanks to Adam Taylor and Barclay Shoemaker.  Also fixed bug in
@@ -61,7 +41,7 @@ calculation of default riverbed thickness.  Thanks to Lou Motz and Nebiyu
 Tiruneh from the University of Florida for locating this problem.
 
 SEAWAT Version 2.11 2002/08/09 - Fixed bug that caused program to bomb 
-for certain problems involving wetting drying.  Thanks to Trayle Kulshan and
+for certain problems involving wetting and drying.  Thanks to Trayle Kulshan and
 Steve Gorelick from Stanford University for help in locating this problem.
 
 SEAWAT Version 2.10 2002/02/07 - Code consists of MODFLOW-88 and MT3DMS Version 
@@ -89,40 +69,82 @@ some pre- and post-processors may not be able to read the output unless the open
 statements are modified, the program is recompiled, and the model is rerun.
 
 SYSTEM REQUIREMENTS
-SEAWAT is written in Fortran 77 with the following extensions: use of variable 
+SEAWAT is written in Fortran 77 with the following extensions:  use of variable 
 names longer than 6 characters, Fortran 90 statements for dynamic memory 
-allocation, the DFLIB library and the DTIME function, and the FORM='BINARY' 
-option with the open statement.  Generally, the program is easily installed on 
-most computer systems.  The code has been used on personal computers with 
-several different versions of the WINDOWS operating system.
+allocation, a call to SUBROUTINE GETARG to retrieve command-line arguments, and
+two calls to DATE_AND_TIME, which is a Fortran 90 intrinsic subroutine. Generally, 
+the program is easily installed on most computer systems.  The code has been used on 
+DOS-based 386 or greater computers having a math coprocessor and 4 mb of memory.
 
-PACKAGES
-This version of SEAWAT includes the following packages:
+PROCESSES
+GLO1 -- Global Process
+GWF1 -- Ground-Water Flow Process
+VDF1 -- Variable-Density Flow Process
+OBS1 -- Observation Process
+SEN1 -- Sensitivity Process
+PES1 -- Parameter-Estimation Process
+IMT1 -- Integrated MT3DMS Process
 
-BAS -- Basic Package
-BCF2 -- Block-Centered Flow Package
-WEL - Well Package
-DRN - Drain Package
-RIV - River Package
-EVT - Evapotranspiration Package
-GHB - General-Head Boundary Package
-RCH - Recharge Package
-SIP - Strongly Implicit Procedure
-SOR - Successive Over-Relaxation
-PCG2 - Preconditioned Conjugate Gradient Solver Package
-OC - Output Control Option
-CHD - Time-Variant Constant Head Package
-LKMT3D - MT3D link package
-BTN - Basic Transport Package
-ADV - Advection Package
-DSP - Dispersion Package
-SSM - Source/Sink Mixing Package
-RCT - Reaction Package
-GCG - Generalized Conjugate Gradient Solver
+Process compatibility issues are described in the user's manual.  In general, the VDF 
+and IMT Processes are not compatible with SEN and PES, and are only slightly 
+compatible with OBS.  VDF is an alternative to GWF, and thus the two cannot be used
+concurrently in a simulation. 
 
-TRAINING
-None at time of release, but a course may be developed and offered through the 
-USGS National Training Center.
+PACKAGES COMPATIBLE WITH THE VARIABLE-DENSITY FLOW (VDF) PROCESS
+BAS6 -- Basic 
+BCF6 -- Block-Centered Flow 
+LPF -- Layer Property Flow 
+HUF2 -- Hydrogeologic Unit Flow. Note that VDF is not yet compatible with 
+        the Layer Variable-Direction Horizontal Anisotropy (LVDA) capability.
+        The LVDA capability should not be used with the VDF process.  The VDF
+        process is compatible with the three features described in Open-File
+        Report 03-347.
+HFB6 -- Hydraulic Flow Barrier
+DRN -- Drain 
+RIV -- River 
+GHB -- General-Head Boundary 
+EVT -- Evapotranspiration 
+WEL -- Well
+RCH -- Recharge 
+CHD -- Time-Variant Constant Head 
+FHB -- Flow and Head Boundary
+SIP -- Strongly Implicit Procedure
+SOR -- Slice-Successive Overrelaxation
+PCG -- Preconditioned Conjugate Gradient Solver (also called PCG2)
+DE4 -- Direct Solver
+OC -- Output Control Option
+LMT6 -- Linkage with MT3DMS
+BTN -- Basic Transport 
+ADV -- Advection 
+DSP -- Dispersion 
+SSM -- Source/Sink Mixing 
+RCT -- Reaction 
+GCG -- Generalized Conjugate Gradient Solver
+OBS -- Observation
+HOB -- Hydraulic-Head Observation
+GHOB -- General-Head Boundary Observation
+DROB -- Drain Observation
+RVOB -- River Observation
+CHOB -- Constant-Head Flow Observation
+
+Other packages (distributed with MODFLOW-2000) are included in SEAWAT-2000, however,
+these additional packages may not be compatible with the VDF Process.
+
+DOCUMENTATION
+
+The basic documentation is contained in the following two reports:
+
+Langevin, C.D., Shoemaker, W.B., and Guo, W., 2003, MODFLOW-2000, the U.S. Geological
+Survey Modular Ground-Water Model--Documentation of the SEAWAT-2000 Version with the
+Variable-Density Flow Process (VDF) and the Integrated MT3DMS Transport Process (IMT):
+U.S. Geological Survey OPen-File Report 03-426, 43 p.
+
+Guo, W., and Langevin, C.D., User's guide to SEAWAT: A computer program for simulation
+of three-dimensional variable-density ground-water flow: Techniques of Water-Resources 
+Investigations of the U.S. Geological Survey, Book 6, Chapter A7, 77 p.
+
+Users will also need documentation for MODFLOW-2000 and MT3DMS, and possibly the
+references cited in those reports.
 
 CONTACTS
 Operation:
@@ -132,6 +154,12 @@ U.S. Geological Survey
 9100 NW 36th Street, STE 110
 Miami, FL 33178
 langevin@usgs.gov
+
+Barclay Shoemaker
+U.S. Geological Survey
+9100 NW 36th Street, STE 110
+Miami, FL 33178
+bshoemak@usgs.gov
 
 Weixing Guo
 CDM Missimer
