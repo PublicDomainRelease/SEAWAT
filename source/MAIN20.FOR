@@ -32,6 +32,11 @@ C     LANGEVIN, 08-09-2002    FIXED TWO BUGS THAT CAUSED ERRORS WHEN A MODEL
 C                             HAD WETTING AND DRYING.  ONE WAS IN THE SUBROUTINE
 C                             SWTDCDT, THE OTHER WAS IN THE CALCULATION OF
 C                             RHOCC,RHOCR,AND RHOCV IN SWTFM.
+C	LANGEVIN, 09-13-2002    MODIFIED EVT2FM TO CORRECTLY CALCULATE DENSITY
+C                             OF FLUID WITHDRAWN BY EVAPOTRANSPIRATION
+C	LANGEVIN, 09-13-2002    THE DEFAULT RIVERBED THICKNESS WAS NOT CALCULATED 
+C                             PROPERLY.  FIXED RIV1RP.
+
 
 C     This program is public domain and is released on the condition that neither
 C     the U.S. Geological Survey nor the United States Government may be held liable 
@@ -152,15 +157,15 @@ C1S1--SEAWAT:  WRITE AN IDENTIFIER
   101 FORMAT(
      +/1X,'SEAWAT: A COMPUTER PROGRAM FOR SIMULATION OF THREE-'
      +/1X,'  DIMENSIONAL VARIABLE-DENSITY GROUND-WATER FLOW'/
-     +/1X,'                        VERSION 2.11'/
-     +/1X,'                        August, 2002'//
+     +/1X,'                        VERSION 2.12'/
+     +/1X,'                       September, 2002'//
      +/1X,'                         written by:'/
      +/1X,'                         WEIXING GUO   '
      +/1X,'                        CDM Missimer'/
      +/1X,'                      CHRISTIAN LANGEVIN    '
      +/1X,'                    U.S. Geological Survey  '//
      +/1X,'            **************************************'
-     +/1X,' BUILD: 08-09-2002'//
+     +/1X,' BUILD: 09-13-2002'//
      +/1X,'This program is public domain and is released on the'
      +/1X,'condition that neither the U.S. Geological Survey nor'
      +/1X,'the United States Government may be held liable for any'
@@ -602,7 +607,8 @@ C7C2AS4--SEAWAT: PASSING IN RECHARGE CONCENTRATION
 C7C2AS5--SEAWAT: PASSING PS, ELEV, AND EVT CONCENTRATION
       IF(IUNIT(5).GT.0) CALL EVT2FM(NEVTOP,X(LCIEVT),X(LCEVTR),
      1    X(LCEXDP),X(LCSURF),X(LCRHS),X(LCHCOF),X(LCIBOU),
-     1    X(LCHNEW),NCOL,NROW,NLAY,NCOMP,Z(LZPS),Z(LZELEV),Y(LTCEVT))
+     1    X(LCHNEW),NCOL,NROW,NLAY,NCOMP,Z(LZPS),Z(LZELEV),Y(LTCEVT),
+     1    Y(LCCNEW))
 C7C2AS6--SEAWAT: PASSING PS AND ELEV
       IF(IUNIT(4).GT.0) CALL RIV1FM(NRIVER,MXRIVR,X(LCRIVR),X(LCHNEW),
      1    X(LCHCOF),X(LCRHS),X(LCIBOU),NCOL,NROW,NLAY,Z(LZPS),Z(LZELEV))
@@ -857,7 +863,7 @@ C7C4S5--SEAWAT: PASSING N (TRANSPORT STEP) INSTEAD OF KKSTP
       IF(IUNIT(5).GT.0) CALL EVT2BD(NEVTOP,X(LCIEVT),X(LCEVTR),
      1     X(LCEXDP),X(LCSURF),X(LCIBOU),X(LCHNEW),NCOL,NROW,NLAY,NCOMP,
      2  dtrans,VBVL,VBNM,MSUM,N,kstp,KKPER,IEVTCB,ICBCFL,X(LCBUFF),IOUT,
-     3   Z(LZPS),Z(LZELEV),Y(LTCEVT),PRTOUT,STEPEND)
+     3   Z(LZPS),Z(LZELEV),Y(LTCEVT),PRTOUT,STEPEND,Y(LCCNEW))
 
 C7C4S6--SEAWAT: PASSSING PS, ELEV, PRTOUT
 C7C4S6--SEAWAT: PASSING N (TRANSPORT STEP) INSTEAD OF KKSTP
