@@ -1,6 +1,6 @@
 README.TXT
 
-SEAWAT-2000 - Version: 3.10 02/13/2004
+SEAWAT-2000 - Version: 3.10.01 03/30/2004
 Three-dimensional variable-density finite-difference ground-water flow model
 
 NOTE: Any use of trade, product or firm names is for descriptive purposes only 

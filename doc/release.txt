@@ -10,6 +10,22 @@ abbreviation.
 NOTE: Any use of trade, product or firm names is for descriptive purposes 
       only and does not imply endorsement by the U.S. Government.
 
+
+o Version 3.10.01 3/30/2003:
+
+Following the convention for MODFLOW-2000 releases, this release is
+designated as 3.10.01.  The ".01" indicates that this release contains
+only bug fixes, rather than new packages or features.
+
+This version contains bug fixes for three coding errors: (1) In the previous 
+version, the value for HDRY was not always written to the output head file if 
+a cell went dry during the simulation.  (2) A runtime error was encountered
+in certain instances when the IMT Process was used with the GWF Process 
+(instead of the VDF Process).  (3)  If MODFLOW timesteps were shorter
+than the calculated transport timestep, the density array was not updated
+properly.  To correct these errors, changes were made to swt2k.f and vdf1.f.
+
+
 o Version 3.10 2/13/2003:
 
 This is the first public release of the SEAWAT-2000 program, which is 
