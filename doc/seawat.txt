@@ -1,0 +1,140 @@
+U.S. Geological Survey                                             seawat(1)
+
+
+
+NAME
+     SEAWAT - Three-dimensional variable-density ground-water flow model
+
+ABSTRACT
+The SEAWAT program was developed to simulate three-dimensional, variable-
+density, transient ground-water flow in porous media. The source code for SEAWAT 
+was developed by combining MODFLOW and MT3DMS into a single program that solves 
+the coupled flow and solute-transport equations. The SEAWAT code follows a 
+modular structure, and thus, new capabilities can be added with only minor 
+modifications to the main program. SEAWAT reads and writes standard MODFLOW and 
+MT3DMS data sets, although some extra input may be required for some SEAWAT 
+simulations. This means that many of the existing pre- and postprocessors can be 
+used to create input data sets and analyze simulation results. Users familiar 
+with MODFLOW and MT3DMS should have little difficulty applying SEAWAT to 
+problems of variable-density ground-water flow. 
+
+MODFLOW was modified to solve the variable-density flow equation by 
+reformulating the matrix equations in terms of fluid mass rather than fluid 
+volume and by including the appropriate density terms. Fluid density is assumed 
+to be solely a function of the concentration of dissolved constituents; the 
+effects of temperature on fluid density are not considered. Temporally and 
+spatially varying salt concentrations are simulated in SEAWAT using routines 
+from the MT3DMS program. SEAWAT uses either an explicit or implicit procedure to 
+couple the ground-water flow equation with the solute-transport equation.  With 
+the explicit procedure, the flow equation is solved first for each timestep, and 
+the resulting advective velocity field is then used in the solution to the 
+solute-transport equation. This procedure for alternately solving the flow and 
+transport equations is repeated until the stress periods and simulation are 
+complete. With the implicit procedure for coupling, the flow and transport 
+equations are solved multiple times for the same timestep until the maximum 
+difference in fluid density between consecutive iterations is less than a user-
+specified tolerance.
+
+The SEAWAT code was tested by simulating five benchmark problems involving 
+variable-density ground-water flow. These problems include two box problems, the 
+Henry problem, Elder problem, and HYDROCOIN problem. The purpose of the box 
+problems is to verify that fluid velocities are properly calculated by SEAWAT. 
+For each of the box problems, SEAWAT calculates the appropriate velocity 
+distribution. SEAWAT also accurately simulates the Henry problem, and SEAWAT 
+results compare well with those of SUTRA. The Elder problem is a complex flow 
+system in which fluid flow is driven solely by density variations. Results from 
+SEAWAT, for six different times, compare well with results from Elder's original 
+solution and results from SUTRA. The HYDROCOIN problem consists of fresh ground 
+water flowing over a salt dome. Simulated contours of salinity compare well for 
+SEAWAT and MOCDENSE.
+
+METHOD
+The variable-density ground-water flow equation is solved using a finite-
+difference approximation similar to the one solved by MODFLOW-88.  The solute-
+transport equation is solved using one of the approaches available with MT3DMS.
+
+HISTORY
+
+SEAWAT Version 2.11 2002/08/09 - Fixed bug that caused program to bomb 
+for certain problems involving wetting drying.
+
+SEAWAT Version 2.10 2002/02/07 - Code consists of MODFLOW-88 and MT3DMS Version 
+3.50.A.  Upgraded the CFACE subroutine with the improved CFACE subroutine from 
+MT3DMS Version 4.00.  Reformulated flow equation to conserve fluid mass.  
+Redesigned boundary conditions to represent variable-density flow.  Added an 
+iterative method for coupling flow and transport.  Program redesigned as double 
+precision.
+
+SEAWAT Version 1.1 1998/05/01 - Initially released by Weixing Guo (Missimer 
+International, Inc.) and Gordon D. Bennett (S.S. Papadopulos & Associates, Inc.)
+
+DATA REQUIREMENTS
+In order to use SEAWAT, initial conditions, hydraulic properties, and stresses 
+must be specified for every model cell in the finite-difference grid.
+
+OUTPUT OPTIONS
+Primary output is head and concentration, which can be written to the listing 
+file or to separate binary files.  Other output includes the complete listing of 
+all input data, drawdown, flow budget, and transport budget data.  Flow budget 
+data are printed as a summary in the listing file, and detailed budget data for 
+all model cells can be written into a separate file.  All binary output is 
+written to files that are opened with the FORM='BINARY' option.  This means that 
+some pre- and post-processors may not be able to read the output unless the open 
+statements are modified, the program is recompiled, and the model is rerun.
+
+SYSTEM REQUIREMENTS
+SEAWAT is written in Fortran 77 with the following extensions: use of variable 
+names longer than 6 characters, Fortran 90 statements for dynamic memory 
+allocation, the DFLIB library and the DTIME function, and the FORM='BINARY' 
+option with the open statement.  Generally, the program is easily installed on 
+most computer systems.  The code has been used on personal computers with 
+several different versions of the WINDOWS operating system.
+
+PACKAGES
+This version of SEAWAT includes the following packages:
+
+BAS -- Basic Package
+BCF2 -- Block-Centered Flow Package
+WEL - Well Package
+DRN - Drain Package
+RIV - River Package
+EVT - Evapotranspiration Package
+GHB - General-Head Boundary Package
+RCH - Recharge Package
+SIP - Strongly Implicit Procedure
+SOR - Successive Over-Relaxation
+PCG2 - Preconditioned Conjugate Gradient Solver Package
+OC - Output Control Option
+CHD - Time-Variant Constant Head Package
+LKMT3D - MT3D link package
+BTN - Basic Transport Package
+ADV - Advection Package
+DSP - Dispersion Package
+SSM - Source/Sink Mixing Package
+RCT - Reaction Package
+GCG - Generalized Conjugate Gradient Solver
+
+TRAINING
+None at time of release, but a course may be developed and offered through the 
+USGS National Training Center.
+
+CONTACTS
+Operation:
+
+Christian Langevin
+U.S. Geological Survey
+9100 NW 36th Street, STE 110
+Miami, FL 33178
+langevin@usgs.gov
+
+Weixing Guo
+CDM Missimer
+8140 College Parkway, Suite 202
+Fort Myers, Florida
+guow@cdm.com
+
+
+See
+http://water.usgs.gov/software/ordering_documentation.html
+for information on ordering printed copies of USGS publications.
+

@@ -1,0 +1,10 @@
+LVL2
+'Level Flags LColor LStyle LWidth FFGColor FBGColor FPattern FMode
+0.35 0 "Black" "Solid" 20 "Black" "Black" "Solid" 2
+1.75 0 "Black" "Solid" 20 "R15 G15 B15" "R15 G15 B15" "Solid" 2
+3.5 0 "Black" "Solid" 20 "R30 G30 B30" "R30 G30 B30" "Solid" 2
+8.75 0 "Black" "Solid" 20 "R45 G45 B45" "R45 G45 B45" "Solid" 2
+17.5 0 "Black" "Solid" 20 "R60 G60 B60" "R60 G60 B60" "Solid" 2
+26.25 0 "Black" "Solid" 20 "R75 G75 B75" "R75 G75 B75" "Solid" 2
+31.5 0 "Black" "Solid" 20 "R90 G90 B90" "R90 G90 B90" "Solid" 2
+33.25 0 "Black" "Solid" 20 "R105 G105 B105" "R105 G105 B105" "Solid" 2

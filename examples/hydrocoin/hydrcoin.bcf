@@ -1,0 +1,233 @@
+         0        50   999.000         0     1.000         5         0         0         0         0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+         0     1.000(10E12.4)                    0     ANISOTROPY
+         0    20.000(10E12.4)                    0     DELTA-X or C
+         0    20.000(10E12.4)                    0     DELTA-Y or R
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer   1
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer   1
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer   1
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer   2
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer   2
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer   2
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer   3
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer   3
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer   3
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer   4
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer   4
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer   4
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer   5
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer   5
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer   5
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer   6
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer   6
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer   6
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer   7
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer   7
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer   7
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer   8
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer   8
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer   8
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer   9
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer   9
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer   9
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  10
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  10
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  10
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  11
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  11
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  11
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  12
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  12
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  12
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  13
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  13
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  13
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  14
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  14
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  14
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  15
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  15
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  15
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  16
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  16
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  16
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  17
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  17
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  17
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  18
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  18
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  18
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  19
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  19
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  19
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  20
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  20
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  20
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  21
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  21
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  21
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  22
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  22
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  22
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  23
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  23
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  23
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  24
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  24
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  24
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  25
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  25
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  25
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  26
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  26
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  26
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  27
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  27
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  27
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  28
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  28
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  28
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  29
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  29
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  29
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  30
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  30
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  30
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  31
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  31
+         02.1189e-01(10e12.4)                   -1     LEAKANCE Layer  31
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  32
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  32
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  32
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  33
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  33
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  33
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  34
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  34
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  34
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  35
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  35
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  35
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  36
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  36
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  36
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  37
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  37
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  37
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  38
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  38
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  38
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  39
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  39
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  39
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  40
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  40
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  40
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  41
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  41
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  41
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  42
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  42
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  42
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  43
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  43
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  43
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  44
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  44
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  44
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  45
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  45
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  45
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  46
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  46
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  46
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  47
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  47
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  47
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  48
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  48
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  48
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  49
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  49
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  49
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  50
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  50
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  50
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  51
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  51
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  51
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  52
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  52
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  52
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  53
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  53
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  53
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  54
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  54
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  54
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  55
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  55
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  55
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  56
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  56
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  56
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  57
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  57
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  57
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  58
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  58
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  58
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  59
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  59
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  59
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  60
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  60
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  60
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  61
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  61
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  61
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  62
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  62
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  62
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  63
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  63
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  63
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  64
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  64
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  64
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  65
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  65
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  65
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  66
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  66
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  66
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  67
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  67
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  67
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  68
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  68
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  68
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  69
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  69
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  69
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  70
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  70
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  70
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  71
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  71
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  71
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  72
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  72
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  72
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  73
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  73
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  73
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  74
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  74
+         02.1190e-01(10e12.4)                   -1     LEAKANCE Layer  74
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  75
+         0     3.390(10e12.4)                   -1     TRANSMISSIVITY Layer  75
+         04.2333e-04(10e12.4)                   -1     LEAKANCE Layer  75
+         01.0000e-05(10e12.4)                   -1     PRIMARY STORAGE Layer  76
+         03.3900e-03(10e12.4)                   -1     TRANSMISSIVITY Layer  76
