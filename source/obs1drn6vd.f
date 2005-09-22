@@ -12,7 +12,7 @@ C--SEAWAT: MODIFIED FOR VARIABLE DENSITY FLOW
 C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
-      REAL C, DRAI, FACT, H, HB, HH, HHNEW, QCLS, TOFF, WTQ, ZERO
+      REAL C, DRAI, FACT, H, HB, QCLS, TOFF, WTQ, ZERO
 C--SEAWAT: ADD PS, ELEV,
       REAL ELEV,PS
       INTEGER I, IBOUND, IBT, IBT1, IFLAG, II, IOUT, IQ, IQOB, IRBOT,
@@ -21,7 +21,8 @@ C--SEAWAT: ADD PS, ELEV,
      &        NROW, NT, NT1, NT2
       CHARACTER*12 OBSNAM(ND)
 CBARC--SEAWAT: ADD HSALT
-      DOUBLE PRECISION HNEW(NCOL,NROW,NLAY),HSALT(NCOL,NROW,NLAY)
+      DOUBLE PRECISION HH, HHNEW, HNEW(NCOL,NROW,NLAY),
+     &                 HSALT(NCOL,NROW,NLAY)
 CBARC--SEAWAT: ADD PS, ELEV 
       DIMENSION IBOUND(NCOL,NROW,NLAY), IBT(2,NQAR), NQOB(NQAR),
      &          NQCL(NQAR), IQOB(NQTAR), QCLS(5,NQCAR), H(ND),

@@ -1,27 +1,29 @@
 C
-      SUBROUTINE IMT1SSM4AL(INSSM,IOUT,ISUM,ISUM2,NCOL,NROW,NLAY,NCOMP,
-     & LCIRCH,LCRECH,LCCRCH,LCIEVT,LCEVTR,LCCEVT,MXSS,LCSS,IVER,LCSSMC)
+      SUBROUTINE IMT1SSM5AL(INSSM,IOUT,ISSGOUT,ISUM,ISUM2,NCOL,NROW,
+     & NLAY,NCOMP,LCIRCH,LCRECH,LCCRCH,LCIEVT,LCEVTR,LCCEVT,MXSS,LCSS,
+     & IVER,LCSSMC,LCSSG)
 C **********************************************************************
 C THIS SUBROUTINE ALLOCATES SPACE FOR ARRAYS NEEDED IN THE SINK & SOURCE
 C MIXING (SSM) PACKAGE.
 C **********************************************************************
-C last modified: 05-15-2003
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
-      INTEGER   INSSM,IOUT,ISUM,ISUM2,NCOL,NROW,NLAY,NCOMP,
-     &          LCIRCH,LCRECH,LCCRCH,LCIEVT,LCEVTR,LCCEVT,
-     &          MXSS,LCSS,ISUMX,ISUMIX,NCR,ISOLD,ISOLD2,IVER,LCSSMC
+      INTEGER   INSSM,IOUT,ISSGOUT,ISUM,ISUM2,NCOL,NROW,NLAY,NCOMP,
+     &          LCIRCH,LCRECH,LCCRCH,LCIEVT,LCEVTR,LCCEVT,MXSS,LCSS,
+     &          ISUMX,ISUMIX,NCR,ISOLD,ISOLD2,IVER,LCSSMC,LCSSG,
+     &          IERR,IOSTAT
       CHARACTER LINE*200
       LOGICAL   FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR(3)
+     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMNW,FDRT,FETS,FUSR(3)
 C--SEAWAT: CHANGED COMMON NAME FC TO FCMT3D TO AVOID CONFLICT WITH SUBROUTINE
       COMMON /FCMT3D/FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR
+     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMNW,FDRT,FETS,FUSR
 C
 C--PRINT PACKAGE NAME AND VERSION NUMBER
       WRITE(IOUT,1000) INSSM
- 1000 FORMAT(1X,'SSM4 -- SINK & SOURCE MIXING PACKAGE,',
-     & ' VERSION 4.5, MAY 2003, INPUT READ FROM UNIT',I3)
+ 1000 FORMAT(1X,'SSM5 -- SINK & SOURCE MIXING PACKAGE,',
+     & ' VERSION 5, FEBRUARY 2005, INPUT READ FROM UNIT',I3)
 C
 C--READ AND PRINT FLAGS INDICATING WHICH SINK/SOURCE OPTIONS
 C--ARE USED IN FLOW MODEL
@@ -44,38 +46,48 @@ C--ARE USED IN FLOW MODEL
       IF(FIBS) WRITE(IOUT,1406)
       IF(FTLK) WRITE(IOUT,1408)
       IF(FLAK) WRITE(IOUT,1410)
-      IF(FMAW) WRITE(IOUT,1412)
+      IF(FMNW) WRITE(IOUT,1412)
       IF(FDRT) WRITE(IOUT,1414)
       IF(FETS) WRITE(IOUT,1416)
       IF(FUSR(1)) WRITE(IOUT,1418)
       IF(FUSR(2)) WRITE(IOUT,1420)
       IF(FUSR(3)) WRITE(IOUT,1422)
- 1010 FORMAT(/1X,'HEADER LINE OF THE SSM PACKAGE INPUT FILE:',/1X,A)
+ 1010 FORMAT(1X,'HEADER LINE OF THE SSM PACKAGE INPUT FILE:',/1X,A)
  1020 FORMAT(1X,'MAJOR STRESS COMPONENTS PRESENT IN THE FLOW MODEL:')
- 1340 FORMAT(1X,'o WELL')
- 1342 FORMAT(1X,'o DRAIN')
- 1344 FORMAT(1X,'o RECHARGE')
- 1346 FORMAT(1X,'o EVAPOTRANSPIRATION')
- 1348 FORMAT(1X,'o RIVER')
- 1350 FORMAT(1X,'o GENERAL-HEAD-DEPENDENT BOUNDARY')
- 1400 FORMAT(1X,'o STREAM')
- 1402 FORMAT(1X,'o RESERVOIR')
- 1404 FORMAT(1X,'o SPECIFIED-HEAD-FLOW BOUNDARY')
- 1406 FORMAT(1X,'o INTERBED STORAGE')
- 1408 FORMAT(1X,'o TRANSIENT LEAKAGE')
- 1410 FORMAT(1X,'o LAKE')
- 1412 FORMAT(1X,'o MULTI-AQUIFER WELL')
- 1414 FORMAT(1X,'o DRAIN WITH RETURN FLOW')
- 1416 FORMAT(1X,'o SEGMENTED EVAPOTRANSPIRATION')
- 1418 FORMAT(1X,'o USER-DEFINED NO. 1')
- 1420 FORMAT(1X,'o USER-DEFINED NO. 2')
- 1422 FORMAT(1X,'o USER-DEFINED NO. 3')
+ 1340 FORMAT(1X,' o WELL')
+ 1342 FORMAT(1X,' o DRAIN')
+ 1344 FORMAT(1X,' o RECHARGE')
+ 1346 FORMAT(1X,' o EVAPOTRANSPIRATION')
+ 1348 FORMAT(1X,' o RIVER')
+ 1350 FORMAT(1X,' o GENERAL-HEAD-DEPENDENT BOUNDARY')
+ 1400 FORMAT(1X,' o STREAM')
+ 1402 FORMAT(1X,' o RESERVOIR')
+ 1404 FORMAT(1X,' o SPECIFIED-HEAD-FLOW BOUNDARY')
+ 1406 FORMAT(1X,' o INTERBED STORAGE')
+ 1408 FORMAT(1X,' o TRANSIENT LEAKAGE')
+ 1410 FORMAT(1X,' o LAKE')
+ 1412 FORMAT(1X,' o MULTI-NODE WELL   ')
+ 1414 FORMAT(1X,' o DRAIN WITH RETURN FLOW')
+ 1416 FORMAT(1X,' o SEGMENTED EVAPOTRANSPIRATION')
+ 1418 FORMAT(1X,' o USER-DEFINED NO. 1')
+ 1420 FORMAT(1X,' o USER-DEFINED NO. 2')
+ 1422 FORMAT(1X,' o USER-DEFINED NO. 3')
 C
 C--READ AND PRINT MAXIMUM NUMBER OF
 C--POINT SINKS/SOURCES PRESENT IN THE FLOW MODEL
-      READ(INSSM,'(I10)') MXSS
+      ISSGOUT=0
+      READ(INSSM,'(2I10)',ERR=1,IOSTAT=IERR) MXSS,ISSGOUT
+    1 IF(IERR.NE.0) THEN
+        BACKSPACE (INSSM)
+        READ(INSSM,'(I10)') MXSS
+      ENDIF
       WRITE(IOUT,1580) MXSS
  1580 FORMAT(1X,'MAXIMUM NUMBER OF POINT SINKS/SOURCES =',I8)
+      IF(ISSGOUT.GT.0) THEN
+        WRITE(IOUT,1582) ISSGOUT
+ 1582   FORMAT(1X,'AVERAGE CONCENTRATIONS FOR LINKED GROUP',
+     &   ' SINKS/SOURCES SAVED In UNIT:',I3)
+      ENDIF 
 C
 C--ALLOCATE SPACE FOR ARRAYS
       ISOLD=ISUM
@@ -86,7 +98,7 @@ C--INTEGER ARRAYS
       LCIRCH=ISUM2
       IF(FRCH) ISUM2=ISUM2+NCR
       LCIEVT=ISUM2
-      IF(FEVT) ISUM2=ISUM2+NCR
+      IF(FEVT.OR.FETS) ISUM2=ISUM2+NCR
 C
 C--REAL ARRAYS
       LCRECH=ISUM
@@ -94,13 +106,15 @@ C--REAL ARRAYS
       LCCRCH=ISUM
       IF(FRCH) ISUM=ISUM+NCR * NCOMP
       LCEVTR=ISUM
-      IF(FEVT) ISUM=ISUM+NCR
+      IF(FEVT.OR.FETS) ISUM=ISUM+NCR
       LCCEVT=ISUM
-      IF(FEVT) ISUM=ISUM+NCR * NCOMP
+      IF(FEVT.OR.FETS) ISUM=ISUM+NCR * NCOMP
       LCSS=ISUM
-      ISUM=ISUM+6*MXSS
+      ISUM=ISUM + 7*MXSS
       LCSSMC=ISUM
       ISUM=ISUM+NCOMP*MXSS
+      LCSSG=ISUM
+      ISUM=ISUM + 5*MXSS
 C
 C--CHECK HOW MANY ELEMENTS OF ARRAYS X AND IX ARE USED
       ISUMX=ISUM-ISOLD
@@ -114,27 +128,27 @@ C--NORMAL RETURN
       END
 C
 C
-      SUBROUTINE IMT1SSM4RP(IN,IOUT,KPER,NCOL,NROW,NLAY,NCOMP,ICBUND,
+      SUBROUTINE IMT1SSM5RP(IN,IOUT,KPER,NCOL,NROW,NLAY,NCOMP,ICBUND,
      & CNEW,CRCH,CEVT,MXSS,NSS,SS,SSMC)
 C ********************************************************************
 C THIS SUBROUTINE READS CONCENTRATIONS OF SOURCES OR SINKS NEEDED BY
 C THE SINK AND SOURCE MIXING (SSM) PACKAGE.
 C ********************************************************************
-C last modified: 04-15-2003
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   IN,IOUT,KPER,NCOL,NROW,NLAY,NCOMP,ICBUND,
      &          MXSS,NSS,JJ,II,KK,NUM,IQ,INCRCH,INCEVT,NTMP,INDEX
       REAL      CRCH,CEVT,SS,SSMC,CSS,CNEW
       LOGICAL   FWEL,FDRN,FRIV,FGHB,FRCH,FEVT,
-     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR(3)
+     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMNW,FDRT,FETS,FUSR(3)
       CHARACTER ANAME*24,TYPESS(-1:100)*15
-      DIMENSION SS(6,MXSS),SSMC(NCOMP,MXSS),CRCH(NCOL,NROW,NCOMP),
+      DIMENSION SS(7,MXSS),SSMC(NCOMP,MXSS),CRCH(NCOL,NROW,NCOMP),
      &          CEVT(NCOL,NROW,NCOMP),
      &          ICBUND(NCOL,NROW,NLAY,NCOMP),CNEW(NCOL,NROW,NLAY,NCOMP)
 C--SEAWAT: CHANGED COMMON NAME FC TO FCMT3D TO AVOID CONFLICT WITH SUBROUTINE
       COMMON /FCMT3D/FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR
+     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMNW,FDRT,FETS,FUSR
 C
 C--INITIALIZE.
       TYPESS(-1)='CONSTANT CONC. '
@@ -150,7 +164,7 @@ C--INITIALIZE.
       TYPESS(24)='INTERBED STRG  '
       TYPESS(25)='TRANSIENT LEAK '
       TYPESS(26)='LAKE           '
-      TYPESS(27)='MULTI-AQ WELL  '
+      TYPESS(27)='MULTI-NODE WELL'
       TYPESS(28)='DRN W RET FLOW '
       TYPESS(29)='SEGMENTED ET   '
       TYPESS(51)='USER-DEFINED #1'
@@ -184,9 +198,9 @@ C--CONTAING CONCENTRATION OF RECHARGE FLUX [CRCH]
      & ' WILL BE READ IN STRESS PERIOD',I3)
 C
 C--READ CONCENTRAION OF EVAPOTRANSPIRATION FLUX
-   10 IF(.NOT.FEVT) GOTO 20
+   10 IF(.NOT.FEVT .AND. .NOT.FETS) GOTO 20
 C
-      IF(KPER.EQ.1) THEN
+      IF(KPER.EQ.1) THEN            
         DO INDEX=1,NCOMP
           DO II=1,NROW
             DO JJ=1,NCOL
@@ -229,7 +243,7 @@ C--RESET OLD CONCENTRATIONS IF REUSE OPTION NOT IN EFFECT
 C
       IF(NTMP.GT.MXSS) THEN
         WRITE(*,30)
-        STOP
+        CALL USTOP(' ')
       ELSEIF(NTMP.LT.0) THEN
         WRITE(IOUT,40)
         RETURN
@@ -263,7 +277,7 @@ C
           SS(5,NUM)=0.
         ELSEIF(IQ.LT.1.OR.IQ.GT.100) THEN
           WRITE(*,80)
-          STOP
+          CALL USTOP(' ')
         ENDIF
         SS(1,NUM)=KK
         SS(2,NUM)=II
@@ -295,303 +309,24 @@ C--RETURN
       END
 C
 C
-      SUBROUTINE IMT1SSM4SV(NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,PRSITY,
-     & DELR,DELC,DH,RETA,IRCH,RECH,CRCH,IEVT,EVTR,CEVT,MXSS,NTSS,
-     & NSS,SS,SSMC,QSTO,CNEW,COLD,DTRANS,MIXELM,ISS,RMASIO)
-C ******************************************************************
-C THIS SUBROUTINE CALCULATES THE CHANGE IN CELL CONCENTRATIONS
-C DUE TO FLUID SOURCE AND SINK MIXING.
-C ******************************************************************
-C last modified: 08-12-2001
-C
-      IMPLICIT  NONE
-      INTEGER   NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,IRCH,IEVT,
-     &          MXSS,NTSS,NSS,NUM,IQ,K,I,J,MIXELM,ISS
-      REAL      PRSITY,RETA,DTRANS,RECH,CRCH,EVTR,CEVT,SS,SSMC,
-     &          CNEW,COLD,CTMP,QSS,DCSSM,RMASIO,DELR,DELC,DH,QSTO
-      LOGICAL   FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR(3)
-      DIMENSION ICBUND(NCOL,NROW,NLAY,NCOMP),SS(6,MXSS),
-     &          SSMC(NCOMP,MXSS),RECH(NCOL,NROW),IRCH(NCOL,NROW),
-     &          CRCH(NCOL,NROW,NCOMP),EVTR(NCOL,NROW),IEVT(NCOL,NROW),
-     &          CEVT(NCOL,NROW,NCOMP),RETA(NCOL,NROW,NLAY,NCOMP),
-     &          PRSITY(NCOL,NROW,NLAY),COLD(NCOL,NROW,NLAY,NCOMP),
-     &          CNEW(NCOL,NROW,NLAY,NCOMP),DELR(NCOL),DELC(NROW),
-     &          DH(NCOL,NROW,NLAY),QSTO(NCOL,NROW,NLAY),
-     &          RMASIO(122,2,NCOMP)
-C--SEAWAT: CHANGED COMMON NAME FC TO FCMT3D TO AVOID CONFLICT WITH SUBROUTINE
-      COMMON /FCMT3D/FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR
-C
-C--COPY CONCENTRATION OF ICOMP FROM [SSMC] TO [SS]
-      IF(NCOMP.GT.1.AND.NSS.GT.0) THEN
-        DO NUM=1,NSS
-          SS(4,NUM)=SSMC(ICOMP,NUM)
-        ENDDO
-      ENDIF
-C
-C--IF A MIXED EULERIAN-LAGRANGIAN SCHEME NOT USED, GO TO
-C--FINITE DIFFERENCE ROUTINE [SSSM4F].
-      IF(MIXELM.LE.0) GOTO 350
-C
-C--TRANSIENT GROUNDWATER STORAGE TERM
-      IF(ISS.NE.0) GOTO 50
-C
-C--RECORD MASS STORAGE CHANGES FOR DISSOLVED AND SORBED PHASES
-      DO K=1,NLAY
-        DO I=1,NROW
-          DO J=1,NCOL
-            IF(ICBUND(J,I,K,ICOMP).LE.0) CYCLE
-            CTMP=COLD(J,I,K,ICOMP)
-            IF(QSTO(J,I,K).GT.0) THEN
-              RMASIO(118,1,ICOMP)=RMASIO(118,1,ICOMP)
-     &         +QSTO(J,I,K)*CTMP*DTRANS*DELR(J)*DELC(I)*DH(J,I,K)
-            ELSE
-              RMASIO(118,2,ICOMP)=RMASIO(118,2,ICOMP)
-     &         +QSTO(J,I,K)*CTMP*DTRANS*DELR(J)*DELC(I)*DH(J,I,K)
-            ENDIF
-          ENDDO
-        ENDDO
-      ENDDO
-C
-C--DIFFUSIVE SINK/SOURCE TERMS
-C--(RECHARGE)
-   50 IF(.NOT.FRCH) GOTO 100
-C
-      DO I=1,NROW
-        DO J=1,NCOL
-C
-          K=IRCH(J,I)
-          IF(K.EQ.0 .OR. ICBUND(J,I,K,ICOMP).LE.0) CYCLE
-          CTMP=CRCH(J,I,ICOMP)
-          IF(RECH(J,I).LT.0.) THEN
-            CTMP=CNEW(J,I,K,ICOMP)
-          ELSE
-            DCSSM=RECH(J,I)*(CTMP-CNEW(J,I,K,ICOMP))/
-     &         (RETA(J,I,K,ICOMP)*PRSITY(J,I,K))*DTRANS
-            CNEW(J,I,K,ICOMP)=CNEW(J,I,K,ICOMP)+DCSSM
-          ENDIF
-C
-C--ACCUMULATE MASS IN OR OUT THROUGH THE SOURCE OR SINK
-          IF(RECH(J,I).GT.0) THEN
-            RMASIO(7,1,ICOMP)=RMASIO(7,1,ICOMP)+RECH(J,I)*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ELSE
-            RMASIO(7,2,ICOMP)=RMASIO(7,2,ICOMP)+RECH(J,I)*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ENDIF
-        ENDDO
-      ENDDO
-C
-C--(EVAPOTRANSPIRATION)
-  100 IF(.NOT.FEVT) GOTO 200
-C
-      DO I=1,NROW
-        DO J=1,NCOL
-          K=IEVT(J,I)
-          IF(K.EQ.0 .OR. ICBUND(J,I,K,ICOMP).LE.0) CYCLE
-          CTMP=CEVT(J,I,ICOMP)
-          IF(EVTR(J,I).LT.0.AND.CTMP.LT.0) THEN
-            CTMP=CNEW(J,I,K,ICOMP)
-          ELSEIF(EVTR(J,I).GE.0.AND.CTMP.LT.0) THEN
-            CTMP=0.
-          ENDIF
-          DCSSM=EVTR(J,I)*(CTMP-CNEW(J,I,K,ICOMP))/
-     &     (RETA(J,I,K,ICOMP)*PRSITY(J,I,K))*DTRANS
-          CNEW(J,I,K,ICOMP)=CNEW(J,I,K,ICOMP)+DCSSM
-C
-C--ACCUMULATE MASS IN OR OUT THROUGH THE SOURCE OR SINK
-          IF(EVTR(J,I).GT.0) THEN
-            RMASIO(8,1,ICOMP)=RMASIO(8,1,ICOMP)+EVTR(J,I)*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ELSE
-            RMASIO(8,2,ICOMP)=RMASIO(8,2,ICOMP)+EVTR(J,I)*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ENDIF
-        ENDDO
-      ENDDO
-C
-C--POINT SINK/SOURCE TERMS
-C--[RESET QSS FOR MASS-LOADING SOURCES (IQ=15)]
-  200 DO NUM=1,NTSS
-        K=SS(1,NUM)
-        I=SS(2,NUM)
-        J=SS(3,NUM)
-        CTMP=SS(4,NUM)
-        QSS=SS(5,NUM)
-        IQ=SS(6,NUM)
-        IF(IQ.EQ.15) QSS=1./(DELR(J)*DELC(I)*DH(J,I,K))
-        IF(ICBUND(J,I,K,ICOMP).GT.0.AND.IQ.GT.0) THEN
-          IF(QSS.LT.0) THEN
-            CTMP=CNEW(J,I,K,ICOMP)
-          ELSE
-            DCSSM=QSS*(CTMP-CNEW(J,I,K,ICOMP))/
-     &       (RETA(J,I,K,ICOMP)*PRSITY(J,I,K))*DTRANS
-            CNEW(J,I,K,ICOMP)=CNEW(J,I,K,ICOMP)+DCSSM
-          ENDIF
-C
-C--ACCUMULATE MASS IN OR OUT THROUGH THE SOURCE OR SINK
-          IF(QSS.GT.0) THEN
-            RMASIO(IQ,1,ICOMP)=RMASIO(IQ,1,ICOMP)+QSS*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ELSE
-            RMASIO(IQ,2,ICOMP)=RMASIO(IQ,2,ICOMP)+QSS*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ENDIF
-        ENDIF
-      ENDDO
-C
-      GOTO 400
-C
-  350 CALL SSSM4F(NCOL,NROW,NLAY,ICBUND(1,1,1,ICOMP),PRSITY,
-     & DELR,DELC,DH,RETA(1,1,1,ICOMP),DTRANS,IRCH,RECH,CRCH(1,1,ICOMP),
-     & IEVT,EVTR,CEVT(1,1,ICOMP),MXSS,NTSS,NSS,SS,
-     & CNEW(1,1,1,ICOMP),COLD(1,1,1,ICOMP),QSTO,ISS,RMASIO(1,1,ICOMP))
-C
-C--RETURN
-  400 RETURN
-      END
-C
-C
-      SUBROUTINE SSSM4F(NCOL,NROW,NLAY,ICBUND,PRSITY,DELR,DELC,DH,
-     & RETA,DTRANS,IRCH,RECH,CRCH,IEVT,EVTR,CEVT,MXSS,NTSS,NSS,SS,
-     & CNEW,COLD,QSTO,ISS,RMASIO)
-C ******************************************************************
-C THIS SUBROUTINE CALCULATES THE CHANGE IN CELL CONCENTRATIONS
-C DUE TO FLUID SOURCE/SINK MIXING WITH THE FINITE DIFFERENCE SCHEME.
-C ******************************************************************
-C last modified: 08-12-2001
-C
-      IMPLICIT  NONE
-      INTEGER   NCOL,NROW,NLAY,ICBUND,IRCH,IEVT,MXSS,NTSS,NSS,
-     &          NUM,IQ,K,I,J,ISS
-      REAL      PRSITY,RETA,DTRANS,RECH,CRCH,EVTR,CEVT,SS,CNEW,COLD,
-     &          CTMP,QSS,DCSSM,RMASIO,DELR,DELC,DH,QSTO,DCSTO
-      LOGICAL   FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR(3)
-      DIMENSION ICBUND(NCOL,NROW,NLAY),SS(6,MXSS),
-     &          RECH(NCOL,NROW),IRCH(NCOL,NROW),CRCH(NCOL,NROW),
-     &          EVTR(NCOL,NROW),IEVT(NCOL,NROW),CEVT(NCOL,NROW),
-     &          RETA(NCOL,NROW,NLAY),PRSITY(NCOL,NROW,NLAY),
-     &          COLD(NCOL,NROW,NLAY),CNEW(NCOL,NROW,NLAY),
-     &          DELR(NCOL),DELC(NROW),DH(NCOL,NROW,NLAY),
-     &          QSTO(NCOL,NROW,NLAY),RMASIO(122,2)
-C--SEAWAT: CHANGED COMMON NAME FC TO FCMT3D TO AVOID CONFLICT WITH SUBROUTINE
-      COMMON /FCMT3D/FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR
-C
-C--TRANSIENT FLUID STORAGE TERM
-      IF(ISS.NE.0) GOTO 50
-C
-C--RECORD MASS STORAGE CHANGES FOR DISSOLVED AND SORBED PHASES
-      DO K=1,NLAY
-        DO I=1,NROW
-          DO J=1,NCOL
-            IF(ICBUND(J,I,K).LE.0) CYCLE
-            CTMP=COLD(J,I,K)
-            DCSTO=QSTO(J,I,K)/(RETA(J,I,K)*PRSITY(J,I,K))*CTMP*DTRANS
-            CNEW(J,I,K)=CNEW(J,I,K)+DCSTO
-            IF(QSTO(J,I,K).GT.0) THEN
-              RMASIO(118,1)=RMASIO(118,1)+QSTO(J,I,K)*CTMP*DTRANS*
-     &         DELR(J)*DELC(I)*DH(J,I,K)
-            ELSE
-              RMASIO(118,2)=RMASIO(118,2)+QSTO(J,I,K)*CTMP*DTRANS*
-     &         DELR(J)*DELC(I)*DH(J,I,K)
-            ENDIF
-          ENDDO
-        ENDDO
-      ENDDO
-C
-C--DIFFUSIVE SINK/SOURCE TERMS (RECHARGE & E. T.)
-   50 IF(.NOT.FRCH) GOTO 100
-C
-      DO I=1,NROW
-        DO J=1,NCOL
-          K=IRCH(J,I)
-          IF(K.EQ.0 .OR. ICBUND(J,I,K).LE.0) CYCLE
-          CTMP=CRCH(J,I)
-          IF(RECH(J,I).LT.0) CTMP=COLD(J,I,K)
-          DCSSM=RECH(J,I)/(RETA(J,I,K)*PRSITY(J,I,K))*CTMP*DTRANS
-          CNEW(J,I,K)=CNEW(J,I,K)+DCSSM
-          IF(RECH(J,I).GT.0) THEN
-            RMASIO(7,1)=RMASIO(7,1)+RECH(J,I)*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ELSE
-            RMASIO(7,2)=RMASIO(7,2)+RECH(J,I)*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ENDIF
-   10   ENDDO
-      ENDDO
-C
-  100 IF(.NOT.FEVT) GOTO 200
-      DO I=1,NROW
-        DO J=1,NCOL
-          K=IEVT(J,I)
-          IF(K.EQ.0 .OR. ICBUND(J,I,K).LE.0) CYCLE
-          CTMP=CEVT(J,I)
-          IF(EVTR(J,I).LT.0.AND.CTMP.LT.0) THEN
-            CTMP=COLD(J,I,K)
-          ELSEIF(EVTR(J,I).GE.0.AND.CTMP.LT.0) THEN
-            CTMP=0.
-          ENDIF
-          DCSSM=EVTR(J,I)/(RETA(J,I,K)*PRSITY(J,I,K))*CTMP*DTRANS
-          CNEW(J,I,K)=CNEW(J,I,K)+DCSSM
-          IF(EVTR(J,I).GT.0) THEN
-            RMASIO(8,1)=RMASIO(8,1)+EVTR(J,I)*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ELSE
-            RMASIO(8,2)=RMASIO(8,2)+EVTR(J,I)*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ENDIF
-        ENDDO
-      ENDDO
-C
-C--POINT SINK/SOURCE TERMS
-C--[RESET QSS FOR MASS-LOADING SOURCES (IQ=15)]
-  200 DO NUM=1,NTSS
-        K=SS(1,NUM)
-        I=SS(2,NUM)
-        J=SS(3,NUM)
-        CTMP=SS(4,NUM)
-        QSS=SS(5,NUM)
-        IQ=SS(6,NUM)
-        IF(IQ.EQ.15) QSS=1./(DELR(J)*DELC(I)*DH(J,I,K))
-        IF(ICBUND(J,I,K).GT.0.AND.IQ.GT.0) THEN
-          IF(QSS.LT.0) CTMP=COLD(J,I,K)
-          DCSSM=QSS/(RETA(J,I,K)*PRSITY(J,I,K))*CTMP*DTRANS
-          CNEW(J,I,K)=CNEW(J,I,K)+DCSSM
-          IF(QSS.GT.0) THEN
-            RMASIO(IQ,1)=RMASIO(IQ,1)+QSS*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ELSE
-            RMASIO(IQ,2)=RMASIO(IQ,2)+QSS*CTMP*DTRANS*
-     &       DELR(J)*DELC(I)*DH(J,I,K)
-          ENDIF
-        ENDIF
-      ENDDO
-C
-C--RETURN
-      RETURN
-      END
-C
-C
-      SUBROUTINE IMT1SSM4FM(NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,DELR,DELC,
-     & DH,IRCH,RECH,CRCH,IEVT,EVTR,CEVT,MXSS,NTSS,SS,SSMC,
+      SUBROUTINE IMT1SSM5FM(NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,DELR,DELC,
+     & DH,IRCH,RECH,CRCH,IEVT,EVTR,CEVT,MXSS,NTSS,SS,SSMC,SSG,
      & QSTO,CNEW,ISS,A,RHS,NODES,UPDLHS,MIXELM)
 C ******************************************************************
 C THIS SUBROUTINE FORMULATES MATRIX COEFFICIENTS FOR THE SINK/
-C SOURCE TERMS IF THE IMPLICIT SCHEME IS USED.
+C SOURCE TERMS UNDER THE IMPLICIT FINITE-DIFFERENCE SCHEME.
 C ******************************************************************
-C last modified: 08-12-2001
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,IRCH,IEVT,MXSS,
-     &          NTSS,NUM,IQ,K,I,J,ISS,N,NODES,MIXELM
-      REAL      CNEW,RECH,CRCH,EVTR,CEVT,SS,SSMC,
+     &          NTSS,NUM,IQ,K,I,J,ISS,N,NODES,MIXELM,IGROUP,
+     &          MHOST,KHOST,IHOST,JHOST
+      REAL      CNEW,RECH,CRCH,EVTR,CEVT,SS,SSMC,SSG,
      &          CTMP,QSS,DELR,DELC,DH,QSTO,A,RHS
       LOGICAL   UPDLHS,FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR(3)
-      DIMENSION ICBUND(NCOL,NROW,NLAY,NCOMP),SS(6,MXSS),
+     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMNW,FDRT,FETS,FUSR(3)
+      DIMENSION ICBUND(NCOL,NROW,NLAY,NCOMP),SS(7,MXSS),SSG(5,MXSS),
      &          SSMC(NCOMP,MXSS),RECH(NCOL,NROW),IRCH(NCOL,NROW),
      &          CRCH(NCOL,NROW,NCOMP),EVTR(NCOL,NROW),
      &          IEVT(NCOL,NROW),CEVT(NCOL,NROW,NCOMP),
@@ -600,7 +335,11 @@ C
      &          A(NODES),RHS(NODES)
 C--SEAWAT: CHANGED COMMON NAME FC TO FCMT3D TO AVOID CONFLICT WITH SUBROUTINE
       COMMON /FCMT3D/FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR
+     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMNW,FDRT,FETS,FUSR
+C
+C--DETERMINE AVERAGE CONCENTRATION FOR LINKED SINK/SOURCE GROUPS
+      CALL CGROUP(NCOL,NROW,NLAY,NCOMP,ICOMP,MXSS,NTSS,
+     & SS,SSMC,SSG,ICBUND,CNEW,DELR,DELC,DH)
 C
 C--FORMULATE [A] AND [RHS] MATRICES FOR EULERIAN SCHEMES
       IF(MIXELM.GT.0) GOTO 1000
@@ -619,7 +358,8 @@ C--TRANSIENT FLUID STORAGE TERM
         ENDDO
       ENDIF
 C
-C--AREAL SINK/SOURCE TERMS (RECHARGE & E. T.)
+C--AREAL SINK/SOURCE TERMS 
+C--(RECHARGE)
       IF(.NOT.FRCH) GOTO 10
       DO I=1,NROW
         DO J=1,NCOL
@@ -636,13 +376,15 @@ C--AREAL SINK/SOURCE TERMS (RECHARGE & E. T.)
         ENDDO
       ENDDO
 C
-   10 IF(.NOT.FEVT) GOTO 20
+C--(EVAPOTRANSPIRATION)
+   10 IF(.NOT.FEVT .AND. .NOT.FETS) GOTO 20
       DO I=1,NROW
         DO J=1,NCOL
           K=IEVT(J,I)
           IF(K.GT.0 .AND. ICBUND(J,I,K,ICOMP).GT.0) THEN
             N=(K-1)*NCOL*NROW+(I-1)*NCOL+J
-            IF(EVTR(J,I).LT.0.AND.CEVT(J,I,ICOMP).LT.0) THEN
+            IF(EVTR(J,I).LT.0.AND.(CEVT(J,I,ICOMP).LT.0 .OR. 
+     &       CEVT(J,I,ICOMP).GE.CNEW(J,I,K,ICOMP))) THEN          
               IF(UPDLHS) A(N)=A(N)+EVTR(J,I)*DELR(J)*DELC(I)*DH(J,I,K)
             ELSEIF(CEVT(J,I,ICOMP).GT.0) THEN
               RHS(N)=RHS(N)
@@ -653,7 +395,6 @@ C
       ENDDO
 C
 C--POINT SINK/SOURCE TERMS
-C--[RESET QSS FOR MASS-LOADING SOURCES (IQ=15)]
    20 DO NUM=1,NTSS
         K=SS(1,NUM)
         I=SS(2,NUM)
@@ -662,15 +403,33 @@ C--[RESET QSS FOR MASS-LOADING SOURCES (IQ=15)]
         IF(NCOMP.GT.1) CTMP=SSMC(ICOMP,NUM)
         QSS=SS(5,NUM)
         IQ=SS(6,NUM)
-        IF(IQ.EQ.15) QSS=1./(DELR(J)*DELC(I)*DH(J,I,K))
-        IF(ICBUND(J,I,K,ICOMP).GT.0.AND.IQ.GT.0) THEN
-          N=(K-1)*NCOL*NROW+(I-1)*NCOL+J
-          IF(QSS.LT.0) THEN
-            IF(UPDLHS) A(N)=A(N)+QSS*DELR(J)*DELC(I)*DH(J,I,K)
-          ELSE
-            RHS(N)=RHS(N)-QSS*CTMP*DELR(J)*DELC(I)*DH(J,I,K)
-          ENDIF
+        IF(ICBUND(J,I,K,ICOMP).LE.0.OR.IQ.LE.0) CYCLE
+C
+C--RESET QSS FOR MASS-LOADING SOURCES (IQ=15)        
+        IF(IQ.EQ.15) THEN
+          QSS=1./(DELR(J)*DELC(I)*DH(J,I,K))
+C
+C--GET AVERAGE CONC FOR LINKED SINK/SOURCE GROUPS (IQ=27)          
+        ELSEIF(IQ.EQ.27) THEN
+          IGROUP=SS(7,NUM)
+          CTMP=SSG(4,IGROUP)
+C
+C--GET RETURN FLOW CONC FOR DRAINS WITH RETURN FLOW (IQ=28)          
+        ELSEIF(IQ.EQ.28 .AND. QSS.GT.0) THEN
+          MHOST=SS(7,NUM)
+          KHOST=(MHOST-1)/(NCOL*NROW) + 1
+          IHOST=MOD((MHOST-1),NCOL*NROW)/NCOL + 1
+          JHOST=MOD((MHOST-1),NCOL) + 1
+          CTMP=CNEW(JHOST,IHOST,KHOST,ICOMP)
         ENDIF
+C
+C--ADD CONTRIBUTIONS TO MATRICES [A] AND [RHS]        
+        N=(K-1)*NCOL*NROW+(I-1)*NCOL+J
+        IF(QSS.LT.0) THEN
+          IF(UPDLHS) A(N)=A(N)+QSS*DELR(J)*DELC(I)*DH(J,I,K)
+        ELSE
+          RHS(N)=RHS(N)-QSS*CTMP*DELR(J)*DELC(I)*DH(J,I,K)
+        ENDIF        
       ENDDO
 C
 C--DONE WITH EULERIAN SCHEMES
@@ -679,7 +438,8 @@ C
 C--FORMULATE [A] AND [RHS] MATRICES FOR EULERIAN-LAGRANGIAN SCHEMES
  1000 CONTINUE
 C
-C--AREAL SINK/SOURCE TERMS (RECHARGE & E. T.)
+C--AREAL SINK/SOURCE TERMS
+C--(RECHARGE)
       IF(.NOT.FRCH) GOTO 30
       DO I=1,NROW
         DO J=1,NCOL
@@ -694,22 +454,26 @@ C--AREAL SINK/SOURCE TERMS (RECHARGE & E. T.)
         ENDDO
       ENDDO
 C
-   30 IF(.NOT.FEVT) GOTO 40
+C--(EVAPOTRANSPIRATION)
+   30 IF(.NOT.FEVT .AND. .NOT.FETS) GOTO 40
       DO I=1,NROW
         DO J=1,NCOL
           K=IEVT(J,I)
           IF(K.GT.0 .AND. ICBUND(J,I,K,ICOMP).GT.0) THEN
             N=(K-1)*NCOL*NROW+(I-1)*NCOL+J
-            IF(EVTR(J,I).LT.0.AND.CEVT(J,I,ICOMP).LT.0) CYCLE
-            IF(UPDLHS) A(N)=A(N)-EVTR(J,I)*DELR(J)*DELC(I)*DH(J,I,K)
-            IF(CEVT(J,I,ICOMP).GT.0) RHS(N)=RHS(N)
-     &       -EVTR(J,I)*CEVT(J,I,ICOMP)*DELR(J)*DELC(I)*DH(J,I,K)
+            IF(EVTR(J,I).LT.0.AND.(CEVT(J,I,ICOMP).LT.0 .OR. 
+     &       CEVT(J,I,ICOMP).GE.CNEW(J,I,K,ICOMP))) THEN             
+              CYCLE
+            ELSEIF(CEVT(J,I,ICOMP).GE.0) THEN  
+              IF(UPDLHS) A(N)=A(N)-EVTR(J,I)*DELR(J)*DELC(I)*DH(J,I,K)
+              RHS(N)=RHS(N)
+     &         -EVTR(J,I)*CEVT(J,I,ICOMP)*DELR(J)*DELC(I)*DH(J,I,K)
+            ENDIF
           ENDIF
         ENDDO
       ENDDO
 C
 C--POINT SINK/SOURCE TERMS
-C--[RESET QSS FOR MASS-LOADING SOURCES (IQ=15)]
    40 DO NUM=1,NTSS
         K=SS(1,NUM)
         I=SS(2,NUM)
@@ -718,12 +482,30 @@ C--[RESET QSS FOR MASS-LOADING SOURCES (IQ=15)]
         IF(NCOMP.GT.1) CTMP=SSMC(ICOMP,NUM)
         QSS=SS(5,NUM)
         IQ=SS(6,NUM)
-        IF(IQ.EQ.15) QSS=1./(DELR(J)*DELC(I)*DH(J,I,K))
-        IF(ICBUND(J,I,K,ICOMP).GT.0.AND.IQ.GT.0.AND.QSS.GT.0) THEN
-          N=(K-1)*NCOL*NROW+(I-1)*NCOL+J
-          IF(UPDLHS) A(N)=A(N)-QSS*DELR(J)*DELC(I)*DH(J,I,K)
-          RHS(N)=RHS(N)-QSS*CTMP*DELR(J)*DELC(I)*DH(J,I,K)
+        IF(ICBUND(J,I,K,ICOMP).LE.0.OR.IQ.LE.0.OR.QSS.LE.0) CYCLE
+C
+C--RESET QSS FOR MASS-LOADING SOURCES (IQ=15)
+        IF(IQ.EQ.15) THEN
+          QSS=1./(DELR(J)*DELC(I)*DH(J,I,K))
+C
+C--GET AVERAGE CONC FOR LINKED SINK/SOURCE GROUPS (IQ=27)
+        ELSEIF(IQ.EQ.27) THEN
+          IGROUP=SS(7,NUM)
+          CTMP=SSG(4,IGROUP)
+C
+C--GET RETURN FLOW CONC FOR DRAINS WITH RETURN FLOW (IQ=28)
+        ELSEIF(IQ.EQ.28 .AND. QSS.GT.0) THEN
+          MHOST=SS(7,NUM)
+          KHOST=(MHOST-1)/(NCOL*NROW) + 1
+          IHOST=MOD((MHOST-1),NCOL*NROW)/NCOL + 1
+          JHOST=MOD((MHOST-1),NCOL) + 1
+          CTMP=CNEW(JHOST,IHOST,KHOST,ICOMP)
         ENDIF
+C
+C--ADD CONTRIBUTIONS TO MATRICES [A] AND [RHS]
+        N=(K-1)*NCOL*NROW+(I-1)*NCOL+J
+        IF(UPDLHS) A(N)=A(N)-QSS*DELR(J)*DELC(I)*DH(J,I,K)
+        RHS(N)=RHS(N)-QSS*CTMP*DELR(J)*DELC(I)*DH(J,I,K)        
       ENDDO
 C
 C--DONE WITH EULERIAN-LAGRANGIAN SCHEMES
@@ -734,23 +516,23 @@ C--RETURN
       END
 C
 C
-      SUBROUTINE IMT1SSM4BD(NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,DELR,DELC,
-     & DH,IRCH,RECH,CRCH,IEVT,EVTR,CEVT,MXSS,NTSS,SS,SSMC,QSTO,CNEW,
-     & RETA,DTRANS,ISS,RMASIO)
+      SUBROUTINE IMT1SSM5BD(NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,DELR,DELC,
+     & DH,IRCH,RECH,CRCH,IEVT,EVTR,CEVT,MXSS,NTSS,SS,SSMC,SSG,
+     & QSTO,CNEW,RETA,DTRANS,ISS,RMASIO)
 C ********************************************************************
 C THIS SUBROUTINE CALCULATES MASS BUDGETS ASSOCIATED WITH ALL SINK/
 C SOURCE TERMS.
 C ********************************************************************
-C last modified: 08-12-2001
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,IRCH,IEVT,MXSS,
-     &          NTSS,NUM,IQ,K,I,J,ISS
-      REAL      DTRANS,RECH,CRCH,EVTR,CEVT,SS,SSMC,CNEW,
+     &          NTSS,NUM,IQ,K,I,J,ISS,IGROUP,MHOST,KHOST,IHOST,JHOST
+      REAL      DTRANS,RECH,CRCH,EVTR,CEVT,SS,SSMC,SSG,CNEW,
      &          CTMP,QSS,RMASIO,DELR,DELC,DH,QSTO,RETA
       LOGICAL   FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR(3)
-      DIMENSION ICBUND(NCOL,NROW,NLAY,NCOMP),SS(6,MXSS),
+     &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMNW,FDRT,FETS,FUSR(3)
+      DIMENSION ICBUND(NCOL,NROW,NLAY,NCOMP),SS(7,MXSS),SSG(5,MXSS),
      &          SSMC(NCOMP,MXSS),RECH(NCOL,NROW),IRCH(NCOL,NROW),
      &          CRCH(NCOL,NROW,NCOMP),EVTR(NCOL,NROW),
      &          IEVT(NCOL,NROW),CEVT(NCOL,NROW,NCOMP),
@@ -759,7 +541,11 @@ C
      &          RETA(NCOL,NROW,NLAY,NCOMP),RMASIO(122,2,NCOMP)
 C--SEAWAT: CHANGED COMMON NAME FC TO FCMT3D TO AVOID CONFLICT WITH SUBROUTINE
       COMMON /FCMT3D/FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
-     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMAW,FDRT,FETS,FUSR
+     &           FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMNW,FDRT,FETS,FUSR
+C
+C--DETERMINE AVERAGE CONCENTRATION FOR LINKED SINK/SOURCE GROUPS
+      CALL CGROUP(NCOL,NROW,NLAY,NCOMP,ICOMP,MXSS,NTSS,
+     & SS,SSMC,SSG,ICBUND,CNEW,DELR,DELC,DH)      
 C
 C--TRANSIENT GROUNDWATER STORAGE TERM
       IF(ISS.NE.0) GOTO 50
@@ -781,18 +567,16 @@ C--RECORD MASS STORAGE CHANGES FOR DISSOLVED AND SORBED PHASES
         ENDDO
       ENDDO
 C
-C--DIFFUSIVE SINK/SOURCE TERMS
+C--AREAL SINK/SOURCE TERMS
 C--(RECHARGE)
    50 IF(.NOT.FRCH) GOTO 100
 C
       DO I=1,NROW
         DO J=1,NCOL
-C
           K=IRCH(J,I)
           IF(K.EQ.0 .OR. ICBUND(J,I,K,ICOMP).LE.0) CYCLE
           CTMP=CRCH(J,I,ICOMP)
           IF(RECH(J,I).LT.0) CTMP=CNEW(J,I,K,ICOMP)
-C
           IF(RECH(J,I).GT.0) THEN
             RMASIO(7,1,ICOMP)=RMASIO(7,1,ICOMP)+RECH(J,I)*CTMP*DTRANS*
      &       DELR(J)*DELC(I)*DH(J,I,K)
@@ -800,24 +584,23 @@ C
             RMASIO(7,2,ICOMP)=RMASIO(7,2,ICOMP)+RECH(J,I)*CTMP*DTRANS*
      &       DELR(J)*DELC(I)*DH(J,I,K)
           ENDIF
-C
         ENDDO
       ENDDO
 C
 C--(EVAPOTRANSPIRATION)
-  100 IF(.NOT.FEVT) GOTO 200
+  100 IF(.NOT.FEVT .AND. .NOT.FETS) GOTO 200
 C
       DO I=1,NROW
         DO J=1,NCOL
           K=IEVT(J,I)
           IF(K.EQ.0 .OR. ICBUND(J,I,K,ICOMP).LE.0) CYCLE
           CTMP=CEVT(J,I,ICOMP)
-          IF(EVTR(J,I).LT.0.AND.CTMP.LT.0) THEN
+          IF(EVTR(J,I).LT.0.AND.(CTMP.LT.0 .or.
+     &                           CTMP.GE.CNEW(J,I,K,ICOMP))) THEN
             CTMP=CNEW(J,I,K,ICOMP)
-          ELSEIF(EVTR(J,I).GE.0.AND.CTMP.LT.0) THEN
+          ELSEIF(CTMP.LT.0) THEN        
             CTMP=0.
           ENDIF
-C
           IF(EVTR(J,I).GT.0) THEN
             RMASIO(8,1,ICOMP)=RMASIO(8,1,ICOMP)+EVTR(J,I)*CTMP*DTRANS*
      &       DELR(J)*DELC(I)*DH(J,I,K)
@@ -825,22 +608,37 @@ C
             RMASIO(8,2,ICOMP)=RMASIO(8,2,ICOMP)+EVTR(J,I)*CTMP*DTRANS*
      &       DELR(J)*DELC(I)*DH(J,I,K)
           ENDIF
-C
         ENDDO
       ENDDO
 C
 C--POINT SINK/SOURCE TERMS
-C--[RESET QSS FOR MASS-LOADING SOURCES (IQ=15)]
   200 DO NUM=1,NTSS
-C
         K=SS(1,NUM)
         I=SS(2,NUM)
         J=SS(3,NUM)
         QSS=SS(5,NUM)
         IQ=SS(6,NUM)
-        IF(IQ.EQ.15) QSS=1./(DELR(J)*DELC(I)*DH(J,I,K))
         CTMP=SS(4,NUM)
         IF(NCOMP.GT.1) CTMP=SSMC(ICOMP,NUM)
+C
+C--RESET QSS FOR MASS-LOADING SOURCES (IQ=15)
+        IF(IQ.EQ.15) THEN
+          QSS=1./(DELR(J)*DELC(I)*DH(J,I,K))
+C
+C--GET AVERAGE CONC FOR LINKED SINK/SOURCE GROUPS (IQ=27)          
+        ELSEIF(IQ.EQ.27) THEN
+          IGROUP=SS(7,NUM)
+          CTMP=SSG(4,IGROUP)
+C
+C--GET RETURN FLOW CONC FOR DRAINS WITH RETURN FLOW (IQ=28)          
+        ELSEIF(IQ.EQ.28 .AND. QSS.GT.0) THEN
+          MHOST=SS(7,NUM)
+          KHOST=(MHOST-1)/(NCOL*NROW) + 1
+          IHOST=MOD((MHOST-1),NCOL*NROW)/NCOL + 1
+          JHOST=MOD((MHOST-1),NCOL) + 1
+          CTMP=CNEW(JHOST,IHOST,KHOST,ICOMP)
+        ENDIF
+C        
         IF(QSS.LT.0) CTMP=CNEW(J,I,K,ICOMP)
 C
         IF(ICBUND(J,I,K,ICOMP).GT.0.AND.IQ.GT.0) THEN
@@ -858,3 +656,150 @@ C
 C--RETURN
   400 RETURN
       END
+C
+C
+      SUBROUTINE IMT1SSM5OT(NCOL,NROW,NLAY,KPER,KSTP,NTRANS,NCOMP,ICOMP,
+     & ICBUND,MXSS,NTSS,NSS,SS,SSG,PRTOUT,TIME2,IOUT,ISSGOUT)
+C ******************************************************************
+C THIS SUBROUTINE SAVES INFORMATION FOR MULTI-NODE WELLS.
+C ******************************************************************
+C last modified: 02-15-2005
+C
+      IMPLICIT  NONE
+      INTEGER   NCOL,NROW,NLAY,kper,kstp,ntrans,NCOMP,ICOMP,ICBUND,
+     &          MXSS,NTSS,NSS,NUM,IQ,K,I,J,iGroup,IOUT,iFlag,
+     &          ISSGOUT,IU
+      REAL      SS,CTMP,TIME2,SSG
+      LOGICAL   PRTOUT
+      DIMENSION ICBUND(NCOL,NROW,NLAY,NCOMP),SS(7,MXSS),SSG(5,MXSS)
+    
+C--IF ISSGOUT = 0, SAVE AVERAGE CONC. OF MULTI-NODE WELLS TO 
+C--STANDARD OUTPUT FILE WHENEVER PRTOUT IS TRUE  
+C--OTHERWISE SAVE TO UNIT DEFINED BY ISSGOUT
+
+      IF(ISSGOUT.LE.0) THEN
+        IF(.NOT.PRTOUT) GOTO 1200
+        IU=IOUT
+        WRITE(IU,1000)
+        WRITE(IU,1002)  
+      ELSE
+        IU=ISSGOUT
+        IF(KPER*KSTP*NTRANS.EQ.1) WRITE(IU,1002)  
+      ENDIF      
+    
+      DO NUM=1,NTSS
+        K =ss(1,num)
+        I =ss(2,num)
+        J =ss(3,num)
+        IQ=ss(6,num)
+        iGroup=ss(7,num)
+        if(iGroup.le.0) cycle
+        ctmp=ssg(4,iGroup)
+        iFlag=int(ssg(1,iGroup))
+        if(iFlag.ne.-999) then
+          ssg(1,iGroup)=-999
+          write(IU,1004) kper,kstp,ntrans,time2,iGroup,k,i,j,ctmp
+        endif
+      ENDDO
+
+      IF(ISSGOUT.LE.0) WRITE(IU,1010) 
+
+ 1000 format(/1x,80('.'))
+ 1002 format(1x,'Stress  Time  Transport     Total         MNW   Layer',
+     & '  Row Column  Average',
+     &      /1x,'Period  Step    Step     Elapsed Time    Group   [K] ',
+     & '  [I]  [J]     Conc.     ')     
+ 1004 format(1x, i4, 2x, i5, 3x, i5, 3x, g15.7, 2x, 4i6, 1x, g15.7)
+ 1010 format(1x,80('.')/)
+C
+ 1200 RETURN
+      END
+C
+C
+      subroutine cgroup(ncol,nrow,nlay,ncomp,icomp,mxss,ntss,
+     & ss,ssmc,ssg,icbund,cnew,delr,delc,dh)
+c **********************************************************************
+c this subroutine calculates the average concentration for a linked
+c group sink/source such as a multi-node well
+c **********************************************************************
+c last modification: 02-15-2005
+c
+      implicit  none
+      integer   k,i,j,iGroup,num,IQ,icbund,icomp,ncomp,mxss,ntss,
+     &          ncol,nrow,nlay
+      real      ss,ssmc,ssg,cold,cnew,delr,delc,dh,ctmp,qss,csink,
+     &          QC_group,Q_group,Qnet_group,cavg
+      dimension ss(7,mxss),ssmc(ncomp,mxss),ssg(5,mxss),
+     &          cnew(ncol,nrow,nlay,ncomp),delr(ncol),delc(nrow),
+     &          dh(ncol,nrow,nlay),icbund(ncol,nrow,nlay,ncomp)
+c
+c--clear storage array
+c
+      do iGroup=1,ntss
+        do i=1,5
+          ssg(i,iGroup)=0.
+        enddo
+      enddo
+c
+c--get cumulative QC and Q (sinks only), and net Q (sinks/sources)
+c
+      do num=1,ntss  
+        k=ss(1,num)
+        i=ss(2,num)
+        j=ss(3,num)
+        ctmp=ss(4,num)
+        if(icomp.gt.1) ctmp=ssmc(icomp,num)
+        qss=ss(5,num)
+        IQ=ss(6,num)
+        iGroup=ss(7,num)
+c
+c--skip if at an inactive cell        
+        if(icbund(j,i,k,icomp).le.0) cycle
+c        
+c--skip if not a linked group sink/source
+        if(iGroup.eq.0 .or. IQ.ne.27) cycle
+c
+c--get cell concentration
+        csink=cnew(j,i,k,icomp)
+c
+c--get volumetric |Q|*C, |Q|, and Q
+        if(qss.lt.0) then
+          QC_group=abs(qss)*delr(j)*delc(i)*dh(j,i,k)*csink
+          Q_group =abs(qss)*delr(j)*delc(i)*dh(j,i,k)
+        else
+          QC_group=0.
+          Q_group =0.  
+        endif
+        Qnet_group = qss*delr(j)*delc(i)*dh(j,i,k)
+c
+c--cumulate and store in ssg
+        ssg(1,iGroup) = ssg(1,iGroup) + QC_group
+        ssg(2,iGroup) = ssg(2,iGroup) + Q_group
+        ssg(5,iGroup) = ssg(5,iGroup) + Qnet_group
+c
+c--get user-specified conc for any cell in the group
+        ssg(3,iGroup) = max( ctmp,ssg(3,iGroup) )
+c
+c--done
+      enddo
+c
+c--get composite concentrations
+c
+      do iGroup=1,ntss
+        cavg = 0.
+        QC_group =   ssg(1,iGroup)
+        Q_group  =   ssg(2,iGroup)
+        Qnet_group = ssg(5,iGroup)
+        ctmp       = ssg(3,iGroup)
+        if(Qnet_group.gt.0) then
+          cavg=(QC_group+Qnet_group*ctmp)/(Q_group+Qnet_group)
+        elseif(Q_group.gt.0) then
+          cavg =QC_group/Q_group
+        endif
+        ssg(4,iGroup) = cavg
+      enddo
+c
+c--normal return
+c
+      return
+      end

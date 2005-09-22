@@ -15,7 +15,7 @@ C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
 CBARC--SEAWAT: ADD PS, ELEV
-      REAL C, FACT, H, HB, HH, HHNEW, QCLS, RBOT, RIVR,
+      REAL C, FACT, H, HB, QCLS, RBOT, RIVR,
      &     TOFF, WTQ, ZERO, PS, ELEV
       INTEGER I, IBOUND, IBT, IBT1, IFLAG, II, IOUT, IQ,
      &        IQOB, IRBOT, ITS, J, JJ, JRBOT, K, KK, KRBOT,
@@ -24,7 +24,8 @@ CBARC--SEAWAT: ADD PS, ELEV
      &        NT1, NT2
       CHARACTER*12 OBSNAM(ND)
 CBARC--SEAWAT: ADD HSALT
-      DOUBLE PRECISION HNEW(NCOL,NROW,NLAY),HSALT(NCOL,NROW,NLAY)
+      DOUBLE PRECISION HH, HHNEW, HNEW(NCOL,NROW,NLAY),
+     &                 HSALT(NCOL,NROW,NLAY)
 CBARC--SEAWAT: ADD PS,ELEV
       DIMENSION RIVR(NRIVVL,MXRIVR), IBOUND(NCOL,NROW,NLAY),
      &          IBT(2,NQAR), NQOB(NQAR), NQCL(NQAR), IQOB(NQTAR),
@@ -35,7 +36,7 @@ CBARC--SEAWAT: ADD COMMON AND AUX. VARIABLES
       CHARACTER*16 RIVAUX
 	INCLUDE 'vdf.inc'
 CBARC--SEAWAT:MT3DMS 
-	DIMENSION SS(6,MXSS),SSMC(NCOMP,MXSS)
+	DIMENSION SS(7,MXSS),SSMC(NCOMP,MXSS)
 
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------

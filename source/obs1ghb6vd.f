@@ -14,14 +14,15 @@ C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
 CBARC--SEAWAT: ADD PS,ELEV
-      REAL BNDS, C, FACT, H, HB, HH, HHNEW, QCLS, TOFF, ZERO, PS, ELEV
+      REAL BNDS, C, FACT, H, HB, QCLS, TOFF, ZERO, PS, ELEV
 
       INTEGER I, IBOUND, IBT, IBT1, IFLAG, II, IOUT, IQ, IQOB, ITS, J,
      &        JJ, K, KK, MXBND, N, NB, NBN, NBOUND, NC, NC1, NC2, NCOL,
      &        NHT, NLAY, NQ, NQCL, NQOB, NROW, NT, NT1, NT2
       CHARACTER*12 OBSNAM(ND)
 CBARC--SEAWAT: ADD HSALT
-      DOUBLE PRECISION HNEW(NCOL,NROW,NLAY),HSALT(NCOL,NROW,NLAY)
+      DOUBLE PRECISION HH, HHNEW,HNEW(NCOL,NROW,NLAY),
+     &                 HSALT(NCOL,NROW,NLAY)
 CBARC--SEAWAT: ADD PS,ELEV
       DIMENSION BNDS(NGHBVL,MXBND), IBOUND(NCOL,NROW,NLAY), IBT(2,NQAR),
      &          NQOB(NQAR), NQCL(NQAR), IQOB(NQTAR), QCLS(5,NQCAR),
@@ -32,7 +33,7 @@ CBARC--SEAWAT: ADD COMMON AND AUX. VARIABLES
       COMMON /GHBCOM/GHBAUX(5)
       CHARACTER*16 GHBAUX
 CBARC--SEAWAT:MT3DMS 
-	DIMENSION SS(6,MXSS),SSMC(NCOMP,MXSS)
+	DIMENSION SS(7,MXSS),SSMC(NCOMP,MXSS)
 
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------

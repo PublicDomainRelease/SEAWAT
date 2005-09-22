@@ -1,0 +1,89 @@
+release.txt
+
+                           SEAWAT-2000 Release Notes
+
+     This file describes changes introduced into SEAWAT-2000 with each
+official release; these changes may substantially affect users. In this file, 
+packages and processes are referred to by their 3-or 4-character 
+abbreviation.
+
+NOTE: Any use of trade, product or firm names is for descriptive purposes 
+      only and does not imply endorsement by the U.S. Government.
+
+
+o Version 3.11.02 9/23/2005:
+
+This version contains a fix for a bug that may have caused transport time
+step lengths to be too short for stress period 2 and greater.  This bug
+would not have caused accuracy problems, but may have resulted in 
+unnecessarily long computer runtimes for some simulations.
+
+
+
+o Version 3.11.01 7/25/2005:
+
+This version contains a fix for a bug that was introduced in 3.11.00 when 
+MT3DMS Version 5.00 was incorporated into SEAWAT.  The size of the SS
+array was increased in MT3DMS parts of the code, but not in the MODFLOW
+parts of the code.  This caused freshwater boundary heads for RIV and GHB
+boundaries to be calculated with a density of DENSEREF instead of a 
+density value calculated with the concentration in the SSM package.  
+The bug probably does not affect models of shallow aquifers but could
+affect GHB fluxes for deep aquifer systems.
+
+
+
+o Version 3.11.00 4/29/2005:
+
+This version of SEAWAT-2000 contains MODFLOW-2000 Version 1.15.00 and MT3DMS
+Version 5.00.  Thus, the new transport observation feature in MT3DMS is now
+available for variable-density simulations.  The Multi-Node Well (MNW) 
+package is now compatible with the Variable-Density Flow (VDF) Process; however, 
+it is assumed that the well density is equal to the reference density 
+(DENSEREF).  Thus, MNW wells should be restricted to freshwater parts of the 
+model domain.
+
+This version of the code contains a fix for a potentially serious bug in 
+prior versions of SEAWAT-2000.  For some cases, the simulation would proceed
+even if convergence had not been achieved with the flow solution.  In the current
+version, SEAWAT will stop and write an error message to the output file and the
+screen if flow convergence is not achieved.  Other bug fixes include 
+(1) SEAWAT-2000 will no longer bomb of the number of columns exceeds 1000, and
+(2) stability criteria for the transport equation are no longer enforced for 
+constant concentration cells.
+
+
+
+o Version 3.10.01 3/30/2004:
+
+Following the convention for MODFLOW-2000 releases, this release is
+designated as 3.10.01.  The ".01" indicates that this release contains
+only bug fixes, rather than new packages or features.
+
+This version contains bug fixes for three coding errors: (1) In the previous 
+version, the value for HDRY was not always written to the output head file if 
+a cell went dry during the simulation.  (2) A runtime error was encountered
+in certain instances when the IMT Process was used with the GWF Process 
+(instead of the VDF Process).  (3)  If MODFLOW timesteps were shorter
+than the calculated transport timestep, the density array was not updated
+properly.  To correct these errors, changes were made to swt2k.f and vdf1.f.
+
+
+
+o Version 3.10 2/13/2004:
+
+This is the first public release of the SEAWAT-2000 program, which is 
+documented in OFR 03-426.
+
+Since OFR 03-426 was printed and distributed, the FHB and HUF2 packages
+have been incorporated into SEAWAT-2000.  There are no special instructions
+for using the FHB package.  Presently, the Layer Variable-Direction Horizontal 
+Anisotropy (LVDA) capability is not compatible with the VDF process.  The 
+version of MODFLOW-2000 included in this release is Version 1.12.01.  The 
+version of MT3DMS included in this release is Version 4.50.
+
+With this release, there is one known bug: the Variable-Density Flow (VDF)
+Process may not produce accurate results if quasi-three-dimensional layers
+are included in the simulation.  Quasi-three-dimensional layers should not
+be used with the VDF Process.
+

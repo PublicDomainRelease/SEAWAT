@@ -1,3 +1,4 @@
+! Time of File Save by ERB: 5/5/2004 9:38AM
 C     Last change:  ERB  14 Jan 2003    3:53 pm
 C=======================================================================
       SUBROUTINE OBS1BAS6DF(IOBS,IOSTAR,IOWTQ,IOWTQDR,IOWTQGB,
@@ -1335,7 +1336,7 @@ C
      &       ' -- NO GRAPH-DATA OUTPUT FILES',
      &       ' WILL BE PRODUCED (SOBS1BAS6OH)',/)
 C
-	ZERO = 0.0
+      ZERO = 0.0
       IO = IOIN
       IF (IO.EQ.2) IO = 1
       RSQ = ZERO
@@ -1426,6 +1427,13 @@ C-------STREAMFLOW-ROUTING (STR) FLOW OBSERVATIONS
      &                                 NDMH,WTRL,NRSO,IUGDO,OUTTMP,
      &                                 IPLOT,IPLPTR,LCOBSTR,ISSWR,SSST,
      &                                 ITMXP,OTIME)
+C-------STREAMFLOW-ROUTING (SFR) FLOW OBSERVATIONS
+cc      IF (NQTSF.GT.0) CALL SOBS1SFR1OH(IO,IOWTQSF,IOUT,NHT,NQTSF,HOBS,H,
+cc     &                                 WTQ,OBSNAM,IDIS,WTQS,D,AVET,
+cc     &                                 NPOST,NNEGT,NRUNS,RSQ,ND,MPR,IPR,
+cc     &                                 NDMH,WTRL,NRSO,IUGDO,OUTTMP,
+cc     &                                 IPLOT,IPLPTR,LCOBSFR,ISSWR,SSSF,
+cc     &                                 ITMXP,OTIME)
 C-------CONSTANT-HEAD BOUNDARY FLOW OBSERVATIONS
       IF (NQTCH.GT.0) CALL SOBS1BAS6FOH(IO,IOWTQCH,IOUT,NHT,NQTCH,HOBS,
      &                                  H,WTQ,OBSNAM,IDIS,WTQS,D,AVET,
@@ -1790,7 +1798,7 @@ C-----CLOSE SENSITIVITY OUTPUT FILES
           IF (I.EQ.4 .AND. .NOT. OBSALL) CYCLE
           INQUIRE(UNIT=IUSNO(I),OPENED=LOP)
           IF (LOP) CLOSE(UNIT=IUSNO(I))
-  250    CONTINUE
+  250   CONTINUE
       ENDIF
 C
       RETURN
@@ -2582,7 +2590,7 @@ C     ------------------------------------------------------------------
      &          MLAY(MAXM,MOBSAR), NDER(5,NHAR),
      &          PR(MAXM,MOBSAR), RINT(4,NHAR), ROFF(NHAR),
      &          STRT(NCOL,NROW,NLAY), TOFF(ND), WT(ND)
-      COMMON /DISCOM/LBOTM(200),LAYCBD(200)
+      COMMON /DISCOM/LBOTM(999),LAYCBD(999)
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
   490 FORMAT (/,' HEAD OBS#',I5,', ID ',A,
@@ -2763,7 +2771,7 @@ C     ------------------------------------------------------------------
       DIMENSION X(NPE,ND), WT(ND), RINT(4,NHAR), JOFF(NHAR),
      &          IOFF(NHAR), MLAY(MAXM,MOBSAR), PR(MAXM,MOBSAR),
      &          NDER(5,NHAR), LN(NPLIST), TOFF(ND)
-      COMMON /DISCOM/LBOTM(200),LAYCBD(200)
+      COMMON /DISCOM/LBOTM(999),LAYCBD(999)
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
   500 FORMAT (/,' HEAD OBS#',I5,', ID ',A4,
@@ -3272,9 +3280,6 @@ C     ------------------------------------------------------------------
   555 FORMAT (4X,F8.0,F6.0,F9.2)
   560 FORMAT (/,' FOR OBS',I5,' STATISTIC RELATED TO WEIGHT < OR =0 -- '
      &        ,'STOP EXECUTION (OBS1BAS6FRP)',/)
-  570 FORMAT (/,' LARGEST OBS TIME STEP (',I5,') LARGER THAN NPER (',I5,
-     &        ') OF BASIC PACKAGE INPUT FILE',/,
-     &        ' -- STOP EXECUTION (OBS1BAS6FRP)',/)
   590 FORMAT (/,' ROW OR COLUMN NUMBER INVALID',
      &        ' -- STOP EXECUTION (OBS1BAS6FRP)',/)
   600 FORMAT (/,' CELL NOT DESIGNATED AS CONSTANT HEAD',
@@ -3766,7 +3771,7 @@ C
      1     CR(NCOL,NROW,NLAY), CC(NCOL,NROW,NLAY),
      2     CV(NCOL,NROW,NLAY), BOTM(NCOL,NROW,0:NBOTM), LAYHDT(NLAY)
 C
-      COMMON /DISCOM/LBOTM(200),LAYCBD(200)
+      COMMON /DISCOM/LBOTM(999),LAYCBD(999)
 C     ------------------------------------------------------------------
 C
 C6------CLEAR VALUES FOR FLOW RATE THROUGH EACH FACE OF CELL.
@@ -3869,7 +3874,7 @@ C
      &     HK(NCOL,NROW,NLAY),HANI(NCOL,NROW,NLAY),
      &     HKCC(NCOL,NROW,NLAY),HUFTHK(NCOL,NROW,NHUF,2),GS(NCOL,NROW)
 C
-      COMMON /DISCOM/LBOTM(200),LAYCBD(200)
+      COMMON /DISCOM/LBOTM(999),LAYCBD(999)
 C     ------------------------------------------------------------------
   600 FORMAT(/,
      &' SENSITIVITIES FOR FLOW OBSERVATIONS AT BOUNDARIES REPRESENTED',
@@ -4021,9 +4026,9 @@ C
      &     HFB(7,MXACTFB),SV(NCOL,NROW,NLAY),VKA(NCOL,NROW,NLAY),
      &     HK(NCOL,NROW,NLAY),HANI(NCOL,NROW,NLAY),CO(6)
 C
-      COMMON /DISCOM/LBOTM(200),LAYCBD(200)
-      COMMON /LPFCOM/LAYTYP(200),LAYAVG(200),CHANI(200),LAYVKA(200),
-     1               LAYWET(200)
+      COMMON /DISCOM/LBOTM(999),LAYCBD(999)
+      COMMON /LPFCOM/LAYTYP(999),LAYAVG(999),CHANI(999),LAYVKA(999),
+     1               LAYWET(999)
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
       ZERO=0.
@@ -4169,8 +4174,8 @@ C     ------------------------------------------------------------------
      &          GS(NCOL,NROW)
       CHARACTER*4 PID
 C
-      COMMON /DISCOM/LBOTM(200),LAYCBD(200)
-      COMMON /HUFCOM/LTHUF(200),HGUHANI(200),HGUVANI(200),LAYWT(200)
+      COMMON /DISCOM/LBOTM(999),LAYCBD(999)
+      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
 

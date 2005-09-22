@@ -1,0 +1,249 @@
+# Microsoft Developer Studio Generated Dependency File, included by swt2k.mak
+
+.\daf1.f : \
+	".\ground.com"\
+	".\params.inc"\
+	".\startdaf.com"\
+	
+
+.\glo1bas6.f : \
+	".\openspec.inc"\
+	".\parallel.inc"\
+	".\param.inc"\
+	
+
+.\gutsdaf.f : \
+	".\params.inc"\
+	".\startdaf.com"\
+	
+
+.\gwf1drt1.f : \
+	".\param.inc"\
+	
+
+.\gwf1hfb6.f : \
+	".\openspec.inc"\
+	".\param.inc"\
+	
+
+.\gwf1huf2.f : \
+	".\param.inc"\
+	
+
+.\gwf1lpf1.f : \
+	".\param.inc"\
+	
+
+.\gwf1sfr1.f : \
+	".\param.inc"\
+	
+
+.\hufutl2.f : \
+	".\param.inc"\
+	
+
+.\hydmod.f : \
+	".\hydmod.inc"\
+	
+
+.\imt1btn5.for : \
+	".\FILESPEC.INC"\
+	
+
+.\imt1utl5.for : \
+	".\FILESPEC.INC"\
+	
+
+.\lmt6.f : \
+	".\openspec.inc"\
+	
+
+.\obs1adv2.f : \
+	".\param.inc"\
+	
+
+.\obs1bas6.f : \
+	".\parallel.inc"\
+	".\param.inc"\
+	
+
+.\obs1bas6vd.f : \
+	".\param.inc"\
+	".\vdf.inc"\
+	
+
+.\obs1drn6.f : \
+	".\param.inc"\
+	
+
+.\obs1drn6vd.f : \
+	".\param.inc"\
+	".\vdf.inc"\
+	
+
+.\obs1drt1.f : \
+	".\param.inc"\
+	
+
+.\obs1ghb6.f : \
+	".\param.inc"\
+	
+
+.\obs1ghb6vd.f : \
+	".\param.inc"\
+	".\vdf.inc"\
+	
+
+.\obs1riv6.f : \
+	".\param.inc"\
+	
+
+.\obs1riv6vd.f : \
+	".\param.inc"\
+	".\vdf.inc"\
+	
+
+.\obs1str6.f : \
+	".\param.inc"\
+	
+
+".\para-non.f" : \
+	".\parallel.inc"\
+	
+
+.\parutl1.f : \
+	".\param.inc"\
+	
+
+.\pes1bas6.f : \
+	".\openspec.inc"\
+	".\parallel.inc"\
+	".\param.inc"\
+	
+
+.\pes1gau1.f : \
+	".\parallel.inc"\
+	".\param.inc"\
+	
+
+.\rtedaf.f : \
+	".\params.inc"\
+	
+
+.\sen1bas6.f : \
+	".\param.inc"\
+	
+
+.\sen1chd6.f : \
+	".\param.inc"\
+	
+
+.\sen1drn6.f : \
+	".\param.inc"\
+	
+
+.\sen1drt1.f : \
+	".\param.inc"\
+	
+
+.\sen1ets1.f : \
+	".\param.inc"\
+	
+
+.\sen1evt6.f : \
+	".\param.inc"\
+	
+
+.\sen1ghb6.f : \
+	".\param.inc"\
+	
+
+.\sen1hfb6.f : \
+	".\param.inc"\
+	
+
+.\sen1huf2.f : \
+	".\param.inc"\
+	
+
+.\sen1lpf1.f : \
+	".\param.inc"\
+	
+
+.\sen1rch6.f : \
+	".\param.inc"\
+	
+
+.\sen1riv6.f : \
+	".\param.inc"\
+	
+
+.\sen1str6.f : \
+	".\param.inc"\
+	
+
+.\sen1wel6.f : \
+	".\param.inc"\
+	
+
+.\swt2k.f : \
+	".\lmt6vd.inc"\
+	".\openspec.inc"\
+	".\parallel.inc"\
+	".\param.inc"\
+	".\vdf.inc"\
+	
+
+.\utl6.f : \
+	".\openspec.inc"\
+	".\param.inc"\
+	
+
+.\vdf1.f : \
+	".\vdf.inc"\
+	
+
+.\vdf1bcf6.f : \
+	".\vdf.inc"\
+	
+
+.\vdf1drn6.f : \
+	".\vdf.inc"\
+	
+
+.\vdf1evt6.f : \
+	".\vdf.inc"\
+	
+
+.\vdf1fhb1.f : \
+	".\vdf.inc"\
+	
+
+.\vdf1ghb6.f : \
+	".\vdf.inc"\
+	
+
+.\vdf1huf2.f : \
+	".\param.inc"\
+	".\vdf.inc"\
+	
+
+.\vdf1lmt6.f : \
+	".\vdf.inc"\
+	
+
+.\vdf1lpf1.for : \
+	".\vdf.inc"\
+	
+
+.\vdf1rch6.f : \
+	".\vdf.inc"\
+	
+
+.\vdf1riv6.f : \
+	".\vdf.inc"\
+	
+
+.\vdf1wel6.f : \
+	".\vdf.inc"\
+	

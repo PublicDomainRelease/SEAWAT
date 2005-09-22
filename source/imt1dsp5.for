@@ -1,12 +1,12 @@
 C
-      SUBROUTINE IMT1DSP4AL(INDSP,IOUT,ISUM,ISUM2,NCOL,NROW,NLAY,
+      SUBROUTINE IMT1DSP5AL(INDSP,IOUT,ISUM,ISUM2,NCOL,NROW,NLAY,
      & LCAL,LCTRPT,LCTRPV,LCDM,LCDXX,LCDXY,LCDXZ,LCDYX,LCDYY,LCDYZ,
      & LCDZX,LCDZY,LCDZZ)
 C **********************************************************************
 C THIS SUBROUTINE ALLOCATES SPACE FOR ARRAYS NEEDED IN THE DISPERSION
 C (DSP) PACKAGE.
 C **********************************************************************
-C last modified: 05-15-2003
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   INDSP,IOUT,ISUM,ISUM2,NCOL,NROW,NLAY,ISOLD,ISOLD2,
@@ -15,8 +15,8 @@ C
 C
 C--PRINT PACKAGE NAME AND VERSION NUMBER
       WRITE(IOUT,1030) INDSP
- 1030 FORMAT(1X,'DSP4 -- DISPERSION PACKAGE,',
-     & ' VERSION 4.5, MAY 2003, INPUT READ FROM UNIT',I3)
+ 1030 FORMAT(1X,'DSP5 -- DISPERSION PACKAGE,',
+     & ' VERSION 5, FEBRUARY 2005, INPUT READ FROM UNIT',I3)
 C
 C--ALLOCATE SPACE FOR ARRAYS
       ISOLD=ISUM
@@ -63,12 +63,12 @@ C--NORMAL RETURN
       END
 C
 C
-      SUBROUTINE IMT1DSP4RP(IN,IOUT,NCOL,NROW,NLAY,AL,TRPT,TRPV,DMCOEF)
+      SUBROUTINE IMT1DSP5RP(IN,IOUT,NCOL,NROW,NLAY,AL,TRPT,TRPV,DMCOEF)
 C ********************************************************************
 C THIS SUBROUTINE READS AND PREPARES INPUT DATA NEEDED BY THE
 C DISPERSION (DSP) PACKAGE.
 C*********************************************************************
-C last modified: 08-12-2001
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   IN,IOUT,NCOL,NROW,NLAY,K
@@ -106,7 +106,7 @@ C--RETURN
       END
 C
 C
-      SUBROUTINE IMT1DSP4CF(IOUT,KSTP,KPER,NCOL,NROW,NLAY,ICBUND,PRSITY,
+      SUBROUTINE IMT1DSP5CF(IOUT,KSTP,KPER,NCOL,NROW,NLAY,ICBUND,PRSITY,
      & DELR,DELC,DZ,QX,QY,QZ,ALPHAL,TRPT,TRPV,DMCOEF,DTDISP,
      & DXX,DXY,DXZ,DYX,DYY,DYZ,DZX,DZY,DZZ,IFMTDP)
 C***********************************************************************
@@ -118,7 +118,7 @@ C NOTE: Dij IS CALCULATED USING DARCY VELOCITY COMPONENTS INSTEAD OF
 C ====  LINEAR VELOCITY COMPONENTS.  TO CONVERT THIS APPARENT Dij TO
 C       ACTUAL DISPERSION COEFFICIENT, DIVIDE IT BY POROSITY.
 C***********************************************************************
-C last modified: 08-12-2001
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   IOUT,KSTP,KPER,NCOL,NROW,NLAY,K,I,J,ICBUND,KM1,IM1,JM1,
@@ -378,6 +378,9 @@ C
 C--CALCULATE MAXIMUM TIME INCREMENT WHICH MEETS STABILITY CRITERION
 C--FOR SOLVING THE EXPLICIT FINITE-DIFFERENCE DISPERSION EQUATION.
       DTDISP=1.E30
+      KD=0
+      ID=0
+      JD=0
       DO K=1,NLAY
       DO I=1,NROW
       DO J=1,NCOL
@@ -557,181 +560,14 @@ C--RETURN
       END
 C
 C
-      SUBROUTINE IMT1DSP4SV(NCOL,NROW,NLAY,MCOMP,ICOMP,ICBUND,DELR,DELC,
-     & DZ,RETA,PRSITY,DXX,DXY,DXZ,DYX,DYY,DYZ,DZX,DZY,DZZ,CNEW,COLD,
-     & BUFF,DTRANS,RMASIO)
-C **********************************************************************
-C THIS SUBROUTINE SOLVES DISPERSION-DIFFUSION EQUATION WITH THE CENTRAL
-C EXPLICIT FINITE DIFFERENCE FORMULATION.
-C **********************************************************************
-C last modified: 08-12-2001
-C
-      IMPLICIT  NONE
-      INTEGER   NCOL,NROW,NLAY,K,I,J,KP1,KM1,IP1,IM1,JP1,JM1,ICBUND,
-     &          MCOMP,ICOMP
-      REAL      DCFLUX,RETA,DTRANS,BUFF,
-     &          RMASIO,WXP,WXM,WYP,WYM,WZP,WZM,DCDSP,DELR,DELC,
-     &          DZ,DXX,DXY,DXZ,DYX,DYY,DYZ,DZX,DZY,DZZ,CNEW,COLD,
-     &          PRSITY
-      DIMENSION ICBUND(NCOL,NROW,NLAY,MCOMP),DELR(NCOL),DELC(NROW),
-     &          DZ(NCOL,NROW,NLAY),BUFF(NCOL,NROW,NLAY),
-     &          COLD(NCOL,NROW,NLAY,MCOMP),CNEW(NCOL,NROW,NLAY,MCOMP),
-     &          RETA(NCOL,NROW,NLAY,MCOMP),PRSITY(NCOL,NROW,NLAY),
-     &          DXX(NCOL,NROW,NLAY),DXY(NCOL,NROW,NLAY),
-     &          DXZ(NCOL,NROW,NLAY),DYX(NCOL,NROW,NLAY),
-     &          DYY(NCOL,NROW,NLAY),DYZ(NCOL,NROW,NLAY),
-     &          DZX(NCOL,NROW,NLAY),DZY(NCOL,NROW,NLAY),
-     &          DZZ(NCOL,NROW,NLAY),RMASIO(122,2,MCOMP)
-C
-C--LOAD COLD FOR COMPONENT [ICOMP] INTO BUFF
-      DO K=1,NLAY
-        DO I=1,NROW
-          DO J=1,NCOL
-            BUFF(J,I,K)=COLD(J,I,K,ICOMP)
-          ENDDO
-        ENDDO
-      ENDDO
-C
-C--LOOP THROUGH EVERY FINITE DIFFERENCE CELL
-      DO K=1,NLAY
-        KP1=MIN(K+1,NLAY)
-        KM1=MAX(1,K-1)
-        DO I=1,NROW
-          IP1=MIN(I+1,NROW)
-          IM1=MAX(1,I-1)
-          DO J=1,NCOL
-            JP1=MIN(J+1,NCOL)
-            JM1=MAX(1,J-1)
-C
-C--SKIP IF CELL IS INACTIVE
-            IF(ICBUND(J,I,K,ICOMP).EQ.0) CYCLE
-C
-C--CALCULATE INTERFACE WEIGHTING FACTORS
-            WXP=DELR(JP1)/(DELR(J)+DELR(JP1))
-            WXM=DELR(J)/(DELR(JM1)+DELR(J))
-            WYP=DELC(IP1)/(DELC(I)+DELC(IP1))
-            WYM=DELC(I)/(DELC(IM1)+DELC(I))
-            WZP=DZ(J,I,KP1)/(DZ(J,I,K)+DZ(J,I,KP1))
-            WZM=DZ(J,I,K)/(DZ(J,I,KM1)+DZ(J,I,K))
-C
-C--ACCUMULATE ALL COMPONENTS OF THE DISPERSIVE FLUX
-            DCFLUX=0.
-C
-C--COMPONENTS ACROSS LEFT AND RIGHT FACES IN THE X-DIRECTION
-            IF(NCOL.GT.1) THEN
-              DCFLUX=DCFLUX+DXX(J,I,K)*(BUFF(JP1,I,K)-BUFF(J,I,K))
-     &         -DXX(JM1,I,K)*(BUFF(J,I,K)-BUFF(JM1,I,K))
-              IF(NROW.GT.1) THEN
-                DCFLUX=DCFLUX+DXY(J,I,K)*(BUFF(JP1,IP1,K)*(1.-WXP)
-     &           +BUFF(J,IP1,K)*WXP
-     &           -BUFF(JP1,IM1,K)*(1.-WXP)-BUFF(J,IM1,K)*WXP)
-                IF(J.GT.1) THEN
-                  DCFLUX=DCFLUX-DXY(JM1,I,K)*(BUFF(J,IP1,K)*(1.-WXM)
-     &             +BUFF(JM1,IP1,K)*WXM
-     &             -BUFF(J,IM1,K)*(1.-WXM)-BUFF(JM1,IM1,K)*WXM)
-                ENDIF
-              ENDIF
-              IF(NLAY.GT.1) THEN
-                DCFLUX=DCFLUX+DXZ(J,I,K)*(BUFF(JP1,I,KP1)*(1.-WXP)
-     &           +BUFF(J,I,KP1)*WXP
-     &           -BUFF(JP1,I,KM1)*(1.-WXP)-BUFF(J,I,KM1)*WXP)
-                IF(J.GT.1) THEN
-                  DCFLUX=DCFLUX-DXZ(JM1,I,K)*(BUFF(J,I,KP1)*(1.-WXM)
-     &             +BUFF(JM1,I,KP1)*WXM
-     &             -BUFF(J,I,KM1)*(1.-WXM)-BUFF(JM1,I,KM1)*WXM)
-                ENDIF
-              ENDIF
-            ENDIF
-C
-C--COMPONENTS ACROSS BACK AND FRONT FACES IN THE Y-DIRECTION
-            IF(NROW.GT.1) THEN
-              DCFLUX=DCFLUX+DYY(J,I,K)*(BUFF(J,IP1,K)-BUFF(J,I,K))
-     &         -DYY(J,IM1,K)*(BUFF(J,I,K)-BUFF(J,IM1,K))
-              IF(NCOL.GT.1) THEN
-                DCFLUX=DCFLUX+DYX(J,I,K)*(BUFF(JP1,IP1,K)*(1.-WYP)
-     &           +BUFF(JP1,I,K)*WYP
-     &           -BUFF(JM1,IP1,K)*(1.-WYP)-BUFF(JM1,I,K)*WYP)
-                IF(I.GT.1) THEN
-                  DCFLUX=DCFLUX-DYX(J,IM1,K)*(BUFF(JP1,I,K)*(1.-WYM)
-     &             +BUFF(JP1,IM1,K)*WYM
-     &             -BUFF(JM1,I,K)*(1.-WYM)-BUFF(JM1,IM1,K)*WYM)
-                ENDIF
-              ENDIF
-              IF(NLAY.GT.1) THEN
-                DCFLUX=DCFLUX+DYZ(J,I,K)*(BUFF(J,IP1,KP1)*(1.-WYP)
-     &           +BUFF(J,I,KP1)*WYP
-     &           -BUFF(J,IP1,KM1)*(1.-WYP)-BUFF(J,I,KM1)*WYP)
-                IF(I.GT.1) THEN
-                  DCFLUX=DCFLUX-DYZ(J,IM1,K)*(BUFF(J,I,KP1)*(1.-WYM)
-     &             +BUFF(J,IM1,KP1)*WYM
-     &             -BUFF(J,I,KM1)*(1.-WYM)-BUFF(J,IM1,KM1)*WYM)
-                ENDIF
-              ENDIF
-            ENDIF
-C
-C--COMPONENTS ACROSS UPPER AND LOWER FACES IN THE Z-DIRECTION
-            IF(NLAY.GT.1) THEN
-              DCFLUX=DCFLUX+DZZ(J,I,K)*(BUFF(J,I,KP1)-BUFF(J,I,K))
-     &         -DZZ(J,I,KM1)*(BUFF(J,I,K)-BUFF(J,I,KM1))
-              IF(NCOL.GT.1) THEN
-                DCFLUX=DCFLUX+DZX(J,I,K)*(BUFF(JP1,I,KP1)*(1.-WZP)
-     &           +BUFF(JP1,I,K)*WZP
-     &           -BUFF(JM1,I,KP1)*(1.-WZP)-BUFF(JM1,I,K)*WZP)
-                IF(K.GT.1) THEN
-                  DCFLUX=DCFLUX-DZX(J,I,KM1)*(BUFF(JP1,I,K)*(1.-WZM)
-     &             +BUFF(JP1,I,KM1)*WZM
-     &             -BUFF(JM1,I,K)*(1.-WZM)-BUFF(JM1,I,KM1)*WZM)
-                ENDIF
-              ENDIF
-              IF(NROW.GT.1) THEN
-                DCFLUX=DCFLUX+DZY(J,I,K)*(BUFF(J,IP1,KP1)*(1.-WZP)
-     &           +BUFF(J,IP1,K)*WZP
-     &           -BUFF(J,IM1,KP1)*(1.-WZP)-BUFF(J,IM1,K)*WZP)
-                IF(K.GT.1) THEN
-                  DCFLUX=DCFLUX-DZY(J,I,KM1)*(BUFF(J,IP1,K)*(1.-WZM)
-     &             +BUFF(J,IP1,KM1)*WZM
-     &             -BUFF(J,IM1,K)*(1.-WZM)-BUFF(J,IM1,KM1)*WZM)
-                ENDIF
-              ENDIF
-            ENDIF
-C
-C--COMPUTE NET CHANGE IN CONCENTRATION
-            DCDSP=DCFLUX*DTRANS/(DELR(J)*DELC(I)*DZ(J,I,K)
-     &       *RETA(J,I,K,ICOMP))/PRSITY(J,I,K)
-C
-C--IF AT CONSTANT-CONCENTRATION CELL, ACCUMULATE MASS IN OR OUT.
-C--OTHERWISE, UPDATE CELL CONCENTRATION.
-            IF(ICBUND(J,I,K,ICOMP).LT.0) THEN
-              IF(DCDSP.GT.0) THEN
-                RMASIO(6,2,ICOMP)=RMASIO(6,2,ICOMP)
-     &           -DCDSP*RETA(J,I,K,ICOMP)*
-     &           DELR(J)*DELC(I)*DZ(J,I,K)*PRSITY(J,I,K)
-              ELSE
-                RMASIO(6,1,ICOMP)=RMASIO(6,1,ICOMP)
-     &           -DCDSP*RETA(J,I,K,ICOMP)*
-     &           DELR(J)*DELC(I)*DZ(J,I,K)*PRSITY(J,I,K)
-              ENDIF
-            ELSE
-              CNEW(J,I,K,ICOMP)=CNEW(J,I,K,ICOMP)+DCDSP
-            ENDIF
-C
-          ENDDO
-        ENDDO
-      ENDDO
-C
-C--RETURN
-      RETURN
-      END
-C
-C
-      SUBROUTINE IMT1DSP4FM(NCOL,NROW,NLAY,MCOMP,ICOMP,ICBUND,DELR,DELC,
+      SUBROUTINE IMT1DSP5FM(NCOL,NROW,NLAY,MCOMP,ICOMP,ICBUND,DELR,DELC,
      & DZ,DXX,DXY,DXZ,DYX,DYY,DYZ,DZX,DZY,DZZ,A,NODES,UPDLHS,COLD,RHS,
      & NCRS)
 C **********************************************************************
 C THIS SUBROUTINE FORMULATES THE COEFFICIENT MATRIX FOR THE DISPERSION
 C TERM IF THE IMPLICIT SCHEME IS USED.
 C **********************************************************************
-C last modified: 04-15-2003
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   NCOL,NROW,NLAY,K,I,J,KP1,KM1,IP1,IM1,JP1,JM1,ICBUND,
@@ -975,13 +811,13 @@ C--NORMAL RETURN
       END
 C
 C
-      SUBROUTINE IMT1DSP4BD(NCOL,NROW,NLAY,MCOMP,ICOMP,ICBUND,DELR,DELC,
+      SUBROUTINE IMT1DSP5BD(NCOL,NROW,NLAY,MCOMP,ICOMP,ICBUND,DELR,DELC,
      & DH,DXX,DXY,DXZ,DYX,DYY,DYZ,DZX,DZY,DZZ,CNEW,BUFF,DTRANS,RMASIO)
 C **********************************************************************
 C THIS SUBROUTINE CALCULATES MASS BUDGET OF CONSTANT-CONCENTRATION NODES
 C DUE TO DISPERSION.
 C **********************************************************************
-C last modified: 08-12-2001
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   NCOL,NROW,NLAY,K,I,J,KP1,KM1,IP1,IM1,JP1,JM1,ICBUND,

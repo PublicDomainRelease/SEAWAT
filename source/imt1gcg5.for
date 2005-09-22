@@ -1,10 +1,10 @@
 C
-      SUBROUTINE IMT1GCG4AL(INGCG,IOUT,ISUM,ISUM2,NCOL,NROW,NLAY,MXITER,
+      SUBROUTINE IMT1GCG5AL(INGCG,IOUT,ISUM,ISUM2,NCOL,NROW,NLAY,MXITER,
      & ITER1,NCRS,ISOLVE,LCA,LCQ,LCWK,LCCNCG,LCLRCH,LCRHS)
 C ********************************************************************
 C ALLOCATE STORAGE IN THE X AND IX ARRAYS FOR GCG ARRAYS
 C ********************************************************************
-C last modified: 05-26-2003
+C last modified: 02-15-2005
 C
       IMPLICIT NONE
       INTEGER  INGCG,IOUT,ISUM,ISUM2,NCOL,NROW,NLAY,MXITER,ITER1,
@@ -13,8 +13,8 @@ C
 
 C--PRINT A MESSAGE IDENTIFYING GCG PACKAGE
       WRITE(IOUT,1) INGCG
-    1 FORMAT(1X,'GCG4 -- GENERALIZED CONJUGATE GRADIENT SOLVER PACKAGE',
-     & ', VERSION 4.5, MAY 2003',' INPUT READ FROM UNIT',I3)
+    1 FORMAT(1X,'GCG5 -- GENERALIZED CONJUGATE GRADIENT SOLVER PACKAGE',
+     & ', VERSION 5, FEBRUARY 2005',' INPUT READ FROM UNIT',I3)
 C
 C--READ AND PRINT MXITER AND ISOLVE
       READ(INGCG,*) MXITER,ITER1,ISOLVE,NCRS
@@ -23,10 +23,10 @@ C--READ AND PRINT MXITER AND ISOLVE
      &      /1X,'       AND',I5,' INNER ITERATIONS ALLOWED FOR CLOSURE')
       IF(MXITER.LE.0) THEN
         WRITE(*,5)
-        STOP
+        CALL USTOP(' ')
       ELSEIF(ITER1.LE.0) THEN
         WRITE(*,7)
-        STOP
+        CALL USTOP(' ')
       ENDIF
       IF(ISOLVE.EQ.1) THEN
         WRITE(IOUT,13)
@@ -36,7 +36,7 @@ C--READ AND PRINT MXITER AND ISOLVE
         WRITE(IOUT,33)
       ELSE
         WRITE(IOUT,43)
-        STOP
+        CALL USTOP(' ')
       ENDIF
     5 FORMAT(/1X,'ERROR: OUTER ITERATION NUMBER MUST BE > 0.')
     7 FORMAT(/1X,'ERROR: INNER ITERATION NUMBER MUST BE > 0.')
@@ -100,12 +100,12 @@ C--NORMAL RETURN
       END
 C
 C
-      SUBROUTINE IMT1GCG4RP(INGCG,IOUT,MXITER,ITER1,
+      SUBROUTINE IMT1GCG5RP(INGCG,IOUT,MXITER,ITER1,
      & ISOLVE,ACCL,CCLOSE,IPRGCG)
 C ***************************************************************
 C READ INPUT DATA FOR GCG PACKAGE
 C ***************************************************************
-C last modified: 06-23-1998
+C last modified: 02-15-2005
 C
       IMPLICIT NONE
       INTEGER  INGCG,IOUT,MXITER,ITER1,ISOLVE,IPRGCG
@@ -138,12 +138,12 @@ C--NORMAL RETURN
       END
 C
 C
-      SUBROUTINE SGCG4P(CNCG,LRCH,ITP,MXITER,ITER1,IOUT)
+      SUBROUTINE SGCG5P(CNCG,LRCH,ITP,MXITER,ITER1,IOUT)
 C******************************************************************
 C PRINT MAXIMUM CONCENTRATION CHANGES FOR EACH ITERATION DURING
 C A TRANSPORT TIME STEP
 C******************************************************************
-C last modified: 06-23-1998
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   LRCH,ITP,MXITER,ITER1,IOUT,I,J
@@ -160,7 +160,7 @@ C
       END
 C
 C
-      SUBROUTINE IMT1GCG4AP(IOUT,MXITER,ITER1,ITO,ITP,METHOD,RELAX,
+      SUBROUTINE IMT1GCG5AP(IOUT,MXITER,ITER1,ITO,ITP,METHOD,RELAX,
      & CCLOSE,ICNVG,CNCG,LRCH,NCOL,NROW,NLAY,NODES,NTRANS,KSTP,KPER,
      & TIME2,HT2,UPDLHS,IPRGCG,ICBUND,CINACT,A,CNEW,RHS,Q,WK,NCRS,ISPD)
 C **********************************************************************
@@ -208,7 +208,7 @@ C  WK      : REAL ARRAY OF LENGTH 7*NCOL*NROW*NLAY, WORK SPACES.
 C  NCRS    : INTEGER, 7 OR 19 DIAGONALS INDICATOR.
 C  ISPD    : INPUT INTEGER, SYMMETRIC CASE INDICATOR.
 C **********************************************************************
-C last modified: 4-15-2003
+C last modified: 2-15-2005
 C
       IMPLICIT  NONE
       INTEGER   NCOL,NROW,NLAY,NODES,LRCH,I,IDELTA,IRDEL,IPN,
@@ -456,7 +456,7 @@ C--LOCAL CONVERGENCE NOT MET, LOOP BACK
      & /1X,I5,' TOTAL ITERATIONS')
 C
       IF(ICNVG.EQ.0 .OR. TIME2.GE.HT2 .OR. MOD(NTRANS,IPRGCG).EQ.0)
-     & CALL SGCG4P(CNCG,LRCH,ITP,MXITER,ITER1,IOUT)
+     & CALL SGCG5P(CNCG,LRCH,ITP,MXITER,ITER1,IOUT)
 C
   600 CONTINUE
 C
@@ -480,7 +480,7 @@ C*******************************************************************
 C...  THIS SUBROUTINE, MVPRD, PERFORMS AX=Y
 C...  WHERE THE MATRIX A IS STORED IN DIAGONAL FORM
 C*******************************************************************
-C last modified: 06-23-1998
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   N,L,IDIAG,I,JCOL,K,ICBUND,NCRS
@@ -508,7 +508,7 @@ C
 C*********************************************************************
 C.... THIS SUBROUTINE, MTVPRD, PERFORMS A^TX=Y
 c*********************************************************************
-C last modified: 06-23-1998
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   N,L,IDIAG,I,JCOL,ICBUND,NCRS,J
@@ -554,7 +554,7 @@ C*         SY      :  INPUT REAL ARRAY. THE RIGHT HAND SIDE OF THE
 C*                    SYSTEM.
 C*         Y       :  OUTPUT REAL ARRAY. CONTAINS THE SOLUTION.
 C*********************************************************************
-C last modified: 06-23-1998
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   N,METHOD,NCRS,LL,LU,I,J,K,II,IDIAG,JCOL,L
@@ -664,7 +664,7 @@ C*                      SIDE OF THIS SYSTEM.
 C*         Y          : OUTPUT REAL ARRAY. IT CONTAINS THE SOLUTION OF
 C*                      THIS SYSTEM.
 C***********************************************************************
-C last modified: 06-23-1998
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   N,METHOD,NCRS,LL,LU,I,J,K,II,IDIAG,JCOL,L
@@ -769,7 +769,7 @@ C*         A       INPUT REAL VECTOR. CONTAINS THE NONZERO ELEMENTS
 C*                 OF THE MATRIX.
 C*         Q       OUTPUT, CONTAINS THE COMPACT LDU FORM FOR THE MIC
 C**********************************************************************
-C last modified: 01-05-2003
+C last modified: 02-15-2005
 C
       IMPLICIT  NONE
       INTEGER   K,II,IJ,IPVT,IICOL,ILST,IROW,JP,JCOL,KK,LL,IERR,
