@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE F90 /compile_only /nologo /warn:nofileopt
-# ADD F90 /assume:underscore /check:bounds /compile_only /iface:cref /names:lowercase /nologo /real_size:64 /traceback /warn:argument_checking /warn:nofileopt
+# ADD F90 /alignment:dcommons /assume:underscore /check:bounds /compile_only /iface:cref /names:lowercase /nologo /real_size:64 /traceback /warn:argument_checking /warn:nofileopt
 # SUBTRACT F90 /browser
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
 # ADD CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FR /YX /FD /c

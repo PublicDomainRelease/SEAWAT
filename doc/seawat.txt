@@ -29,9 +29,14 @@ transport equation is solved using one of the approaches available with MT3DMS.
 
 HISTORY
 
+SEAWAT-2000 Version 3.12.00 2006/03/14 - This version of SEAWAT was updated with
+MT3DMS Version 5.10, which includes a new zero-order growth/decay option within
+the reactions package.  This option may be useful for simulating groundwater age 
+as a separate species.
+
 SEAWAT-2000 Version 3.11.02 2005/09/23 - This version of SEAWAT contains a fix 
-for a minor bug that may have caused transport timesteps to be too short.  Thanks
-to Matthijs Bonte for helping to identify this problem.
+for a minor bug that may have caused some transport timesteps to be too short.  
+Thanks to Matthijs Bonte for helping to identify this problem.
 
 SEAWAT-2000 Version 3.11.01 2005/07/25 - This version of SEAWAT contains a bug
 fix for head-dependent flux calculations for some boundary types.  Thanks to

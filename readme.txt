@@ -1,6 +1,6 @@
 README.TXT
 
-SEAWAT-2000 - Version: 3.11.02 09/23/2005
+SEAWAT-2000 - Version: 3.12.00 03/14/2006
 Three-dimensional variable-density finite-difference ground-water flow model
 
 NOTE: Any use of trade, product or firm names is for descriptive purposes only 
@@ -30,7 +30,7 @@ F. TESTING
 A. DISTRIBUTION FILE
 The following zip file is for use on personal computers:
 
-     SWT2K_V3_11.zip
+     SWT2K_V3_12.zip
 
 The distribution file contains:
      Compiled runfiles and source code for SEAWAT
@@ -45,7 +45,7 @@ which the files should be restored.  The following subdirectory structure will
 be created under the specified directory:
 
 |
-|--swt2k_v3_11
+|--swt2k_v3_12
 |     |doc; documentation files
 |     |examples; example files 
 |     |     |1_box; test cases for box problems
@@ -57,6 +57,7 @@ be created under the specified directory:
 |     |     |     |3_VDF_no_Trans; henry problem without transport
 |     |     |     |4_VDF_uncpl_Trans; henry problem with uncoupled transport
 |     |     |     |5_VDF_DualD_Trans; henry problem with dual domain transport
+|     |     |     |6_age_simulation; henry problem with age simulated as species 2
 |     |     |3_elder; test case for elder problem
 |     |     |4_hydrocoin; test case for hydrocoin problem
 |     |     |5_saltlake; test case for saltlake problem
@@ -64,11 +65,11 @@ be created under the specified directory:
 |     |exe; compiled executables
 |     |source; source code
 
-It is recommended that no user files are kept in the swt2k_v3_11 directory 
+It is recommended that no user files are kept in the swt2k_v3_12 directory 
 structure.  If you do plan to put files in the swt2k_v3_11 directory structure, do 
 so only by creating subdirectories.
 
-Included in directory swt2k_v3_11\doc is Portable Document Format (PDF) version of 
+Included in directory swt2k_v3_12\doc is Portable Document Format (PDF) version of 
 the SEAWAT user's manual (OFR 01-434).
 
 The PDF file is readable and printable on various computer platforms using 
@@ -80,7 +81,7 @@ following World Wide Web sites:
 C. COMPILING
 
 Although executable versions of the programs are provided, the source code of 
-the SEAWAT program is provided in the swt2k_v3_11\source directory so that the 
+the SEAWAT program is provided in the swt2k_v3_12\source directory so that the 
 program can be recompiled if necessary.  However, no support can be provided for 
 users generating their own versions of the software.  In general, SEAWAT-2000 
 should be compiled for serial processing (as opposed to parallel processing).

@@ -6,12 +6,12 @@
 --------------------Configuration: swt2k - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSP1B.tmp" with contents
+Creating temporary file "C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSPB8B9.tmp" with contents
 [
-/assume:underscore /check:bounds /compile_only /iface:cref /names:lowercase /nologo /real_size:64 /traceback /warn:argument_checking /warn:nofileopt /module:"Release/" /object:"Release/" 
-"D:\Users\langevin\seawat2k\swt2000\source\v3_11_20050429_public\swt2k.f"
+/alignment:dcommons /assume:underscore /check:bounds /compile_only /iface:cref /names:lowercase /nologo /real_size:64 /traceback /warn:argument_checking /warn:nofileopt /module:"Release/" /object:"Release/" 
+"D:\Users\langevin\seawat2k\swt2000\source\v3_12_20060308_public\swt2k.f"
 ]
-Creating temporary file "C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSP1C.tmp" with contents
+Creating temporary file "C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSPB8BA.tmp" with contents
 [
 kernel32.lib /nologo /stack:0x989680 /subsystem:console /incremental:no /pdb:"Release/swt2k.pdb" /machine:I386 /out:"Release/swt2k.exe" 
 .\Release\ctime.obj
@@ -109,22 +109,16 @@ kernel32.lib /nologo /stack:0x989680 /subsystem:console /incremental:no /pdb:"Re
 .\Release\vdf1wel6.obj
 .\gmg1.2.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSP1C.tmp"
+Creating command line "link.exe @C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSPB8BA.tmp"
 <h3>Output Window</h3>
 Compiling Fortran...
-D:\Users\langevin\seawat2k\swt2000\source\v3_11_20050429_public\swt2k.f
-D:\Users\langevin\seawat2k\swt2000\source\v3_11_20050429_public\swt2k.f(240) : Warning: Because of COMMON, the alignment of object is inconsistent with its type   [WD]
-      COMMON   /AD/PERCEL,ITRACK,WD,ISEED,DCEPS,NPLANE,NPL,NPH,
----------------------------------^
-D:\Users\langevin\seawat2k\swt2000\source\v3_11_20050429_public\swt2k.f(241) : Warning: Because of COMMON, the alignment of object is inconsistent with its type   [SRMULT]
-     &             NPMIN,NPMAX,SRMULT,INTERP,NLSINK,NPSINK,DCHMOC
--------------------------------^
+D:\Users\langevin\seawat2k\swt2000\source\v3_12_20060308_public\swt2k.f
 Linking...
 
 
 
 <h3>Results</h3>
-swt2k.exe - 0 error(s), 2 warning(s)
+swt2k.exe - 0 error(s), 0 warning(s)
 </pre>
 </body>
 </html>

@@ -6,7 +6,7 @@ C **********************************************************************
 C THIS SUBROUTINE ALLOCATES SPACE FOR ARRAYS NEEDED BY THE CHEMICAL 
 C REACTION (RCT) PACKAGE.
 C **********************************************************************
-C last modified: 02-15-2005
+C last modified: 10-01-2005
 C
       IMPLICIT  NONE
       INTEGER   INRCT,IOUT,ISUM,ISUM2,NCOL,NROW,NLAY,NCOMP,
@@ -46,8 +46,10 @@ C
       ENDIF
       IF(IREACT.EQ.0) THEN
         WRITE(IOUT,1030)
-      ELSE
+      ELSEIF(ireact.eq.1) THEN
         WRITE(IOUT,1032)
+      ELSEIF(ireact.eq.100) THEN
+        WRITE(IOUT,1034)
       ENDIF
  1022 FORMAT(1X,'TYPE OF SORPTION SELECTED IS [LINEAR]')
  1024 FORMAT(1X,'TYPE OF SORPTION SELECTED IS [FREUNDLICH]')
@@ -59,6 +61,7 @@ C
  1030 FORMAT(1X,'NO FIRST-ORDER RATE REACTION IS SIMULATED')
  1032 FORMAT(1X,'FIRST-ORDER IRREVERSIBLE REACTION',
      & ' [RADIOACTIVE DECAY OR BIODEGRADATION] IS SIMULATED')
+ 1034 FORMAT(1X,'ZEROTH-ORDER DECAY OR PRODUCTION IS SIMULATED')     
 C
       IF(IRCTOP.LE.1) THEN
         IRCTOP=1
@@ -129,7 +132,7 @@ C **********************************************************************
 C THIS SUBROUTINE READS AND PREPARES INPUT DATA NEEDED BY THE CHEMICAL
 C REACTION (RCT) PACKAGE.
 C***********************************************************************
-C last modified: 02-15-2005
+C last modified: 10-01-2005
 C
       IMPLICIT  NONE
       INTEGER   IN,IOUT,NCOL,NROW,NLAY,ICBUND,ISOTHM,IREACT,IFMTRF,
@@ -148,8 +151,8 @@ C
 C
 C--PRINT A HEADER
       WRITE(IOUT,1000)
- 1000 FORMAT(//1X,'SORPTION AND 1ST ORDER RATE REACTION PARAMETERS',
-     & /1X,47('-')/)
+ 1000 FORMAT(//1X,'SORPTION AND 1ST/0TH ORDER REACTION PARAMETERS',
+     & /1X,46('-')/)
 C
 C--CALL RARRAY TO READ IN SORPTION PARAMETERS IF SORPTION SIMULATED
       IF(ISOTHM.LE.0) GOTO 2000
@@ -279,9 +282,9 @@ C--TO RATIO OF MOBILE TO TOTAL POROSITIES
 C
  2000 CONTINUE
 C
-C--CALL RARRAY TO READ IN 1ST ORDER RECTION RATE CONSTANTS
+C--CALL RARRAY TO READ IN 1st/0th ORDER REACTION RATE CONSTANTS
 C--IF NECESSARY
-      IF(IREACT.LE.0) GOTO 3000
+      IF(IREACT.ne.1.and.IREACT.ne.100) GOTO 3000
 C
       DO INDEX=1,NCOMP
         ANAME='SOLUTE RXN RATE: COMP NO'
@@ -359,12 +362,12 @@ C--OR IMMOBILE-LIQUID PHASE CONCENTRATION (DUAL-DOMAIN MODEL)
       ENDIF
 C
 C--CALCULATE SETPSIZE WHICH MEETS STABILITY CRITERION
-C--OF THE REACTION TERM IF AN EXPLICIT SOLUTION SCHEME IS USED
+C--OF 1ST ORDER REACTION TERM IF AN EXPLICIT SOLUTION SCHEME IS USED
       DTRCT=1.E30
       KR=0
       IR=0
       JR=0
-      IF(IREACT.LE.0.AND.ISOTHM.LE.3) GOTO 4000
+      IF(IREACT.ne.1.AND.ISOTHM.LE.3) GOTO 4000
 C
       DO INDEX=1,NCOMP
         DO K=1,NLAY
@@ -372,8 +375,8 @@ C
             DO J=1,NCOL
               IF(ICBUND(J,I,K,INDEX).GT.0) THEN
                 TR=0.
-                IF(IREACT.GT.0) TR=ABS(RC1(J,I,K,INDEX))
-                IF(IREACT.GT.0.AND.ISOTHM.GT.0)
+                IF(IREACT.eq.1) TR=ABS(RC1(J,I,K,INDEX))
+                IF(IREACT.eq.1.AND.ISOTHM.GT.0)
      &                     TR=TR+ABS(RC2(J,I,K,INDEX))
                 IF(ISOTHM.GT.4) THEN
                   TR=TR+ABS(SP2(J,I,K,INDEX))/PRSITY(J,I,K)
@@ -422,7 +425,7 @@ C THIS SUBROUTINE CALCULATES RETARDATION FACTOR AND CONCENTRATION
 C OF SORBED (UNIT: MASS/MASS) FOR SINGLE-DOMAIN MODEL OR
 C IMMOBILE-LIQUID PHASE (UNIT: MASS/VOLUME) FOR DUAL-DOMAIN MODEL.
 C ********************************************************************
-C last modified: 02-15-2005
+C last modified: 10-01-2005
 C
       IMPLICIT  NONE
       INTEGER   NCOL,NROW,NLAY,ICBUND,ISOTHM,IREACT,J,I,K
@@ -500,11 +503,20 @@ C--4. LINEAR NON-EQUILIBRIUM...
             DO J=1,NCOL
               IF(ICBUND(J,I,K).EQ.0.OR.DTRANS.LT.TINY) CYCLE
               RC2TMP=0.
-              IF(IREACT.GT.0) RC2TMP=RC2(J,I,K)
-              SRCONC(J,I,K)=(SP2(J,I,K)*COLD(J,I,K)+
-     &         RHOB(J,I,K)/DTRANS*SRCONC(J,I,K))/
-     &         (RHOB(J,I,K)/DTRANS+SP2(J,I,K)/SP1(J,I,K)
-     &         +RC2TMP*RHOB(J,I,K))
+              IF(IREACT.eq.1.or.IREACT.eq.100) RC2TMP=RC2(J,I,K)
+C--if with no reaction or with first-order reaction               
+              if(ireact.eq.0.or.ireact.eq.1) then  
+                SRCONC(J,I,K)=(SP2(J,I,K)*COLD(J,I,K)+
+     &           RHOB(J,I,K)/DTRANS*SRCONC(J,I,K))/
+     &           (RHOB(J,I,K)/DTRANS+SP2(J,I,K)/SP1(J,I,K)
+     &           +RC2TMP*RHOB(J,I,K))
+C--if with zeroth-order reaction      
+              elseif(ireact.eq.100) then 
+                SRCONC(J,I,K)=(SP2(J,I,K)*COLD(J,I,K)+
+     &           RHOB(J,I,K)/DTRANS*SRCONC(J,I,K) 
+     &           -RC2TMP*RHOB(J,I,K))/
+     &           (RHOB(J,I,K)/DTRANS+SP2(J,I,K)/SP1(J,I,K))              
+              endif
             ENDDO
           ENDDO
         ENDDO
@@ -524,19 +536,29 @@ C--5/6. DUAL DOMAIN MASS TRANSFER WITHOUT/WITH LINEAR SORPTION
      &         RETA2(J,I,K)=1.+(1.-FRAC(J,I,K))
      &         *RHOB(J,I,K)*SP1(J,I,K)/PRSITY2(J,I,K)
               IF(DTRANS.LT.TINY) CYCLE
-C
               RC1TMP=0.
               RC2TMP=0.
-              IF(IREACT.GT.0) THEN
+              IF(IREACT.eq.1.or.IREACT.eq.100) THEN
                 RC1TMP=RC1(J,I,K)
                 RC2TMP=RC2(J,I,K)
-              ENDIF
-              TERM1=PRSITY2(J,I,K)*RETA2(J,I,K)/DTRANS+SP2(J,I,K)
-     &         +RC1TMP*PRSITY2(J,I,K)
-     &         +RC2TMP*PRSITY2(J,I,K)*(RETA2(J,I,K)-1.)
-              SRCONC(J,I,K)=(SP2(J,I,K)*COLD(J,I,K)
-     &         +PRSITY2(J,I,K)*RETA2(J,I,K)/DTRANS*SRCONC(J,I,K))
-     &         /TERM1
+              ENDIF    
+C--if with no reaction or with first-order reaction            
+              if(ireact.eq.0.or.ireact.eq.1) then
+                TERM1=PRSITY2(J,I,K)*RETA2(J,I,K)/DTRANS+SP2(J,I,K)
+     &           +RC1TMP*PRSITY2(J,I,K)
+     &           +RC2TMP*PRSITY2(J,I,K)*(RETA2(J,I,K)-1.)
+                SRCONC(J,I,K)=(SP2(J,I,K)*COLD(J,I,K)
+     &           +PRSITY2(J,I,K)*RETA2(J,I,K)/DTRANS*SRCONC(J,I,K))
+     &           /TERM1
+C--if with zeroth-order reaction     
+              elseif(ireact.eq.100) then 
+                TERM1=PRSITY2(J,I,K)*RETA2(J,I,K)/DTRANS+SP2(J,I,K)
+                SRCONC(J,I,K)=(SP2(J,I,K)*COLD(J,I,K)
+     &           -RC1TMP*PRSITY2(J,I,K)
+     &           -RC2TMP*(1.-FRAC(J,I,K))*RHOB(J,I,K)
+     &           +PRSITY2(J,I,K)*RETA2(J,I,K)/DTRANS*SRCONC(J,I,K))
+     &           /TERM1
+              endif         
             ENDDO
           ENDDO
         ENDDO
@@ -551,10 +573,11 @@ C
      & DELR,DELC,DH,ISOTHM,IREACT,RHOB,SP1,SP2,SRCONC,RC1,RC2,
      & PRSITY2,RETA2,FRAC,A,RHS,NODES,UPDLHS,DTRANS)
 C *******************************************************************
-C THIS SUBROUTINE FORMULATES THE COEFFICIENT MATRIX FOR THE REACTION
-C TERMS IF THE IMPLICIT SCHEME IS USED.
+C THIS SUBROUTINE FORMULATES THE COEFFICIENT MATRIX [A] AND THE 
+C RIGHT-HAND-SIDE MATRIX [RHS] FOR SORPTION AND 1ST/0TH ORDER 
+C REACTION TERMS USING THE IMPLICIT FINITE-DIFFERENCE SCHEME.
 C *******************************************************************
-C last modified: 02-15-2005
+C last modified: 10-01-2005
 C
       IMPLICIT  NONE
       INTEGER   NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,ISOTHM,IREACT,
@@ -570,7 +593,7 @@ C
      &          PRSITY2(NODES),RETA2(NODES,NCOMP),FRAC(NODES)
       PARAMETER (TINY=1.E-30)
 C
-C--NONEQUILIBRIUM SORPTION
+C--CONTRIBUTIONS TO [A] AND [RHS] FROM NONEQUILIBRIUM SORPTION
 C
       IF(ISOTHM.EQ.4) THEN
         DO K=1,NLAY
@@ -581,62 +604,80 @@ C
 C--SKIP IF INACTIVE OR CONSTANT CONCENTRATION CELL
               IF(ICBUND(N,ICOMP).LE.0) CYCLE
 C
-C--UPDATE COEFFICIENT MATRIX IF NECESSARY
+C--UPDATE COEFFICIENT MATRIX A AND RHS IF NECESSARY
               RC2TMP=0.
-              IF(IREACT.GT.0) RC2TMP=RC2(N,ICOMP)
-              IF(UPDLHS) A(N)=A(N)-SP2(N,ICOMP)*DELR(J)*DELC(I)
-     &         *DH(N)*(1.-SP2(N,ICOMP)/SP1(N,ICOMP)
-     &         /(RHOB(N)/DTRANS+SP2(N,ICOMP)/SP1(N,ICOMP)
-     &         +RC2TMP*RHOB(N)))
-C
-C--UPDATE RHS
-              RHS(N)=RHS(N)-SP2(N,ICOMP)/SP1(N,ICOMP)*DELR(J)*DELC(I)
-     &         *DH(N)*RHOB(N)*SRCONC(N,ICOMP)/DTRANS
-     &         /(RHOB(N)/DTRANS+SP2(N,ICOMP)/SP1(N,ICOMP)
-     &         +RC2TMP*RHOB(N))
+              IF(IREACT.eq.1.or.IREACT.eq.100) RC2TMP=RC2(N,ICOMP)
+C--if with no reaction or with first-order reaction             
+              if(ireact.eq.0.or.ireact.eq.1) then
+                IF(UPDLHS) A(N)=A(N)-SP2(N,ICOMP)*DELR(J)*DELC(I)
+     &           *DH(N)*(1.-SP2(N,ICOMP)/SP1(N,ICOMP)
+     &           /(RHOB(N)/DTRANS+SP2(N,ICOMP)/SP1(N,ICOMP)
+     &           +RC2TMP*RHOB(N)))
+                RHS(N)=RHS(N)-SP2(N,ICOMP)/SP1(N,ICOMP)*DELR(J)*DELC(I)
+     &           *DH(N)*RHOB(N)*SRCONC(N,ICOMP)/DTRANS
+     &           /(RHOB(N)/DTRANS+SP2(N,ICOMP)/SP1(N,ICOMP)
+     &           +RC2TMP*RHOB(N))
+C--if with zeroth-order reaction     
+              elseif(ireact.eq.100) then
+                IF(UPDLHS) A(N)=A(N)-SP2(N,ICOMP)*DELR(J)*DELC(I)
+     &           *DH(N)*(1.-SP2(N,ICOMP)/SP1(N,ICOMP)
+     &           /(RHOB(N)/DTRANS+SP2(N,ICOMP)/SP1(N,ICOMP)))
+                RHS(N)=RHS(N)+(SP2(N,ICOMP)/SP1(N,ICOMP)
+     &           *DELR(J)*DELC(I)*DH(N)*RHOB(N)
+     &           *(RC2TMP-SRCONC(N,ICOMP)/DTRANS))
+     &           /(RHOB(N)/DTRANS+SP2(N,ICOMP)/SP1(N,ICOMP))              
+              endif   
             ENDDO
           ENDDO
         ENDDO
       ENDIF
 C
-C--DUAL-DOMAIN MASS TRANSFER
+C--CONTRIBUTIONS TO [A] AND [RHS] FROM DUAL-DOMAIN MASS TRANSFER
 C
       IF(ISOTHM.EQ.5.OR.ISOTHM.EQ.6) THEN
         DO K=1,NLAY
           DO I=1,NROW
             DO J=1,NCOL
               N=(K-1)*NCOL*NROW+(I-1)*NCOL+J
+C
+C--SKIP IF INACTIVE OR CONSTANT CONCENTRATION CELL
+              IF(ICBUND(N,ICOMP).LE.0) CYCLE              
+C
+C--UPDATE COEFFICIENT MATRIX A AND RHS IF NECESSARY              
               RC1TMP=0.
               RC2TMP=0.
-              IF(IREACT.GT.0) THEN
+              IF(IREACT.eq.1.or.IREACT.eq.100) THEN
                 RC1TMP=RC1(N,ICOMP)
                 RC2TMP=RC2(N,ICOMP)
               ENDIF
-C
-C--SKIP IF INACTIVE OR CONSTANT CONCENTRATION CELL
-              IF(ICBUND(N,ICOMP).LE.0) CYCLE
-C
-              TERM1=PRSITY2(N)*RETA2(N,ICOMP)/DTRANS+SP2(N,ICOMP)
-     &         +RC1TMP*PRSITY2(N)
-     &         +RC2TMP*PRSITY2(N)*(RETA2(N,ICOMP)-1.)
-C
-C--UPDATE COEFFICIENT MATRIX IF NECESSARY
-              IF(UPDLHS) THEN
-                A(N)=A(N)-SP2(N,ICOMP)*DELR(J)*DELC(I)*DH(N)*
-     &               (1.-SP2(N,ICOMP)/TERM1)
-              ENDIF
-C
-C--UPDATE RHS
-              RHS(N)=RHS(N)-SP2(N,ICOMP)*PRSITY2(N)*RETA2(N,ICOMP)*
-     &         DELR(J)*DELC(I)*DH(N)*SRCONC(N,ICOMP)/(DTRANS*TERM1)
+C--if with no reaction or with first-order reaction
+              if(ireact.eq.0.or.ireact.eq.1) then
+                TERM1=PRSITY2(N)*RETA2(N,ICOMP)/DTRANS+SP2(N,ICOMP)
+     &           +RC1TMP*PRSITY2(N)
+     &           +RC2TMP*PRSITY2(N)*(RETA2(N,ICOMP)-1.)
+                IF(UPDLHS) A(N)=A(N)-SP2(N,ICOMP)
+     &           *DELR(J)*DELC(I)*DH(N)*(1.-SP2(N,ICOMP)/TERM1)
+                RHS(N)=RHS(N)-SP2(N,ICOMP)
+     &           *PRSITY2(N)*RETA2(N,ICOMP)*DELR(J)*DELC(I)*DH(N)
+     &           *SRCONC(N,ICOMP)/(DTRANS*TERM1)
+C--if with zeroth-order reaction      
+              elseif(ireact.eq.100) then
+                TERM1=PRSITY2(N)*RETA2(N,ICOMP)/DTRANS+SP2(N,ICOMP)
+                IF(UPDLHS) A(N)=A(N)-SP2(N,ICOMP)
+     &           *DELR(J)*DELC(I)*DH(N)*(1.-SP2(N,ICOMP)/TERM1)
+                RHS(N)=RHS(N)-SP2(N,ICOMP)*DELR(J)*DELC(I)*DH(N)
+     &           *(-RC1TMP*PRSITY2(N)-RC2TMP*(1.-FRAC(N))*RHOB(N)
+     &           +PRSITY2(N)*RETA2(N,ICOMP)*SRCONC(N,ICOMP)/DTRANS)
+     &           /TERM1             
+              endif
             ENDDO
           ENDDO
         ENDDO
       ENDIF
 C
-C--FIRST-ORDER IRREVERSIBLE REACTION
+C--CONTRIBUTIONS TO [A] AND [RHS] FROM 1ST ORDER KINETIC REACTION
 C
-      IF(IREACT.EQ.1) THEN
+      IF(ireact.eq.1) THEN
         DO K=1,NLAY
           DO I=1,NROW
             DO J=1,NCOL
@@ -665,6 +706,34 @@ C--SORBED PHASE FOR EQUILIBRIUM-CONTROLLED ISOTHERMS
         ENDDO
       ENDIF
 C
+C--CONTRIBUTIONS TO [A] AND [RHS] FROM ZEROTH-ORDER REACTION
+C
+      IF(ireact.eq.100) THEN
+        DO K=1,NLAY
+          DO I=1,NROW
+            DO J=1,NCOL
+              N=(K-1)*NCOL*NROW+(I-1)*NCOL+J
+C
+C--SKIP IF INACTIVE OR CONSTANT CONCENTRATION CELL
+              IF(ICBUND(N,ICOMP).LE.0) CYCLE
+C
+C--DISSOLVED PHASE
+              RHS(N)=RHS(N)+RC1(N,ICOMP)*PRSITY(N)
+     &          *DELR(J)*DELC(I)*DH(N)
+C
+C--SORBED PHASE FOR EQUILIBRIUM-CONTROLLED ISOTHERMS
+              IF(ISOTHM.EQ.1.OR.ISOTHM.EQ.2.OR.ISOTHM.EQ.3) THEN
+                RHS(N)=RHS(N)+RC2(N,ICOMP)*RHOB(N)
+     &           *DELR(J)*DELC(I)*DH(N)
+              ELSEIF(ISOTHM.EQ.6) THEN
+                 RHS(N)=RHS(N)+RC2(N,ICOMP)*FRAC(N)*
+     &           RHOB(N)*DELR(J)*DELC(I)*DH(N)
+              ENDIF
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDIF                 
+C
 C--RETURN
       RETURN
       END
@@ -676,7 +745,7 @@ C
 C **********************************************************************
 C THIS SUBROUTINE CALCULATES MASS BUDGET ASSOCIATED WITH REACTIONS.
 C **********************************************************************
-C last modified: 02-15-2005
+C last modified: 10-01-2005
 C
       IMPLICIT  NONE
       INTEGER   NCOL,NROW,NLAY,NCOMP,ICOMP,ICBUND,ISOTHM,IREACT,K,I,J
@@ -763,11 +832,11 @@ C--RECORD MASS STORAGE CHANGE IN IMMOBILE DOMAIN
       ENDIF
 C
 C--CALCULATE MASS BUDGETS FOR
-C--FIRST-ORDER IRREVERSIBLE REACTION (DECAY/BIODEGRADATION)
+C--1st/0th ORDER IRREVERSIBLE REACTION
 C
-      IF(IREACT.EQ.0) goto 9999
+      IF(IREACT.ne.1.and.IREACT.ne.100) goto 9999
 C
-C--DECAY/BIODEGRADATION IN SINGLE-DOMAIN MODEL
+C--SKIP IF NOT SINGLE-DOMAIN MODEL
       IF(ISOTHM.EQ.5.OR.ISOTHM.EQ.6) GOTO 1000
 C
       DO K=1,NLAY
@@ -778,19 +847,28 @@ C--SKIP IF INACTIVE OR CONSTANT CONCENTRATION CELL
             IF(ICBUND(J,I,K,ICOMP).LE.0) CYCLE
 C
 C--SKIP IF CONCENTRATION IS NOT POSITIVE
-            IF(CNEW(J,I,K,ICOMP).LE.0) CYCLE
+            IF(CNEW(J,I,K,ICOMP).LE.0) CYCLE         
 C
 C--DISSOLVED PHASE
-            DCRCT=-RC1(J,I,K,ICOMP)*CNEW(J,I,K,ICOMP)
+            IF(ireact.eq.1) THEN
+              DCRCT=-RC1(J,I,K,ICOMP)*CNEW(J,I,K,ICOMP)
      &            *DTRANS*DELR(J)*DELC(I)*DH(J,I,K)*PRSITY(J,I,K)
+            ELSEIF(ireact.eq.100) THEN
+              DCRCT=-RC1(J,I,K,ICOMP)
+     &            *DTRANS*DELR(J)*DELC(I)*DH(J,I,K)*PRSITY(J,I,K)            
+            ENDIF
 C--SORBED PHASE
             DCRCT2=0.
-            IF(ISOTHM.GT.0)
-     &       DCRCT2=-RC2(J,I,K,ICOMP)*RHOB(J,I,K)
-     &          *SRCONC(J,I,K,ICOMP)*DTRANS
-     &          *DELR(J)*DELC(I)*DH(J,I,K)
+            IF(ISOTHM.GT.0.and.ireact.eq.1) THEN
+              DCRCT2=-RC2(J,I,K,ICOMP)*RHOB(J,I,K)
+     &            *SRCONC(J,I,K,ICOMP)*DTRANS
+     &            *DELR(J)*DELC(I)*DH(J,I,K)
+            ELSEIF(ISOTHM.GT.0.and.ireact.eq.100) THEN
+              DCRCT2=-RC2(J,I,K,ICOMP)*RHOB(J,I,K)
+     &            *DTRANS*DELR(J)*DELC(I)*DH(J,I,K)
+            ENDIF            
 C
-C--CALCULATE MASS LOSS/GAIN DUE TO DECAY/BIODEGRADATION
+C--CALCULATE MASS LOSS/GAIN DUE TO 1st/0th ORDER REACTION
             IF(DCRCT+DCRCT2.LT.0) THEN
               RMASIO(9,2,ICOMP)=RMASIO(9,2,ICOMP)+DCRCT+DCRCT2
             ELSE
@@ -807,7 +885,7 @@ C--UPDATE SORBED MASS STORAGE CHANGE FOR NONEQUILIBRIUM SORPTION
         ENDDO
       ENDDO
 C
-C--DECAY/BIODEGRADATION IN DUAL-DOMAIN MODEL
+C--1ST/0TH ORDER REACTION IN DUAL-DOMAIN MODEL
  1000 IF(ISOTHM.NE.5.AND.ISOTHM.NE.6) GOTO 9999
 C
       DO K=1,NLAY
@@ -818,18 +896,30 @@ C--SKIP IF INACTIVE OR CONSTANT CONCENTRATION CELL
             IF(ICBUND(J,I,K,ICOMP).LE.0) CYCLE
 C
 C--SKIP IF CONCENTRATION IS NOT POSITIVE
-            IF(CNEW(J,I,K,ICOMP).LE.0) CYCLE
+            IF(CNEW(J,I,K,ICOMP).LE.0) CYCLE          
 C
+C--compute mass loss/gain in each cell for all 4 phases: 
+C--mobile liquid, mobile sorbed, immobile liquid, immobile sorbed
             VOLUME=DELR(J)*DELC(I)*DH(J,I,K)
             CMML=CNEW(J,I,K,ICOMP)*PRSITY(J,I,K)*VOLUME
             CMMS=(RETA(J,I,K,ICOMP)-1.)*CMML
             CIML=PRSITY2(J,I,K)*SRCONC(J,I,K,ICOMP)*VOLUME
-            CIMS=(RETA2(J,I,K,ICOMP)-1.)*CIML
-C
-            CMML=-RC1(J,I,K,ICOMP)*CMML*DTRANS
-            CMMS=-RC2(J,I,K,ICOMP)*CMMS*DTRANS
-            CIML=-RC1(J,I,K,ICOMP)*CIML*DTRANS
-            CIMS=-RC2(J,I,K,ICOMP)*CIMS*DTRANS
+            CIMS=(RETA2(J,I,K,ICOMP)-1.)*CIML            
+C--for 1st-order reaction            
+            if(ireact.eq.1) then                                                    
+              CMML=-RC1(J,I,K,ICOMP)*CMML*DTRANS
+              CMMS=-RC2(J,I,K,ICOMP)*CMMS*DTRANS
+              CIML=-RC1(J,I,K,ICOMP)*CIML*DTRANS
+              CIMS=-RC2(J,I,K,ICOMP)*CIMS*DTRANS
+C--for zero-order reaction
+            elseif(ireact.eq.100) then              
+              CMML=-RC1(J,I,K,ICOMP)*VOLUME*PRSITY(J,I,K)*DTRANS
+              CMMS=-RC2(J,I,K,ICOMP)*VOLUME*RHOB(J,I,K)*DTRANS
+     &             *FRAC(J,I,K)
+              CIML=-RC1(J,I,K,ICOMP)*VOLUME*PRSITY2(J,I,K)*DTRANS
+              CIMS=-RC2(J,I,K,ICOMP)*VOLUME*RHOB(J,I,K)*DTRANS
+     &             *(1.-FRAC(J,I,K))
+            endif            
 C
 C--CALCULATE MASS LOSS/GAIN DUE TO REACTION IN MOBILE DOMAIN
             IF(CMML+CMMS.LT.0) THEN

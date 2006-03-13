@@ -11,6 +11,16 @@ NOTE: Any use of trade, product or firm names is for descriptive purposes
       only and does not imply endorsement by the U.S. Government.
 
 
+o Version 3.12.00 3/14/2006:
+
+This version has been updated with MT3DMS 5.10, which includes a zero-order
+growth/decay option through the reactions package.  The zero-order growth/
+decay option can be used to simulate groundwater age.  This version also
+contains modifications to the original MNW budget routine, which may not have
+correctly written several variables to the cell-by-cell flow file.
+
+
+
 o Version 3.11.02 9/23/2005:
 
 This version contains a fix for a bug that may have caused transport time

@@ -141,3 +141,37 @@ In VDF1MNW1.F
 
 
 
+
+______________________________________________________________________________________________________________
+3/14/2006 Updating with MT3DMS version 5.1
+
+Main program--no differences
+BTN
+	BTN5OT--slight changes
+ADV--no differences
+DSP--no differences
+SSM
+	SSM5FM--changed
+	SSM5BD--changed
+GCG--no differences
+RCT
+	RCT5AL
+	RCT5RP
+	SRCT5R
+	RCT5FM
+	RCT5BD
+TOB--no difference
+UTL--no difference
+FMI--no difference
+
+
+
+
+
+
+
+
+
+
+
+

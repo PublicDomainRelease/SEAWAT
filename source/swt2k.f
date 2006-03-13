@@ -4,7 +4,7 @@ C                            SEAWAT-2000                               %
 C                   a modular three-dimensional model                  %
 C          for simulating the flow of variable-density groundwater     %
 C                                                                      %
-C                          (Version 3.11)                              %
+C                          (Version 3.12)                              %
 C                                                                      %
 C                           Developed by                               %
 C                                                                      %
@@ -64,6 +64,11 @@ C--SEAWAT:    MT3DMS 5.00.  SS ARRAY NEEDED TO CHANGE FROM SIZE 6 TO 7.
 C--SEAWAT:    ALSO FIXED MINOR BUG IN LMT6GHB6VD.
 C--SEAWAT:  LANGEVIN 09/23/2005 FIXED A BUG THAT CAUSED SHORT TRANSPORT
 C--SEAWAT:    STEPS FOR STRESS PERIODS GREATER THAN 1 FOR SOME SITUATIONS.
+C--SEAWAT:  LANGEVIN 02/10/2006 FIXED A BUG IN MNW THAT RESULTED IN
+C--SEAWAT:    AN INCORRECT VALUE FOR NLAY AND PERTIM IN THE BINARY OUTPUT 
+C--SEAWAT:    FILE
+C--SEAWAT:  LANGEVIN 03/08/2006 CHANGED TO VERSION 3.12 AND UPGRADED TO
+C--SEAWAT:     MT3DMS VERSION 5.1.  
 
 C     Last change:  ERB   3 May 2002   10:07 am
 C     ******************************************************************
@@ -138,15 +143,16 @@ C                  08-15-2000 (3.50.B)
 C                  08-12-2001 (4.00)
 C                  05-27-2003 (4.50)
 C                  02-15-2005 (5.00)   
+C                  10-25-2005 (5.10)
 C
 C
 C--SEAWAT: COMPAQ COMPILER NEEDS DFLIB LIBRARY TO USE GETARG RUNTIME SUBROUTINE (CVDP2)
       USE DFLIB
 C--SEAWAT:-----ASSIGN VERSION NUMBER AND DATE
       CHARACTER*40 VERSION,VERSIONMF,VERSIONMT
-      PARAMETER (VERSION  ='3.11.02-PUBLIC 09/23/2005')
+      PARAMETER (VERSION  ='3.12.00-PUBLIC 03/14/2006')
 	PARAMETER (VERSIONMF='1.15.00 08/06/2004')
-	PARAMETER (VERSIONMT='5.00    02/15/2005')
+	PARAMETER (VERSIONMT='5.01    10/25/2005')
 C
 C-----DECLARE ARRAY TYPES
       REAL GX, X, RX, XHS
@@ -2735,18 +2741,19 @@ C--DRAINS WITH RETURN FLOW
      3                          GX(LCBUFF),PERTIM,TOTIM,NCOL,NROW,
      4                          NLAY,IG(LCIBOU))
 C--MULTINODE WELLS
+C--SEAWAT: FOR BOTH CALLS BELOW HAD TO ADD PERTIM TO ARG LIST
             IF(IUNIT(50).GT.0.AND.IUNIT(57).EQ.0)
      &          CALL GWF1MNW1BD(MNWSITE,NWELL2,MXWEL2,VBNM,VBVL,MSUM,
      &                          DELT,RX(LCWEL2),IG(LCIBOU),GZ(LCHNEW),
      &                          NCOL,NROW,NODES,NSTP(KKPER),KKSTP,KKPER,
      &                          IWL2CB,ICBCFL,GX(LCBUFF),IOUT,IOWELL2,
-     &                          TOTIM,PLOSSMNW,HDRY)
+     &                          TOTIM,PLOSSMNW,HDRY,PERTIM)
             IF(IUNIT(50).GT.0.AND.IUNIT(57).GT.0)
      &          CALL VDF1MNW1BD(MNWSITE,NWELL2,MXWEL2,VBNM,VBVL,MSUM,
      &                          DELT,RX(LCWEL2),IG(LCIBOU),GZ(LCHNEW),
      &                          NCOL,NROW,NODES,NSTP(KKPER),KKSTP,KKPER,
      &                          IWL2CB,ICBCFL,GX(LCBUFF),IOUT,IOWELL2,
-     &                          TOTIM,PLOSSMNW,HDRY)
+     &                          TOTIM,PLOSSMNW,HDRY,PERTIM)
             IF (IUNIT(43).GT.0)
      &          CALL GWF1HYD1OT(GZ,LENGZ,RX,LENRX,IG,LENIG,RX(LCHYDM),
      &                        NUMH,IHYDMUN,TOTIM,HYDNOH,NROW,NCOL,

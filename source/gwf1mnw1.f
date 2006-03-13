@@ -993,7 +993,7 @@ c_______________________________________________________________________________
 c
       SUBROUTINE GWF1MNW1bd(MNWsite,nwell2,mxwel2,vbnm,vbvl,msum,delt,
      +        well2,ibound,hnew,ncol,nrow,nodes,nstp,kstp,kper,iwl2cb,
-     +             icbcfl,buff,iout,iowell2,totim,PLoss,Hdry)
+     +             icbcfl,buff,iout,iowell2,totim,PLoss,Hdry,PERTIM)
 C     VERSION 20030710 KJH
 c
 c----- MNW1 by K.J. Halford        1/31/98
@@ -1020,6 +1020,8 @@ c             ----+----1----+-
       zero = 1.E-25
 c     ------------------------------------------------------------------
 c
+C--SEAWAT: MOVED CALCULATION OF NLAY TO BEGINNING OF SUBROUTINE
+      nlay = nodes / ncol / nrow
 c  clear ratin and ratout accumulators.
       ratin=0.
       ratout=0.
@@ -1223,7 +1225,8 @@ c -----print the summed rates to auxillary file if requested .
 c
 c  ----- END  MULTI-NODE reporting section -------------
 c
-        nlay = nodes / ncol / nrow
+C--SEAWAT: MOVED THE FOLLOWING LINE TO TOP.  NLAY NEEDED FOR UBDSV4
+C        nlay = nodes / ncol / nrow
 c6------if cell-by-cell flows will be saved call ubudsv to record them
         if( abs(iwl2cb).gt.0 .and. icbcfl.ne.0 ) then           !! BooBoo Fix--July 10,2003  KJH
           ioc = abs(iwl2cb)
