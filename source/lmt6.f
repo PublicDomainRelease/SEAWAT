@@ -19,6 +19,7 @@ C Revision History
 C     Version 6.0: 05-25-2001 cz
 C             6.1: 05-01-2002 cz
 C             6.2: 07-15-2003 cz
+C             6.3: 05-10-2005 cz
 C ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 C
 C
@@ -1106,24 +1107,25 @@ C
 C
       SUBROUTINE LMT6HUF2(HNEW,IBOUND,CR,CC,CV,ISS,ISSCURRENT,DELT,
      & HOLD,SC1,BOTM,NBOTM,NCOL,NROW,NLAY,KSTP,KPER,HUFTHK,NHUF,IZON,
-     & NZONAR,RMLT,NMLTAR,DELR,DELC,BUFF,IOUT,INUHF)
+     & NZONAR,RMLT,NMLTAR,DELR,DELC,BUFF,IOUT,ILVDA,VDHT,INUHF)
 C *********************************************************************
 C SAVE FLOW ACROSS THREE CELL INTERFACES (QXX, QYY, QZZ), FLOW RATE TO
 C OR FROM TRANSIENT FLUID-STORAGE (QSTO), AND LOCATIONS AND FLOW RATES
 C OF CONSTANT-HEAD CELLS FOR USE BY MT3D.  THIS SUBROUTINE IS CALLED
 C ONLY IF THE 'HUF' PACKAGE IS USED IN MODFLOW.
 C *********************************************************************
-C Modified from Harbaugh et al. (2000)
-C last modified: 07-15-2003
+C Modified from Anderman and Hill (2000) & Anderman et al. (2002)
+C last modified: 05-10-2005
 C
       CHARACTER*16 TEXT
-      DOUBLE PRECISION HNEW,HN,HD
-      DIMENSION HNEW(NCOL,NROW,NLAY), IBOUND(NCOL,NROW,NLAY),
-     & CR(NCOL,NROW,NLAY), CC(NCOL,NROW,NLAY), CV(NCOL,NROW,NLAY),
-     & SC1(NCOL,NROW,NLAY), HUFTHK(NCOL,NROW,NLAY,NHUF,2),
+      DOUBLE PRECISION HNEW,HN,HD,DFL,DFR,DFT,DFB
+      DIMENSION HNEW(NCOL,NROW,NLAY),IBOUND(NCOL,NROW,NLAY),
+     & CR(NCOL,NROW,NLAY),CC(NCOL,NROW,NLAY),CV(NCOL,NROW,NLAY),
+     & SC1(NCOL,NROW,NLAY),HUFTHK(NCOL,NROW,NLAY,NHUF,2),
      & IZON(NCOL,NROW,NZONAR),RMLT(NCOL,NROW,NMLTAR),
      & DELR(NCOL),DELC(NROW),BOTM(NCOL,NROW,0:NBOTM),
-     & BUFF(NCOL,NROW,NLAY),HOLD(NCOL,NROW,NLAY)
+     & BUFF(NCOL,NROW,NLAY),HOLD(NCOL,NROW,NLAY),
+     & VDHT(NCOL,NROW,NLAY,3)
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
       COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
       COMMON /LINKMT3D/ILMTFMT
@@ -1194,9 +1196,15 @@ C--FOR EACH CELL
       DO K=1,NLAY
         DO I=1,NROW
           DO J=1,NCM1
-            IF(IBOUND(J,I,K).NE.0.AND.IBOUND(J+1,I,K).NE.0) THEN
-              HDIFF=HNEW(J,I,K)-HNEW(J+1,I,K)
-              BUFF(J,I,K)=HDIFF*CR(J,I,K)
+            IF(IBOUND(J,I,K).NE.0.AND.IBOUND(J+1,I,K).NE.0) THEN            
+              if(ILVDA.gt.0) then
+                CALL SGWF1HUF2VDF9(I,J,K,VDHT,HNEW,IBOUND,
+     &           NLAY,NROW,NCOL,DFL,DFR,DFT,DFB)
+                BUFF(J,I,K) = DFR
+              else                       
+                HDIFF=HNEW(J,I,K)-HNEW(J+1,I,K)
+                BUFF(J,I,K)=HDIFF*CR(J,I,K)
+              endif  
             ENDIF
           ENDDO
         ENDDO
@@ -1238,8 +1246,14 @@ C--FOR EACH CELL
         DO I=1,NRM1
           DO J=1,NCOL
             IF(IBOUND(J,I,K).NE.0.AND.IBOUND(J,I+1,K).NE.0) THEN
-              HDIFF=HNEW(J,I,K)-HNEW(J,I+1,K)
-              BUFF(J,I,K)=HDIFF*CC(J,I,K)
+              if(ILVDA.gt.0) then
+                CALL SGWF1HUF2VDF9(I,J,K,VDHT,HNEW,IBOUND,
+     &           NLAY,NROW,NCOL,DFL,DFR,DFT,DFB)
+                BUFF(J,I,K) = DFT
+              else                        
+                HDIFF=HNEW(J,I,K)-HNEW(J,I+1,K)
+                BUFF(J,I,K)=HDIFF*CC(J,I,K)
+              endif  
             ENDIF
           ENDDO
         ENDDO
@@ -1262,7 +1276,7 @@ C--SEAWAT: WRITE AS SINGLE OR DOUBLE DEPENDING ON INUHF
 C
   505 CONTINUE
 C
-C--CALCULATE AND SAVE FLOW ACROSS FRONT FACE
+C--CALCULATE AND SAVE FLOW ACROSS LOWER FACE
       NLM1=NLAY-1
       IF(NLM1.LT.1) GO TO 700
       TEXT='QZZ'
@@ -1276,7 +1290,7 @@ C--CLEAR THE BUFFER
         ENDDO
       ENDDO
 C
-C--FOR EACH CELL CALCULATE FLOW THRU LOWER FACE & STORE IN BUFFER
+C--FOR EACH CELL 
       DO K=1,NLM1
         DO I=1,NROW
           DO J=1,NCOL
@@ -1423,34 +1437,55 @@ C--CLEAR FIELDS FOR SIX FLOW RATES.
             X5=0.
             X6=0.
 C
+C--COMPUTE HORIZONTAL FLUXES IF THE LVDA CAPABILITY IS USED            
+            if(ILVDA.gt.0)
+     &       CALL SGWF1HUF2VDF9(I,J,K,VDHT,HNEW,IBOUND,
+     &       NLAY,NROW,NCOL,DFL,DFR,DFT,DFB)                        
+C
 C--CALCULATE FLOW THROUGH THE LEFT FACE
 C
 C--IF THERE IS AN INACTIVE CELL ON THE OTHER SIDE OF THIS
 C--FACE THEN GO ON TO THE NEXT FACE.
             IF(J.EQ.1) GO TO 30
             IF(IBOUND(J-1,I,K).EQ.0) GO TO 30
-            HDIFF=HNEW(J,I,K)-HNEW(J-1,I,K)
 C
 C--CALCULATE FLOW THROUGH THIS FACE INTO THE ADJACENT CELL.
-            X1=HDIFF*CR(J-1,I,K)
+            if(ILVDA.gt.0) then
+              X1 = -DFL
+            else
+              HDIFF=HNEW(J,I,K)-HNEW(J-1,I,K)            
+              X1=HDIFF*CR(J-1,I,K)
+            endif  
 C
 C--CALCULATE FLOW THROUGH THE RIGHT FACE
    30       IF(J.EQ.NCOL) GO TO 60
             IF(IBOUND(J+1,I,K).EQ.0) GO TO 60
-            HDIFF=HNEW(J,I,K)-HNEW(J+1,I,K)
-            X2=HDIFF*CR(J,I,K)
+            if(ILVDA.gt.0) then
+              X2 = DFR
+            else                       
+              HDIFF=HNEW(J,I,K)-HNEW(J+1,I,K)
+              X2=HDIFF*CR(J,I,K)
+            endif  
 C
 C--CALCULATE FLOW THROUGH THE BACK FACE.
    60       IF(I.EQ.1) GO TO 90
             IF (IBOUND(J,I-1,K).EQ.0) GO TO 90
-            HDIFF=HNEW(J,I,K)-HNEW(J,I-1,K)
-            X3=HDIFF*CC(J,I-1,K)
+            if(ILVDA.gt.0) then
+              X3 = -DFT
+            else                       
+              HDIFF=HNEW(J,I,K)-HNEW(J,I-1,K)
+              X3=HDIFF*CC(J,I-1,K)
+            endif  
 C
 C--CALCULATE FLOW THROUGH THE FRONT FACE.
    90       IF(I.EQ.NROW) GO TO 120
             IF(IBOUND(J,I+1,K).EQ.0) GO TO 120
-            HDIFF=HNEW(J,I,K)-HNEW(J,I+1,K)
-            X4=HDIFF*CC(J,I,K)
+            if(ILVDA.gt.0) then
+              X4 = DFB
+            else             
+              HDIFF=HNEW(J,I,K)-HNEW(J,I+1,K)
+              X4=HDIFF*CC(J,I,K)
+            endif  
 C
 C--CALCULATE FLOW THROUGH THE UPPER FACE
   120       IF(K.EQ.1) GO TO 150
@@ -2184,13 +2219,14 @@ C--NORMAL RETURN
       END
 C
       SUBROUTINE LMT6MNW1(MNWsite,nwell2,mxwel2,
-     & well2,ibound,ncol,nrow,nlay,nodes,kstp,kper,iout,INUHF)
+     & well2,ibound,ncol,nrow,nlay,nodes,kstp,kper,iout)
 C *********************************************************************
 C SAVE MNW LOCATIONS AND VOLUMETRIC FLOW RATES FOR USE BY MT3D.
 C *********************************************************************
 C Modified from MNW1 by K.J. Halford
-C last modification: 06-28-2003
+C last modification: 05-10-2005
 C
+      DOUBLE PRECISION WELL2   !WELL2 declared doubleprecision for v6.3
       CHARACTER TEXT*16,MNWsite*32
       DIMENSION IBOUND(nodes),WELL2(18,MXWEL2),MNWsite(mxwel2)
       COMMON /LINKMT3D/ILMTFMT

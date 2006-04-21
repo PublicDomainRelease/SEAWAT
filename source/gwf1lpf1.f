@@ -1,3 +1,4 @@
+! Time of File Save by ERB: 12/20/2005 2:02PM
 C     Last change:  ERB  30 Sep 2002    1:40 pm
       SUBROUTINE GWF1LPF1ALG(ISUM,LCHK,LCVKA,LCSC1,LCSC2,LCHANI,
      1  LCVKCB,IN,NCOL,NROW,NLAY,IOUT,ILPFCB,LCWETD,
@@ -276,7 +277,8 @@ C  Make the parameter active for all stress periods
 C
 C        SENSITIVITY FOR HK AND HANI PARAMETERS IS NOT SUPPORTED FOR
 C        AVERAGING METHOD OTHER THAN HARMONIC MEAN -- CHECK FOR CONFLICT
-         IF (ISEN.NE.0 .AND. (PTYP.EQ.'HK' .OR. PTYP.EQ.'HANI')) THEN
+         IF (ISEN.NE.0 .AND. (PTYP.EQ.'HK' .OR. PTYP.EQ.'HANI') .AND.
+     &       N.LE.NPLIST) THEN
            IF (ISENS(N).GT.0) THEN
 C            CYCLE THROUGH CLUSTERS INCLUDED IN THIS PARAMETER
              DO 19 ICLUSTER=IPLOC(1,N),IPLOC(2,N)
@@ -782,11 +784,23 @@ C2B-----CHECK VERTICAL HYDRAULIC CONDUCTIVITY AND CONFINING BED
 C2B-----VERTICAL HYDRAULIC CONDUCTIVITY.
          IF(NLAY.GT.1) THEN
             IF(VKA(J,I,K).NE.ZERO) THEN
-               IF(K.NE.NLAY .AND. LAYCBD(K).NE.0) THEN
-                  IF(VKCB(J,I,LAYCBD(K)).NE.ZERO) GO TO 40
+               IF(K.NE.NLAY) THEN
+                  IF (VKA(J,I,K+1).NE.ZERO) THEN
+                     IF(LAYCBD(K).NE.0) THEN
+                        IF(VKCB(J,I,LAYCBD(K)).NE.ZERO) GO TO 40
+                     ELSE
+                        GO TO 40
+                     END IF
+                  END IF
                END IF
-               IF(K.NE.1 .AND. LAYCBD(K-1).NE.0) THEN
-                  IF(VKCB(J,I,LAYCBD(K-1)).NE.ZERO) GO TO 40
+               IF(K.NE.1) THEN
+                  IF (VKA(J,I,K-1).NE.ZERO) THEN
+                     IF (LAYCBD(K-1).NE.0) THEN
+                        IF(VKCB(J,I,LAYCBD(K-1)).NE.ZERO) GO TO 40
+                     ELSE
+                        GO TO 40
+                     END IF
+                  ENDIF
                END IF
             END IF
          END IF
@@ -812,11 +826,23 @@ C3B-----CHECK VERTICAL HYDRAULIC CONDUCTIVITY AND CONFINING BED
 C3B-----VERTICAL HYDRAULIC CONDUCTIVITY.
          IF(NLAY.GT.1) THEN
             IF(VKA(J,I,K).NE.ZERO) THEN
-               IF(K.NE.NLAY .AND. LAYCBD(K).NE.0) THEN
-                  IF(VKCB(J,I,LAYCBD(K)).NE.ZERO) GO TO 50
+               IF(K.NE.NLAY) THEN
+                  IF (VKA(J,I,K+1).NE.ZERO) THEN
+                     IF(LAYCBD(K).NE.0) THEN
+                        IF(VKCB(J,I,LAYCBD(K)).NE.ZERO) GO TO 50
+                     ELSE
+                        GO TO 50
+                     END IF
+                  END IF
                END IF
-               IF(K.NE.1 .AND. LAYCBD(K-1).NE.0) THEN
-                  IF(VKCB(J,I,LAYCBD(K-1)).NE.ZERO) GO TO 50
+               IF(K.NE.1) THEN
+                  IF (VKA(J,I,K-1).NE.ZERO) THEN
+                     IF (LAYCBD(K-1).NE.0) THEN
+                        IF(VKCB(J,I,LAYCBD(K-1)).NE.ZERO) GO TO 50
+                     ELSE
+                        GO TO 50
+                     END IF
+                  ENDIF
                END IF
             END IF
          END IF

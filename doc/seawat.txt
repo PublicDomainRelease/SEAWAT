@@ -29,6 +29,10 @@ transport equation is solved using one of the approaches available with MT3DMS.
 
 HISTORY
 
+SEAWAT-2000 Version 3.13.00 2006/04/21 - This version of SEAWAT was updated with
+MODFLOW Version 1.16.00.  Additionally, ETS and DRT are now compatible with the
+VDF process.
+
 SEAWAT-2000 Version 3.12.00 2006/03/14 - This version of SEAWAT was updated with
 MT3DMS Version 5.10, which includes a new zero-order growth/decay option within
 the reactions package.  This option may be useful for simulating groundwater age 
@@ -130,6 +134,8 @@ RCH -- Recharge
 CHD -- Time-Variant Constant Head 
 FHB -- Flow and Head Boundary
 MNW -- Multi-Node Well
+ETS -- Evapotranspiration with a Segmented Function
+DRT -- Drains with Return Flow
 SIP -- Strongly Implicit Procedure
 SOR -- Slice-Successive Overrelaxation
 PCG -- Preconditioned Conjugate Gradient Solver (also called PCG2)
@@ -149,6 +155,7 @@ GHOB -- General-Head Boundary Observation
 DROB -- Drain Observation
 RVOB -- River Observation
 CHOB -- Constant-Head Flow Observation
+DTOB -- Drain with Return Flow Observation
 
 Other packages (distributed with MODFLOW-2000) are included in SEAWAT-2000, however,
 these additional packages may not be compatible with the VDF Process.
@@ -174,14 +181,14 @@ Operation:
 
 Christian Langevin
 U.S. Geological Survey
-9100 NW 36th Street, STE 110
-Miami, FL 33178
+3110 SW 9th Avenue
+Fort Lauderdale, FL 33312
 langevin@usgs.gov
 
 Barclay Shoemaker
 U.S. Geological Survey
-9100 NW 36th Street, STE 110
-Miami, FL 33178
+3110 SW 9th Avenue
+Fort Lauderdale, FL 33312
 bshoemak@usgs.gov
 
 Weixing Guo

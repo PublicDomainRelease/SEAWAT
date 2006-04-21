@@ -2332,3 +2332,277 @@ C
 C--RETURN
       RETURN
       END
+      SUBROUTINE LMT6ETS1VD(NETSOP,IETS,ETSR,ETSX,ETSS,IBOUND,HNEW,
+     & NCOL,NROW,NLAY,KSTP,KPER,BUFF,IOUT,NETSEG,PXDP,PETM,NSEGAR,PS,
+     & ELEV,INUHF)
+C ********************************************************************
+C SAVE SEGMENTED EVAPOTRANSPIRATION LAYER INDICES (IF NLAY>1) AND
+C VOLUMETRIC FLOW RATES FOR USE BY MT3D.
+C ********************************************************************
+C Modified from Banta (2000)
+C last modified: 7-15-2003
+C
+      CHARACTER*16 TEXT
+      DOUBLE PRECISION HNEW, QQ, HH, SS, DD, XX, HHCOF, RRHS,
+     &                 PXDP1, PXDP2
+      DIMENSION IETS(NCOL,NROW), ETSR(NCOL,NROW), ETSX(NCOL,NROW),
+     &          ETSS(NCOL,NROW), IBOUND(NCOL,NROW,NLAY),
+     &          HNEW(NCOL,NROW,NLAY),BUFF(NCOL,NROW,NLAY), 
+     &          PXDP(NCOL,NROW,NSEGAR),PETM(NCOL,NROW,NSEGAR)
+      COMMON /LINKMT3D/ILMTFMT
+C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
+      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
+ 	INCLUDE 'vdf.inc'
+      TEXT='ETS'
+C
+C--WRITE AN IDENTIFYING HEADER
+      IF(ILMTFMT.EQ.0) THEN
+        WRITE(IOUT) KPER,KSTP,NCOL,NROW,NLAY,TEXT
+      ELSEIF(ILMTFMT.EQ.1) THEN
+        WRITE(IOUT,*) KPER,KSTP,NCOL,NROW,NLAY
+        WRITE(IOUT,*) TEXT
+      ENDIF      
+C
+C--CLEAR THE BUFFER
+      DO IL=1,NLAY
+        DO IR=1,NROW
+          DO IC=1,NCOL
+            BUFF(IC,IR,IL)=0.
+          ENDDO   
+        ENDDO   
+      ENDDO   
+C
+C--PROCESS EACH HORIZONTAL CELL LOCATION
+      DO IR=1,NROW
+        DO IC=1,NCOL
+C
+C--SET THE LAYER INDEX EQUAL TO 1.
+          IL=1
+C
+C--IF OPTION 2 IS SPECIFIED THEN GET LAYER INDEX FROM IETS ARRAY
+          IF (NETSOP.EQ.2) IL=IETS(IC,IR)
+C
+C--IF CELL IS EXTERNAL THEN IGNORE IT.
+          IF (IBOUND(IC,IR,IL).LE.0) CYCLE
+C          
+          C=ETSR(IC,IR)
+          S=ETSS(IC,IR)
+          SS=S
+          HH=HNEW(IC,IR,IL)
+C
+C--IF HEAD IN CELL => ETSS,SET Q=MAX ET RATE.
+          IF (HH.GE.SS) THEN
+            QQ=-C
+          ELSE
+C
+C--IF DEPTH=>EXTINCTION DEPTH, ET IS 0.
+            X=ETSX(IC,IR)
+            XX=X
+            DD=SS-HH
+            IF (DD.LT.XX) THEN
+C--VARIABLE RANGE.  CALCULATE Q DEPENDING ON NUMBER OF SEGMENTS
+C
+              IF (NETSEG.GT.1) THEN
+C               DETERMINE WHICH SEGMENT APPLIES BASED ON HEAD, AND
+C               CALCULATE TERMS TO ADD TO RHS AND HCOF
+C
+C               SET PROPORTIONS CORRESPONDING TO ETSS ELEVATION
+                PXDP1 = 0.0
+                PETM1 = 1.0
+                DO ISEG = 1,NETSEG
+C                 SET PROPORTIONS CORRESPONDING TO LOWER END OF
+C                 SEGMENT
+                  IF (ISEG.LT.NETSEG) THEN
+                    PXDP2 = PXDP(IC,IR,ISEG)
+                    PETM2 = PETM(IC,IR,ISEG)
+                  ELSE
+                    PXDP2 = 1.0
+                    PETM2 = 0.0
+                  ENDIF
+                  IF (DD.LE.PXDP2*XX) THEN
+C                   HEAD IS IN DOMAIN OF THIS SEGMENT
+                    EXIT
+                  ENDIF
+C                 PROPORTIONS AT LOWER END OF SEGMENT WILL BE FOR
+C                 UPPER END OF SEGMENT NEXT TIME THROUGH LOOP
+                  PXDP1 = PXDP2
+                  PETM1 = PETM2
+                ENDDO   
+C--CALCULATE ET RATE BASED ON SEGMENT THAT APPLIES AT HEAD
+C--ELEVATION
+C--SEAWAT:                  HHCOF = -(PETM1-PETM2)*C/((PXDP2-PXDP1)*X)
+C--SEAWAT:                  RRHS = -HHCOF*(S-PXDP1*X) - PETM1*C
+                  HHCOF = -(PETM1-PETM2)*C/((PXDP2-PXDP1)*X)
+     +                                      *DENSEREF/PS(IC,IR,IL)
+                  RRHS = (C*((PETM1-PETM2)/(PXDP2-PXDP1)*PXDP1 + 
+     +                                                            PETM1)
+     +                   - (PETM1-PETM2)/(PXDP2-PXDP1)*C*S/X
+     +                   + C/X*ELEV(IC,IR,IL)*(PS(IC,IR,IL)-DENSEREF)/
+     +                                                    PS(IC,IR,IL))
+              ELSE
+C--SIMPLE LINEAR RELATION.  Q=-ETSR*(HNEW-(ETSS-ETSX))/ETSX, WHICH
+C--IS FORMULATED AS Q= -HNEW*ETSR/ETSX + (ETSR*ETSS/ETSX -ETSR).
+C--SEAWAT:                  HHCOF = -C/X
+C--SEAWAT:                  RRHS = (C*S/X) - C
+                  HHCOF = -DENSEREF/PS(IC,IR,IL)*C/X
+                  RRHS = C-C*S/X + C/X*
+     +              (PS(IC,IR,IL)-DENSEREF)/PS(IC,IR,IL)*ELEV(IC,IR,IL)
+              ENDIF
+C--SEAWAT:                 QQ = HH*HHCOF + RRHS
+C--SEAWAT: CHANGED TO MINUS RRHS SO RRHS EQUATION WOULD BE SAME AS FM
+                QQ = HNEW(IC,IR,IL)*HHCOF - RRHS
+            ELSE
+              QQ = 0.0
+            ENDIF
+          ENDIF  
+C
+C--ADD Q TO BUFFER.
+          Q=QQ
+          BUFF(IC,IR,1)=Q
+        ENDDO   
+      ENDDO   
+C
+C--RECORD THEM
+      IF(NETSOP.EQ.1) THEN
+        IL=1
+        IF(ILMTFMT.EQ.0) WRITE(IOUT)   ((IL,J=1,NCOL),I=1,NROW)
+        IF(ILMTFMT.EQ.1) WRITE(IOUT,*) ((IL,J=1,NCOL),I=1,NROW)
+      ELSEIF(NETSOP.NE.1) THEN
+        IF(ILMTFMT.EQ.0) WRITE(IOUT)   ((IETS(J,I),J=1,NCOL),I=1,NROW)
+        IF(ILMTFMT.EQ.1) WRITE(IOUT,*) ((IETS(J,I),J=1,NCOL),I=1,NROW)
+      ENDIF
+C
+      IF(ILMTFMT.EQ.0) THEN
+C--SEAWAT: WRITE SINGLE OR DOUBLE PRECISION DEPENDING ON INUHF
+	  IF(IOUT.EQ.INUHF) THEN
+		WRITE(IOUT) ((BUFF(J,I,1),J=1,NCOL),I=1,NROW)
+	  ELSE
+		WRITE(IOUT) ((REAL(BUFF(J,I,1),4),J=1,NCOL),I=1,NROW)
+	  ENDIF
+      ELSEIF(ILMTFMT.EQ.1) THEN
+        WRITE(IOUT,*) ((BUFF(J,I,1),J=1,NCOL),I=1,NROW)
+      ENDIF
+C
+C--RETURN
+      RETURN
+      END
+C
+C
+      SUBROUTINE LMT6DRT1VD(NDRTCL,MXDRT,DRTF,HNEW,NCOL,NROW,NLAY,
+     & IBOUND,KSTP,KPER,IOUT,NDRTVL,IDRTFL,NRFLOW,PS,ELEV,INUHF)
+C ******************************************************************
+C SAVE DRT (Drain with Return Flow) CELL LOCATIONS AND 
+C VOLUMETRIC FLOW RATES FOR USE BY MT3D
+C ******************************************************************
+C Modified from Banta (2000)
+C last modified: 7-15-2003
+C
+      CHARACTER*16 TEXT
+      DOUBLE PRECISION HNEW,HHNEW,EEL,CC,CEL,QQ
+      DIMENSION DRTF(NDRTVL,MXDRT),HNEW(NCOL,NROW,NLAY),
+     &          IBOUND(NCOL,NROW,NLAY)
+      COMMON /LINKMT3D/ILMTFMT
+C--SEAWAT: DIMENSION ADDITIONAL ARRAYS, INCLUDE VDF.INC AND GRAB AUX
+      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
+	INCLUDE 'vdf.inc'
+      COMMON /DRTCOM/DRTAUX(5)
+C
+      TEXT='DRT'
+C
+C--WRITE AN IDENTIFYING HEADER
+      IF(ILMTFMT.EQ.0) THEN
+        WRITE(IOUT) KPER,KSTP,NCOL,NROW,NLAY,TEXT,NDRTCL+NRFLOW
+      ELSEIF(ILMTFMT.EQ.1) THEN
+        WRITE(IOUT,*) KPER,KSTP,NCOL,NROW,NLAY
+        WRITE(IOUT,*) TEXT,NDRTCL+NRFLOW
+      ENDIF      
+C
+C--IF THERE ARE NO DRAIN-RETURN CELLS, SKIP.
+      IF (NDRTCL+NRFLOW.LE.0) RETURN
+C
+C--SEAWAT: FIND DRTBELEV IF EXISTS AS AUX VARIABLE
+      LOCZDRT=0
+      DO I=1,5
+        IF(DRTAUX(I).EQ.'DRTBELEV') LOCZDRT=I+5
+      ENDDO
+C
+C--LOOP THROUGH EACH DRAIN-RETURN CELL, CALCULATING FLOW.
+      DO L=1,NDRTCL
+C
+C--GET LAYER, ROW & COLUMN OF CELL CONTAINING DRAIN.
+        IL=DRTF(1,L)
+        IR=DRTF(2,L)
+        IC=DRTF(3,L)
+        Q=0.
+C
+C--IF CELL IS NO-FLOW OR CONSTANT-HEAD, IGNORE IT.
+        IF (IBOUND(IC,IR,IL).LE.0) GOTO 99
+C
+C--GET DRAIN PARAMETERS FROM DRAIN-RETURN LIST.
+        EL=DRTF(4,L)
+C--SEAWAT: SET REFERENCE ELEVATION FOR DRT HEAD
+	  ZDRT=ELEV(IC,IR,IL)
+	  IF(LOCZDRT.GT.0) ZDRT=DRTF(LOCZDRT,L)
+C--SEAWAT: CALCULATE EEL AS EQUIVALENT FRESHWATER VALUE
+C        EEL=EL
+        EEL=FEHEAD(EL,PS(IC,IR,IL),ZDRT)
+        C=DRTF(5,L)
+        HHNEW=HNEW(IC,IR,IL)
+C
+C--IF HEAD HIGHER THAN DRAIN, CALCULATE Q=C*(EL-HHNEW).
+C--SUBTRACT Q FROM RATOUT.
+C--SEAWAT: USE SALTWATER HEAD AND EL FOR TURNING ON DRT
+        IF (SALTHEAD(HHNEW,PS(IC,IR,IL),ELEV(IC,IR,IL)).GT.EL) THEN
+          CC=C
+C          CEL=C*EL
+C          QQ=CEL - CC*HHNEW
+C--SEAWAT: VD FORM
+	    QQ=CC*(EEL-HNEW(IC,IR,IL)-
+     &       (PS(IC,IR,IL)-DENSEREF)/DENSEREF*(ELEV(IC,IR,IL)-ZDRT))
+          Q=QQ
+          ILR=0
+          IF (IDRTFL.GT.0) THEN
+            ILR = DRTF(6,L)
+            IF (ILR.NE.0) THEN
+              IRR = DRTF(7,L)
+              ICR = DRTF(8,L)
+              RFPROP = DRTF(9,L)
+C--SEAWAT: FLIP SIGN AND USE QQ INSTEAD OF (CC*HNEW-CEL)
+C              QQIN = RFPROP*(CC*HHNEW-CEL)
+              QQIN = -QQ*RFPROP
+              QIN = QQIN
+            ENDIF
+          ENDIF
+        ENDIF
+   99   CONTINUE     
+C
+C--WRITE DRT LOCATION AND RATE (both host and recipient)
+        mhost=0.
+        QSW=0.
+C       main drain (host to recipient cell)
+C--SEAWAT: WRITE SINGLE OR DOUBLE PRECISION DEPENDING ON INUHF
+        IF(ILMTFMT.EQ.0) THEN
+		IF (IOUT.EQ.INUHF) THEN
+			WRITE(IOUT)   IL,IR,IC,Q,mhost,QSW
+		ELSE
+			WRITE(IOUT)   IL,IR,IC,REAL(Q,4),mhost,REAL(QSW,4)
+		ENDIF
+	  ENDIF
+        IF(ILMTFMT.EQ.1) WRITE(IOUT,*) IL,IR,IC,Q,mhost,QSW 
+C       return flow recipient cell 
+        if(ILR.ne.0) then
+          mhost = ncol*nrow*(IL-1) + ncol*(IR-1) + IC
+          IF(ILMTFMT.EQ.0) THEN
+		  IF(IOUT.EQ.INUHF) THEN
+			WRITE(IOUT)   ILR,IRR,ICR,QIN,mhost,QSW
+	      ELSE
+			WRITE(IOUT)   ILR,IRR,ICR,REAL(QIN,4),mhost,REAL(QSW,4)
+		  ENDIF
+		ENDIF
+          IF(ILMTFMT.EQ.1) WRITE(IOUT,*) ILR,IRR,ICR,QIN,mhost,QSW
+        endif
+      ENDDO   
+C
+C--RETURN
+      RETURN
+      END

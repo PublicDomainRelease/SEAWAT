@@ -218,7 +218,7 @@ SOURCE=.\gwf1riv6.f
 # End Source File
 # Begin Source File
 
-SOURCE=.\gwf1sfr1.f
+SOURCE=.\gwf1sfr2.f
 DEP_F90_GWF1S=\
 	".\param.inc"\
 	
@@ -349,6 +349,14 @@ DEP_F90_OBS1DR=\
 SOURCE=.\obs1drt1.f
 DEP_F90_OBS1DRT=\
 	".\param.inc"\
+	
+# End Source File
+# Begin Source File
+
+SOURCE=.\obs1drt1vd.f
+DEP_F90_OBS1DRT1=\
+	".\param.inc"\
+	".\vdf.inc"\
 	
 # End Source File
 # Begin Source File
@@ -586,8 +594,22 @@ DEP_F90_VDF1D=\
 # End Source File
 # Begin Source File
 
-SOURCE=.\vdf1evt6.f
+SOURCE=.\vdf1drt1.f
+DEP_F90_VDF1DR=\
+	".\vdf.inc"\
+	
+# End Source File
+# Begin Source File
+
+SOURCE=.\vdf1ets1.f
 DEP_F90_VDF1E=\
+	".\vdf.inc"\
+	
+# End Source File
+# Begin Source File
+
+SOURCE=.\vdf1evt6.f
+DEP_F90_VDF1EV=\
 	".\vdf.inc"\
 	
 # End Source File

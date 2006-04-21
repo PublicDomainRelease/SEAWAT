@@ -6,12 +6,12 @@
 --------------------Configuration: swt2k - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSPB8B9.tmp" with contents
+Creating temporary file "C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSP596B.tmp" with contents
 [
 /alignment:dcommons /assume:underscore /check:bounds /compile_only /iface:cref /names:lowercase /nologo /real_size:64 /traceback /warn:argument_checking /warn:nofileopt /module:"Release/" /object:"Release/" 
-"D:\Users\langevin\seawat2k\swt2000\source\v3_12_20060308_public\swt2k.f"
+"D:\Users\langevin\seawat2k\swt2000\source\v3_13_20060417_public\swt2k.f"
 ]
-Creating temporary file "C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSPB8BA.tmp" with contents
+Creating temporary file "C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSP596C.tmp" with contents
 [
 kernel32.lib /nologo /stack:0x989680 /subsystem:console /incremental:no /pdb:"Release/swt2k.pdb" /machine:I386 /out:"Release/swt2k.exe" 
 .\Release\ctime.obj
@@ -39,7 +39,7 @@ kernel32.lib /nologo /stack:0x989680 /subsystem:console /incremental:no /pdb:"Re
 .\Release\gwf1rch6.obj
 .\Release\gwf1res1.obj
 .\Release\gwf1riv6.obj
-.\Release\gwf1sfr1.obj
+.\Release\gwf1sfr2.obj
 .\Release\gwf1str6.obj
 .\Release\gwf1sub1.obj
 .\Release\gwf1wel6.obj
@@ -63,6 +63,7 @@ kernel32.lib /nologo /stack:0x989680 /subsystem:console /incremental:no /pdb:"Re
 .\Release\obs1drn6.obj
 .\Release\obs1drn6vd.obj
 .\Release\obs1drt1.obj
+.\Release\obs1drt1vd.obj
 .\Release\obs1ghb6.obj
 .\Release\obs1ghb6vd.obj
 .\Release\obs1riv6.obj
@@ -97,6 +98,8 @@ kernel32.lib /nologo /stack:0x989680 /subsystem:console /incremental:no /pdb:"Re
 .\Release\vdf1bcf6.obj
 .\Release\vdf1chd6.obj
 .\Release\vdf1drn6.obj
+.\Release\vdf1drt1.obj
+.\Release\vdf1ets1.obj
 .\Release\vdf1evt6.obj
 .\Release\vdf1fhb1.obj
 .\Release\vdf1ghb6.obj
@@ -109,10 +112,10 @@ kernel32.lib /nologo /stack:0x989680 /subsystem:console /incremental:no /pdb:"Re
 .\Release\vdf1wel6.obj
 .\gmg1.2.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSPB8BA.tmp"
+Creating command line "link.exe @C:\DOCUME~1\LANGEVIN.FL\LOCALS~1\Temp\RSP596C.tmp"
 <h3>Output Window</h3>
 Compiling Fortran...
-D:\Users\langevin\seawat2k\swt2000\source\v3_12_20060308_public\swt2k.f
+D:\Users\langevin\seawat2k\swt2000\source\v3_13_20060417_public\swt2k.f
 Linking...
 
 

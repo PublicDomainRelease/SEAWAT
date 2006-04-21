@@ -11,6 +11,15 @@ NOTE: Any use of trade, product or firm names is for descriptive purposes
       only and does not imply endorsement by the U.S. Government.
 
 
+
+o Version 3.13.00 4/21/2006:
+
+This version has been updated with MODFLOW Version 1.16.00.  In addition,
+the ETS and DRT packages (including DTOB) have been modified to work with
+the Variable-Density Flow (VDF) Process.
+
+
+
 o Version 3.12.00 3/14/2006:
 
 This version has been updated with MT3DMS 5.10, which includes a zero-order

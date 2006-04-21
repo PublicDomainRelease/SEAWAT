@@ -1,8 +1,7 @@
-c
       SUBROUTINE VDF1MNW1fm(nwell2,mxwel2,well2,ibound,delr,delc,cr,cc,
      +    hy,small,Hdry, hcof, rhs, hnew, ncol, nrow, nodes,kiter,
      +    NoMoIter,LAYHDT,BOTM,NBOTM,HK,IUBCF,IULPF,IUHUF,NLAY,
-     &    PLoss,TRPY,HKCC,HANI)
+     &    TRPY,HKCC,HANI)
 C     VERSION 20020819 KJH
 c
 c----- MNW1 by K.J. Halford
@@ -13,20 +12,34 @@ c     ******************************************************************
 c
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      IMPLICIT NONE
+      common /rev23/ PLOSS, iwelpt
+      INTEGER MXWEL2, NODES, IBOUND, NCOL, NROW, NBOTM, NLAY, IUHUF,
+     &        IULPF, IUBCF, NOMOITER, KITER, NWELL2, LAYCON, LAYHDT,
+     &        M, N, IFRL, IWELPT, NE, IIN, IQSLV
+      REAL DELR, DELC, CR, CC, HY, HCOF, RHS, HANI, HK, HKCC, HDRY,
+     &     BOTM, TRPY
+      DOUBLE PRECISION PLOSS
+      double precision well2
+      double precision zero,qres,rw,cond,Qact,sk,Cf,qdes,csum,chsum,
+     * hwell,ipole,hlim,href,ddmax,ddsim,ratio,dhc2w,small
       dimension well2(18,mxwel2), ibound(nodes)
       dimension delr(ncol), delc(nrow),cr(nodes),cc(nodes)
       dimension hy(nodes)
       dimension hcof(nodes), rhs(nodes)
       dimension hnew(nodes)
       double precision hnew
+      double precision cel2wel
       COMMON /BCFCOM/LAYCON(999)
       DIMENSION BOTM(NCOL,NROW,0:NBOTM),
      &          HANI(NCOL,NROW,NLAY), HK(NODES), HKCC(NCOL,NROW,NLAY),
      &          LAYHDT(NLAY), TRPY(NLAY)
-C--SEAWAT: INCLUDE VDF.INC
+C
+C--SEAWAT:
+	REAL DENSEREF,DENSESLP,DENSEMIN,DENSEMAX
 	INCLUDE 'vdf.inc'
 C
-      zero = 1.0E-20
+      zero = 1.0D-20
 c
 c                 CR( i, j, k)    ------>   CR  i + 1/2
 c                 CC( i, j, k)    ------>   CC  j + 1/2
@@ -52,7 +65,7 @@ c-----if the cell is inactive or specified then bypass processing.
             cond = cel2wel(delr,delc,cr,cc,hy,hnew,ncol,nrow,nodes,n,rw,
      &                 sk,Qact,Cf,PLoss,small,Hdry,LAYHDT,BOTM,NBOTM,HK,
      &                     IUBCF,IULPF,IUHUF,NLAY,TRPY,HKCC,HANI)
-            if( rw .lt. zero ) cond = cond * 1.0E3
+            if( rw .lt. zero ) cond = cond * 1.0D3
           endif
           well2(11,m) = cond
         endif
@@ -62,23 +75,23 @@ c   Prepare components and limits of a multi-node well
       m = 0
       do while( m .lt. nwell2 )
         m = m + 1
-        well2(10,m) = 1.0E31
+        well2(10,m) = 1.0D31
 c
 c   A very large # in WL reference array (8,m) triggers multi-node calculation
 c
-        if( well2(8,m) .gt. 1.0E30 ) then
+        if( well2(8,m) .gt. 1.0D30 ) then
           ne  = ifrl( well2(7,m) )
           qdes = well2(2,ne)
           qact = qdes
-          csum = 0.000
-          chsum = 0.000
+          csum = 0.000D0
+          chsum = 0.000D0
           do iin = m, ne
             n = ifrl( well2(1,iin) )
             if( ibound(n) .ne. 0 ) then
               csum  = csum  + well2(11,iin)
               chsum = chsum + well2(11,iin)*hnew(n)
             else
-              well2(3,iin) = 0.00000000
+              well2(3,iin) = 0.0D0
             endif
           enddo
 c---div0 ---  CSUM could go to zero if the entire well is dry
@@ -101,11 +114,15 @@ c
             qact = hwell*csum - chsum
 c      DD constraints that stop production are not tested until after the 2nd iteration
             if( kiter .gt.2 ) then
-              ratio = 1.00
+              ratio = 1.00D0
               if( abs(qdes) .gt. small ) ratio =  qact / qdes
-              if( ratio .lt. 0.00001 ) then
-                qact  = 0.000
-                hwell = chsum / csum
+              if( ratio .lt. 0.00001D0 ) then
+                qact  = 0.000D0
+                if (csum .gt. 0.0D0) then
+                  hwell = chsum / csum
+                else
+                  hwell = hnew(n)
+                endif
               endif
             endif
           endif
@@ -134,7 +151,7 @@ c-----if the cell is inactive then bypass processing.
 c
           hlim = well2(7,m)
           href = well2(8,m)
-          if( well2(10,m).gt.1.0E30 .and. cond.gt.zero ) then
+          if( well2(10,m).gt.1.0D30 .and. cond.gt.zero ) then
             dhc2w = Qact / cond
 c   Process single-node wells
 c   Test DD constraints, Hlim is assumed to be a Max/Min for Injection/Production wells
@@ -144,20 +161,20 @@ c   Test DD constraints, Hlim is assumed to be a Max/Min for Injection/Productio
             well2(10,m) = hwell
             ddsim = ipole*( hwell - href )
             ddmax = ipole*( hlim - href ) - small
-            ratio = 1.00
+            ratio = 1.00D0
             if( abs(qdes) .gt. zero ) ratio =  qact / qdes
-            if( abs(ratio).gt. 1.00 ) qact = qdes
-            if( ratio     .lt. zero ) qact = 0.000000
+            if( abs(ratio).gt. 1.00D0 ) qact = qdes
+            if( ratio     .lt. zero ) qact = 0.0D0
 c    Well will be simulated as a specified rate or GHB
             iqslv = 0
             if( ddsim.gt.ddmax .and. ddmax.gt.zero ) iqslv = 1
             if((qdes-qact)**2 .gt. small           ) iqslv = 1
             if(abs(qact).lt.zero .and.  ddsim.gt.ddmax) iqslv = 0
             if(abs(qact).lt.zero .and.  ddsim.lt.ddmax) iqslv = 1
-            if(abs(qdes).lt.zero .or. ratio.gt.1.0-zero ) iqslv = 0
+            if(abs(qdes).lt.zero .or. ratio.gt.1.0D0-zero ) iqslv = 0
 c
           elseif( cond.lt.zero ) then
-            qact = 0.00000
+            qact = 0.0D0
             iqslv = 0
           else
 c Process multi-node wells, Constraints were already tested when allocating flow
@@ -170,16 +187,15 @@ c Process multi-node wells, Constraints were already tested when allocating flow
             endif
           endif
 c
-C--SEAWAT: MULTIPLY BY DENSITY TO CONSERVE MASS (ASSUME CONCENTRATION OF ZERO FOR ALL PUMPING)
-	DENSE=DENSEREF
+C--SEAWAT: MULTIPLY HCOF AND RHS TERMS BY DENSEREF
 c   Modify HCOF and RHS arrays
           if( iqslv.ne.0 .and. kiter.gt.1 .and. kiter.lt.NoMoIter ) then
             qact = ( hlim - hnew(n) ) * cond
-            hcof(n) = hcof(n) - DENSE*cond
-            rhs(n)  = rhs(n)  - DENSE*cond * hlim
+            hcof(n) = hcof(n) - cond * DENSEREF
+            rhs(n)  = rhs(n)  - cond * hlim * DENSEREF
           else
 c  Specify Q and solve for head;  add Q to RHS accumulator.
-            rhs(n) = rhs(n) - DENSE*qact
+            rhs(n) = rhs(n) - qact * DENSEREF
           endif
           well2(3,m) = qact
         endif
@@ -192,7 +208,7 @@ c_______________________________________________________________________________
 c
       SUBROUTINE VDF1MNW1bd(MNWsite,nwell2,mxwel2,vbnm,vbvl,msum,delt,
      +        well2,ibound,hnew,ncol,nrow,nodes,nstp,kstp,kper,iwl2cb,
-     +             icbcfl,buff,iout,iowell2,totim,PLoss,Hdry,PERTIM)
+     +             icbcfl,buff,iout,iowell2,totim,Hdry)
 C     VERSION 20030710 KJH
 c
 c----- MNW1 by K.J. Halford        1/31/98
@@ -202,6 +218,17 @@ c     ******************************************************************
 c
 c        specifications:
 c     ------------------------------------------------------------------
+      IMPLICIT NONE
+      common /rev23/ PLOSS, iwelpt
+      INTEGER MXWEL2, MSUM , NODES, IBOUND, IBD, NAUX, NLAY, N, M,
+     &        IGRP1, M2, IGRP2, IMULT, IL,M IR, IC, NE, IOCH, IWELPT,
+     &        IOBYND, IIN, IOQSUM, IOC, NWELVL, IOUT, ICBCFL, IWL2CB,
+     &        KPER, KSTP, NSTP, NROW, NCOL, NWELL2, IOWELL2, IFRL, IR
+      REAL HDRY, VBVL, BUFF, PERTIM, TOTIM, DELT
+      DOUBLE PRECISION HWELL, PLOSS
+      double precision well2
+      double precision zero,ratin,ratout,qwsum,qsum,qwbar,DryTest,q,
+     * qd,hlim,href,dd,s,ipole,sNL,sL,qin,qout,qwfsum
       dimension MNWsite(mxwel2)
       dimension vbvl(4,msum),well2(18,mxwel2),
      1          ibound(nodes), buff(nodes)
@@ -211,18 +238,20 @@ c     ------------------------------------------------------------------
 c
       character*16 text,vbnm(msum),AUXTXT(5)
       character*32 MNWsite
-C--SEAWAT: INCLUDE VDF.INC
+C--SEAWAT:
+	REAL DENSEREF,DENSESLP,DENSEMIN,DENSEMAX
 	INCLUDE 'vdf.inc'
+C
 c             ----+----1----+-
       text = '             MNW'
-      zero = 1.E-25
+      zero = 1.D-25
 c     ------------------------------------------------------------------
 c
-C--SEAWAT: MOVED CALCULATION OF NLAY TO BEGINNING OF SUBROUTINE
-      nlay = nodes / ncol / nrow
+C--SEAWAT: MOVED TO TOP SO NLAY IS AVAILABLE
+        nlay = nodes / ncol / nrow
 c  clear ratin and ratout accumulators.
-      ratin=0.
-      ratout=0.
+      ratin=0.D0
+      ratout=0.D0
       ibd=0
       IF(IWL2CB.GT.0) IBD=ICBCFL
 C
@@ -258,21 +287,21 @@ c     Compute flow weighted QW values and store in well2(11,m)
 c
         do m = 1, nwell2
           well2(11,m) = well2(3,m) * well2(4,m)
-          well2(12,m) = 0.000
-          if( well2(4,m).lt.0.00 .or. well2(3,m).gt.0.00 ) then
-            well2(11,m) = -1
-            well2(12,m) =  1
+          well2(12,m) = 0.D0
+          if( well2(4,m).lt.0.D0 .or. well2(3,m).gt.0.D0 ) then
+            well2(11,m) = -1.D0
+            well2(12,m) =  1.D0
           endif
         enddo
 c
         do m = 1, nwell2
           igrp1 = ifrl( well2(9,m) )
-          if( well2(12,m) .lt. 0.5 ) then
-            qwsum = 0.0000
-            qsum = 0.0000
+          if( well2(12,m) .lt. 0.5D0 ) then
+            qwsum = 0.0000D0
+            qsum = 0.0000D0
             do m2 = m, nwell2
               igrp2 = ifrl( well2(9,m2) )
-              if( igrp1.eq.igrp2 .and. well2(12,m2).lt.0.5) then
+              if( igrp1.eq.igrp2 .and. well2(12,m2).lt.0.5D0) then
                 qwsum = qwsum + well2(11,m2)
                 qsum  = qsum  + well2(3,m2)
                 well2(12,m2) = 1
@@ -283,7 +312,7 @@ c
             if( qsum**2.gt.zero ) qwbar = qwsum / qsum
             do m2 = m, nwell2
               igrp2 = ifrl( well2(9,m2) )
-              if( igrp1.eq.igrp2 .and. well2(4,m2).ge.0.0 )
+              if( igrp1.eq.igrp2 .and. well2(4,m2).ge.0.0D0 )
      +            well2(11,m2) = QWbar
             enddo
           endif
@@ -294,7 +323,7 @@ c
           n = ifrl( well2(1,m) )
           DryTest = Hnew(n) - Hdry
           if(ABS(DryTest).lt.zero) then
-            well2(3,m) = 0.0000
+            well2(3,m) = 0.0D0
           endif
           q = well2(3,m)
           well2(17,m)=q     !!7/13/2003 - CZ: preserve q
@@ -307,9 +336,9 @@ c    Report all wells with production less than the desired rate......
             qd = well2(2,m)
             hlim = well2(7,m)
 c -----Modified OUTPUT to hide internal pointers that "Look Funny" in DD column--KJH-- July 10, 2003
-            if( well2(8,m) .gt. 1.0e30 )then
+            if( well2(8,m) .gt. 1.0D30 )then
               imult = 1
-              if( well2(7,m) .lt. 1.0e30 )then
+              if( well2(7,m) .lt. 1.0D30 )then
                 ne = ifrl(well2(7,m))
                 href = well2(8,ne)
               else
@@ -328,7 +357,7 @@ c -----print the individual rates if requested(iwl2cb<0).
               s   = hnew(n) - hwell
               IPOLE = 0
               if( abs(s).gt.zero )  ipole = s / abs(s)
-              sNL = ipole * well2(16,m) * q**PLoss
+              sNL = ipole * well2(16,m) * abs(q)**PLoss
               sL  = s - sNL
               write(iout,'(1x,i6,3i4,9(1x,g12.6))')
      +         m,il,ir,ic,q, hwell,hnew(n), dd, qwbar, sL, sNL
@@ -350,13 +379,12 @@ c  Create WEL1 file if iowell2(1) > 0
 c
             buff(n) = buff(n) + q
 C--SEAWAT: MULTIPLY Q BY DENSE (ASSUME ALL CONCENTRATIONS ARE ZERO FOR NOW)
-	DENSE=DENSEREF
-            if( q.ge.0.000 ) then
+            if( q.ge.0.0D0 ) then
 c -----pumping rate is positive(recharge). add it to ratin.
-              ratin = ratin + q*DENSE
+              ratin = ratin + q * DENSEREF
             else
 c -----pumping rate is negative(discharge). add it to ratout.
-              ratout = ratout - q*DENSE
+              ratout = ratout - q * DENSEREF
             endif
           endif
         enddo
@@ -374,27 +402,28 @@ c
         m = 0
         do while( m .lt. nwell2 )
           m = m + 1
-          if( well2(8,m) .gt. 1.0E30 ) then
+          if( well2(8,m) .gt. 1.0D30 ) then
             ne  = ifrl( well2(7,m) )
-            qwsum = 0.000
-            qwfsum = 0.000
-            qsum = 0.000
-            qin  = 0.000
-            qout = 0.000
+            qwsum = 0.000D0
+            qwfsum = 0.000D0
+            qsum = 0.000D0
+            qin  = 0.000D0
+            qout = 0.000D0
             do iin = m, ne
               n = ifrl( well2(1,iin) )
-              if( ibound(n).eq.0 ) well2(3,iin) = 0.0
-              if( well2(4,iin).ge.0.0 .and. well2(3,iin).le.0.0 ) then
+              if( ibound(n).eq.0 ) well2(3,iin) = 0.0D0
+              if( well2(4,iin).ge.0.0D0 .and. well2(3,iin).le.0.0D0 )
+     &            then
                 qwfsum  = qwfsum + well2(3,iin)
                 qwsum   = qwsum  + well2(3,iin)*well2(4,iin)
               endif
-              if( well2(3,iin).le.0.0 ) then
+              if( well2(3,iin).le.0.0D0 ) then
                 qin = qin  + well2(3,iin)
               else
                 qout = qout  + well2(3,iin)
               endif
               qsum  = qsum  + well2(3,iin)
-              well2(3,iin) = 0.00000
+              well2(3,iin) = 0.00000D0
             enddo
             well2(3,ne) = qsum
 c -----print the summed rates if requested(iwl2cb<0).
@@ -425,7 +454,7 @@ c -----print the summed rates to auxillary file if requested .
 c
 c  ----- END  MULTI-NODE reporting section -------------
 c
-C--SEAWAT: MOVED THE FOLLOWING LINE TO TOP.  NLAY NEEDED FOR UBDSV4
+C--SEAWAT: MOVED NLAY CALCULATION TO BEGINNING OF ROUTINE
 C        nlay = nodes / ncol / nrow
 c6------if cell-by-cell flows will be saved call ubudsv to record them
         if( abs(iwl2cb).gt.0 .and. icbcfl.ne.0 ) then           !! BooBoo Fix--July 10,2003  KJH
@@ -461,4 +490,3 @@ c
 c11-----return
       return
       end
-c
