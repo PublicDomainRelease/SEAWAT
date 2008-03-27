@@ -1,5 +1,5 @@
       SUBROUTINE VDF1DRN6FM(NDRAIN,MXDRN,DRAI,HNEW,HCOF,RHS,IBOUND,
-     1              NCOL,NROW,NLAY,NDRNVL,PS,ELEV)
+     1              NCOL,NROW,NLAY,NDRNVL)
 C
 C-----VERSION 11JAN2000 DRN5FM
 C     ******************************************************************
@@ -9,23 +9,17 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
-
+      USE VDFMODULE,   ONLY: DENSEREF,PS,ELEV
 C--SEAWAT: ADD EL
       DOUBLE PRECISION HNEW,EEL,EL,HHNEW
 C
-
       DIMENSION DRAI(NDRNVL,MXDRN),HNEW(NCOL,NROW,NLAY),
      1         RHS(NCOL,NROW,NLAY),IBOUND(NCOL,NROW,NLAY),
      1         HCOF(NCOL,NROW,NLAY)
-C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
-	INCLUDE 'vdf.inc'
 C--SEAWAT: INCLUDE AUXILIARY VARIABLES
       COMMON /DRNCOM/DRNAUX(5)
       CHARACTER*16 DRNAUX
-
 C     ------------------------------------------------------------------
-
 C
 C1------IF NDRAIN<=0 THERE ARE NO DRAINS. RETURN.
       IF(NDRAIN.LE.0) RETURN
@@ -73,7 +67,7 @@ C8------RETURN.
       END
       SUBROUTINE VDF1DRN6BD(NDRAIN,MXDRN,VBNM,VBVL,MSUM,DRAI,DELT,HNEW,
      1        NCOL,NROW,NLAY,IBOUND,KSTP,KPER,IDRNCB,ICBCFL,BUFF,IOUT,
-     2        PERTIM,TOTIM,NDRNVL,IDRNAL,IAUXSV,PS,ELEV)
+     2        PERTIM,TOTIM,NDRNVL,IDRNAL,IAUXSV)
 C-----VERSION 05JUNE2000 GWF1DRN6BD
 C     ******************************************************************
 C     CALCULATE VOLUMETRIC BUDGET FOR DRAINS
@@ -81,6 +75,8 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: DENSEREF,PS,ELEV
+C
       COMMON /DRNCOM/DRNAUX(5)
       CHARACTER*16 DRNAUX
       CHARACTER*16 VBNM(MSUM),TEXT
@@ -91,9 +87,6 @@ C
      1          IBOUND(NCOL,NROW,NLAY),BUFF(NCOL,NROW,NLAY)
 C
       DATA TEXT /'          DRAINS'/
-C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
-	INCLUDE 'vdf.inc'
 C     ------------------------------------------------------------------
 C
 C1------INITIALIZE CELL-BY-CELL FLOW TERM FLAG (IBD) AND

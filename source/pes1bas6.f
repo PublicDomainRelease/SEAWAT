@@ -1,7 +1,8 @@
 ! Time of File Save by ERB: 2/18/2004 11:45AM
 C     Last change:  ERB  14 Jan 2003    4:09 pm
 C=======================================================================
-      SUBROUTINE PES1BAS6DF(IBEFLG,IFO,IOUB,IPES,IPR,IPRAR,IPRINT,
+      SUBROUTINE PES1BAS6DF(IBEALE,IBEFLG,IFO,IOUB,
+     &                      IPES,IPR,IPRAR,IPRINT,
      &                      ITERPF,ITERPK,ITMXP,IUPES,IYCFLG,JMAX,LASTX,
      &                      LCDMXA,LCNIPR,LCNPAR,LCPRM,LCWP,LCWTP,
      &                      LCWTPS,LCW3,LCW4,MPR,MPRAR,NPNGAR,SOSC,SOSR,
@@ -25,6 +26,7 @@ C     PARAMETER-ESTIMATION PROCESS
       BEFIRST = .TRUE.
       IFO = 0
       IOUB = 0
+      IBEALE = 0
       IBEFLG = 0
       IYCFLG = -1
       IPES = 0
@@ -90,6 +92,7 @@ C     ------------------------------------------------------------------
      &        LCEIGW, LCG, LCGD, LCNIPR, LCPRM, LCR, LCS, LCSCLE,
      &        LCU, LCWP, LCWTP, LCWTPS, LCW3, LCW4, MPR, NOPT, NPLIST,
      &        LCPRNT, LCPARE, LCAAP, LCAMCA
+      DOUBLE PRECISION TOL
       CHARACTER*200 LINE
 C     ------------------------------------------------------------------
       IREWND=0
@@ -104,8 +107,9 @@ C     READ AND PRINT ITEM 1 OF THE PES INPUT FILE
       LLOC = 1
       CALL URWORD(LINE,LLOC,ISTART,ISTOP,2,ITMXP,DUM,IOUT,IU)
       CALL URWORD(LINE,LLOC,ISTART,ISTOP,3,IDUM,DMAX,IOUT,IU)
-      CALL URWORD(LINE,LLOC,ISTART,ISTOP,3,IDUM,TOL,IOUT,IU)
+      CALL URWORD(LINE,LLOC,ISTART,ISTOP,3,IDUM,RTOL,IOUT,IU)
       CALL URWORD(LINE,LLOC,ISTART,ISTOP,3,IDUM,SOSC,IOUT,IU)
+      TOL = DBLE(RTOL)
       WRITE(IOUT,510) ITMXP,DMAX,TOL,SOSC
   510 FORMAT (/,
      &' MAXIMUM NUMBER OF PARAMETER-ESTIMATION ITERATIONS (MAX-ITER)  ='
@@ -123,7 +127,8 @@ C       ASSIGN VARIABLES TO FORCE CONVERGENCE IN ONE PARAMETER-
 C       ESTIMATION ITERATION
         ITMXP = 1
         DMAX = 1.0E-6
-        TOL = 1.0E35
+        !TOL = 1.0E35
+        TOL = HUGE(TOL)
         WRITE (IOUT,515) DMAX,TOL
       ELSEIF (ITMXP.LT.0) THEN
         WRITE (IOUT,517)
@@ -662,7 +667,7 @@ C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
       REAL BL, BU
-      DOUBLE PRECISION AP
+      DOUBLE PRECISION AP, TOL
       INTEGER I, ISENS, IOUB, IPNG, LN, NPNG, NPLIST
       CHARACTER*4 PIDTMP
       DIMENSION BL(NPLIST), BU(NPLIST), ISENS(NPLIST), IPNG(NPNGAR),

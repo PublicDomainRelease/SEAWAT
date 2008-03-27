@@ -1,4 +1,23 @@
-! Time of File Save by ERB: 3/31/2005 12:35PM
+C  I edited all occurrences of common block HUFCOM (in sen1huf2.f, 
+C  lmt6.f, gwfhuf2.f, and obs1bas6.f) to put all REAL arrays before all 
+C  INTEGER arrays.  The original order is OK when both REALs and 
+C  INTEGERs are KIND=4.  But when REALs are promoted to DOUBLE 
+C  PRECISION, KIND goes from 4 to 8, and this generates alignment 
+C  problems.  The alignment problems are avoided when all variables of 
+C  larger KIND precede all variables of smaller KIND. -- ERB 6/29/2006
+C=======================================================================
+      SUBROUTINE GWF1HUF2DF(IOHUFHDS,IOHUFFLWS)
+C     ******************************************************************
+C     DEFINE VARIABLES USED IN MODFLOW MAIN.   
+C     Subroutine added 10/23/2006 ERB
+C     ******************************************************************
+      IMPLICIT NONE
+      INTEGER IOHUFHDS, IOHUFFLWS
+      IOHUFHDS = 0
+      IOHUFFLWS = 0
+      RETURN
+      END
+C=======================================================================
       SUBROUTINE GWF1HUF2ALG(ISUM,LCHK,LCVKA,LCSC1,
      &  IN,ITRSS,NCOL,NROW,NLAY,IOUT,IHUFCB,LCWETD,
      &  HDRY,NPER,ISSFLG,LCHGUF,IREWND,
@@ -14,7 +33,7 @@ C     ------------------------------------------------------------------
       INTEGER LAYHDT(NLAY),ISSFLG(NPER)
       CHARACTER*14 LAYPRN(5),TYPNAM(2),WETNAM(2)
       CHARACTER*200 LINE
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C
       DATA TYPNAM/'      CONFINED','   CONVERTIBLE'/
       DATA WETNAM/'  NON-WETTABLE','      WETTABLE'/
@@ -188,7 +207,7 @@ C
       DIMENSION WETDRY(NCOL,NROW,NLAY),
      &  HUFTHK(NCOL,NROW,NHUF,2),IHGUFLG(5,NHUF),IFLG(5)
 C
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
       COMMON /HUFCOMC/HGUNAM(999)
 C
       DATA ANAME(1) /'   HYD. COND. ALONG ROWS'/
@@ -535,7 +554,7 @@ C
      &    A9(NCOL*NROW*NLAY,5)
 C
       INCLUDE 'param.inc'
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
       COMMON /HUFCOMC/HGUNAM(999)
       DATA ANAME(1) /'   HYD. COND. ALONG ROWS'/
       DATA ANAME(2) /'  HORIZ. ANI. (COL./ROW)'/
@@ -749,7 +768,7 @@ C     ------------------------------------------------------------------
      &  HUFHK(NHUF),BOTM(NCOL,NROW,0:NBOTM),HUFHANI(NHUF),
      &  HNEW(NCOL,NROW,NLAY),GS(NCOL,NROW)
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 
       MULTKDEP = 1.0
       IF(KT.EQ.KB) THEN
@@ -810,7 +829,7 @@ C     ------------------------------------------------------------------
      &  VKA(NCOL,NROW,NLAY),HUFHK(NHUF),HUFVK(NHUF),
      &  IBOUND(NCOL,NROW,NLAY),GS(NCOL,NROW)
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
 
       CALL SGWF1HUF2VSRCH(NCOL,NROW,NLAY,BOTM,NBOTM,I,J,TOPU,BOTU,
@@ -893,7 +912,7 @@ C     ------------------------------------------------------------------
      &  IBOUND(NCOL,NROW,NLAY),GS(NCOL,NROW),HUFTHK(NCOL,NROW,NHUF,2),
      &  IZON(NCOL,NROW,NZONAR),RMLT(NCOL,NROW,NMLTAR)
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
 
       DO 100 NU=1,NHUF
@@ -972,7 +991,7 @@ C     ------------------------------------------------------------------
       DIMENSION HNEW(NCOL,NROW,NLAY),BOTM(NCOL,NROW,0:NBOTM),
      &  IBOUND(NCOL,NROW,NLAY)
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C
 C Reset IFLG
       IFLG=1
@@ -1051,7 +1070,7 @@ C     ------------------------------------------------------------------
       DIMENSION HNEW(NCOL,NROW,NLAY),BOTM(NCOL,NROW,0:NBOTM),
      &  IBOUND(NCOL,NROW,NLAY)
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C
 C Reset IFLG
       IFLG=1
@@ -1172,7 +1191,7 @@ C
      &    WETDRY(NCOL,NROW,NLAY),BOTM(NCOL,NROW,0:NBOTM)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
       ZERO=0.
       HCNV=888.88
@@ -1280,7 +1299,7 @@ C
      &    BOTM(NCOL,NROW,0:NBOTM),HKCC(NCOL,NROW,NLAY)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
 C
 C4------CALCULATE HOR. CONDUCTANCE(CR AND CC) FOR CONSTANT T LAYERS.
@@ -1356,7 +1375,7 @@ C
      &    SC1(NCOL,NROW,NLAY),RMLT(NCOL,NROW,NMLTAR),
      &    IZON(NCOL,NROW,NZONAR)
       INCLUDE 'param.inc'
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
 C
 C
@@ -1455,7 +1474,7 @@ C
       DIMENSION ICNVRT(5),JCNVRT(5),ACNVRT(5)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
 C1------INITIALIZE DATA.
       ZERO=0.
@@ -1545,7 +1564,7 @@ C
       DIMENSION ICNVRT(5),JCNVRT(5),ACNVRT(5)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
 C1------INITIALIZE DATA.
       ZERO=0.
@@ -1637,7 +1656,7 @@ C
      &          BOTM(NCOL,NROW,0:NBOTM),WETDRY(NCOL,NROW,NLAY)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
 C
 C1------RETURN IF STEADY STATE.
@@ -1687,7 +1706,7 @@ C
       DIMENSION ICNVRT(5),JCNVRT(5),ACNVRT(5)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
       ZERO=0.0
 C
@@ -1898,7 +1917,7 @@ C
      &    VDHT(NCOL,NROW,NLAY,3),A9(NCOL*NROW*NLAY,5)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
       ONE=1.
 C
@@ -2180,7 +2199,7 @@ C
      &   RMLT(NCOL,NROW,NMLTAR),DELR(NCOL),DELC(NROW)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C
       DATA TEXT /'         STORAGE'/
 C     ------------------------------------------------------------------
@@ -2295,7 +2314,7 @@ C
      &     BUFF(NCOL,NROW,NLAY),VDHT(NCOL,NROW,NLAY,3)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C
       DATA TEXT(1),TEXT(2),TEXT(3)
      & /'FLOW RIGHT FACE ','FLOW FRONT FACE ','FLOW LOWER FACE '/
@@ -2492,7 +2511,7 @@ C
      &     VDHT(NCOL,NROW,NLAY,3)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C
       DATA TEXT /'   CONSTANT HEAD'/
 C     ------------------------------------------------------------------
@@ -2974,7 +2993,7 @@ C     ------------------------------------------------------------------
      &    IZON(NCOL,NROW,NZONAR),HUFHK(999),HUFVK(999),
      &    INDX(999),HUFKDEP(999),GS(NCOL,NROW)
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
 
 C
@@ -3161,7 +3180,7 @@ C
 
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C
       DATA TEXT /'   CONSTANT HEAD'/
 C     ------------------------------------------------------------------
@@ -3309,7 +3328,7 @@ C
 C
 C      INCLUDE 'param.inc'
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 
 C     ------------------------------------------------------------------
 C
@@ -3737,7 +3756,7 @@ C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
       INCLUDE 'param.inc'
       CHARACTER*4 PTYP
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C     ------------------------------------------------------------------
 C
       WRITE(IOUT,47)
@@ -3894,7 +3913,7 @@ C     ------------------------------------------------------------------
      &    HUFTHK(NCOL,NROW,NHUF,2),BOTM(NCOL,NROW,0:NBOTM),
      &    RMLT(NCOL,NROW,NMLTAR),IZON(NCOL,NROW,NZONAR),HUFKDEP(999),
      &    HNEW(NCOL,NROW,NLAY),GS(NCOL,NROW)
-      COMMON /HUFCOM/LTHUF(999),HGUHANI(999),HGUVANI(999),LAYWT(999)
+      COMMON /HUFCOM/HGUHANI(999),HGUVANI(999),LTHUF(999),LAYWT(999)
 C-----------------------------------------------------------------------
 C
 C2------DEFINE DATA FOR NAMED PARAMETERS.
@@ -4465,6 +4484,8 @@ C
 C     ******************************************************************
 C     Calculate the A coefficients for Quadrant II
 C     ******************************************************************
+C 1/10/2007 ERB: Modified to nest IF blocks to avoid out-of-bound array 
+C references
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
@@ -4478,30 +4499,48 @@ C-------Local cell 1, I,J
       TAB1 = VDHT(J,I,K,2)
       TBB1 = VDHT(J,I,K,3)
 C-------Local cell 4, I+1,J
-      IF(I.LT.NROW .AND. IBOUND(J,I+1,K).NE.0) THEN
-        TAA4 = VDHT(J,I+1,K,1)
-        TAB4 = VDHT(J,I+1,K,2)
-        TBB4 = VDHT(J,I+1,K,3)
+      IF (I.LT.NROW) THEN
+        IF (IBOUND(J,I+1,K).NE.0) THEN
+          TAA4 = VDHT(J,I+1,K,1)
+          TAB4 = VDHT(J,I+1,K,2)
+          TBB4 = VDHT(J,I+1,K,3)
+        ELSE
+          TAA4 = TAA1/TMPCOF
+          TAB4 = TAB1/TMPCOF
+          TBB4 = TBB1/TMPCOF
+        ENDIF
       ELSE
         TAA4 = TAA1/TMPCOF
         TAB4 = TAB1/TMPCOF
         TBB4 = TBB1/TMPCOF
       ENDIF
 C-------Local cell 5, I+1,J-1
-      IF(J.GT.1.AND.I.LT.NROW .AND. IBOUND(J-1,I+1,K).NE.0) THEN
-        TAA5 = VDHT(J-1,I+1,K,1)
-        TAB5 = VDHT(J-1,I+1,K,2)
-        TBB5 = VDHT(J-1,I+1,K,3)
+      IF (J.GT.1.AND.I.LT.NROW) THEN
+        IF (IBOUND(J-1,I+1,K).NE.0) THEN
+          TAA5 = VDHT(J-1,I+1,K,1)
+          TAB5 = VDHT(J-1,I+1,K,2)
+          TBB5 = VDHT(J-1,I+1,K,3)
+        ELSE
+          TAA5 = TAA1/TMPCOF
+          TAB5 = TAB1/TMPCOF
+          TBB5 = TBB1/TMPCOF
+        ENDIF
       ELSE
         TAA5 = TAA1/TMPCOF
         TAB5 = TAB1/TMPCOF
         TBB5 = TBB1/TMPCOF
       ENDIF
 C-------Local cell 6, I,J-1
-      IF(J.GT.1 .AND. IBOUND(J-1,I,K).NE.0) THEN
-        TAA6 = VDHT(J-1,I,K,1)
-        TAB6 = VDHT(J-1,I,K,2)
-        TBB6 = VDHT(J-1,I,K,3)
+      IF (J.GT.1) THEN
+        IF (IBOUND(J-1,I,K).NE.0) THEN
+          TAA6 = VDHT(J-1,I,K,1)
+          TAB6 = VDHT(J-1,I,K,2)
+          TBB6 = VDHT(J-1,I,K,3)
+        ELSE
+          TAA6 = TAA1/TMPCOF
+          TAB6 = TAB1/TMPCOF
+          TBB6 = TBB1/TMPCOF
+        ENDIF
       ELSE
         TAA6 = TAA1/TMPCOF
         TAB6 = TAB1/TMPCOF

@@ -1,7 +1,7 @@
       SUBROUTINE VDF1ETS1FM(NETSOP,IETS,ETSR,ETSX,ETSS,RHS,HCOF,IBOUND,
      &                      HNEW,NCOL,NROW,NLAY,NETSEG,PXDP,PETM,
      &                      NSEGAR,
-     &                      PS,ELEV,MTDNCONC,CEVT,CNEW,NCOMP)
+     &                      CEVT,NCOMP)
 C
 C-----VERSION 20000620 ERB
 C     ******************************************************************
@@ -10,6 +10,8 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS,ELEV
+C
       DOUBLE PRECISION HNEW, HH, SS, XX, DD, PXDP1, PXDP2
       DIMENSION IETS(NCOL,NROW), ETSR(NCOL,NROW), ETSX(NCOL,NROW),
      &          ETSS(NCOL,NROW), RHS(NCOL,NROW,NLAY),
@@ -17,9 +19,7 @@ C     ------------------------------------------------------------------
      &          HNEW(NCOL,NROW,NLAY), PXDP(NCOL,NROW,NSEGAR),
      &          PETM(NCOL,NROW,NSEGAR)
 C--SEAWAT: DIMENSION ADDITIONAL VARIABLES
-      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY),
-     1          CEVT(NCOL,NROW,NCOMP),CNEW(NCOL,NROW,NLAY,NCOMP)
-	INCLUDE 'vdf.inc'
+      DIMENSION CEVT(NCOL,NROW,NCOMP)
 C     ------------------------------------------------------------------
 C
 C1------PROCESS EACH HORIZONTAL CELL LOCATION
@@ -31,15 +31,16 @@ C2------SET THE LAYER INDEX EQUAL TO 1      .
 C
 C3------IF OPTION 2 IS SPECIFIED THEN GET LAYER INDEX FROM IETS ARRAY
           IF (NETSOP.EQ.2) IL=IETS(IC,IR)
+          IF (IL.EQ.0) GO TO 20  ! ERB 1/11/07
 C
 C4------IF THE CELL IS EXTERNAL IGNORE IT.
           IF (IBOUND(IC,IR,IL).GT.0) THEN
 C--SEAWAT: DETERMINE DENSE VALUE OF WITHDRAWN ET FLUID
             DENSE=DENSEREF
-            IF(MTDNCONC.GT.0) THEN
-		    DENSE=PS(IC,IR,IL)
-		    IF(CEVT(IC,IR,MTDNCONC).LT.CNEW(IC,IR,IL,MTDNCONC))
-     &		  DENSE=CALCDENS(CEVT(IC,IR,MTDNCONC))
+            IF(MT3DRHOFLG.NE.0) THEN
+		        DENSE=PS(IC,IR,IL)
+		        DENSEEVT=CALCDENS(IC,IR,IL,CEVT(IC,IR,1:NCOMP))
+		        IF(DENSEEVT.LT.DENSE) DENSE=DENSEEVT
             ENDIF
             C=ETSR(IC,IR)
             S=ETSS(IC,IR)
@@ -130,7 +131,7 @@ C=======================================================================
      &                      NROW,NLAY,DELT,VBVL,VBNM,MSUM,KSTP,KPER,
      &                      IETSCB,ICBCFL,BUFF,IOUT,PERTIM,TOTIM,NETSEG,
      &                      PXDP,PETM,NSEGAR,
-     &                      PS,ELEV,MTDNCONC,CEVT,CNEW,NCOMP)
+     &                      CEVT,NCOMP)
 C-----VERSION 20000620 ERB
 C     ******************************************************************
 C     CALCULATE VOLUMETRIC BUDGET FOR EVAPOTRANSPIRATION SEGMENTS
@@ -138,6 +139,8 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS,ELEV
+C
       CHARACTER*16 VBNM(MSUM), TEXT
       DOUBLE PRECISION HNEW, RATOUT, QQ, HH, SS, DD, XX, HHCOF, RRHS,
      &                 PXDP1, PXDP2
@@ -149,9 +152,7 @@ C     ------------------------------------------------------------------
 C
       DATA TEXT /'     ET SEGMENTS'/
 C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY),
-     1          CEVT(NCOL,NROW,NCOMP),CNEW(NCOL,NROW,NLAY,NCOMP)
- 	INCLUDE 'vdf.inc'
+      DIMENSION CEVT(NCOL,NROW,NCOMP)
 C     ------------------------------------------------------------------
 C
 C1------CLEAR THE RATE ACCUMULATOR.
@@ -178,15 +179,16 @@ C4------SET THE LAYER INDEX EQUAL TO 1.
 C
 C5------IF OPTION 2 IS SPECIFIED THEN GET LAYER INDEX FROM IETS ARRAY.
           IF (NETSOP.EQ.2) IL=IETS(IC,IR)
+          IF (IL.EQ.0) GO TO 60  ! ERB 1/11/07
 C
 C6------IF CELL IS EXTERNAL THEN IGNORE IT.
           IF (IBOUND(IC,IR,IL).GT.0) THEN
-C--SEAWAT: SET DENSE
+C--SEAWAT: DETERMINE DENSE VALUE OF WITHDRAWN ET FLUID
             DENSE=DENSEREF
-            IF(MTDNCONC.GT.0) THEN
-		    DENSE=PS(IC,IR,IL)
-		    IF(CEVT(IC,IR,MTDNCONC).LT.CNEW(IC,IR,IL,MTDNCONC))
-     &		  DENSE=CALCDENS(CEVT(IC,IR,MTDNCONC))
+            IF(MT3DRHOFLG.NE.0) THEN
+		        DENSE=PS(IC,IR,IL)
+		        DENSEEVT=CALCDENS(IC,IR,IL,CEVT(IC,IR,1:NCOMP))
+		        IF(DENSEEVT.LT.DENSE) DENSE=DENSEEVT
             ENDIF
             C=ETSR(IC,IR)
             S=ETSS(IC,IR)

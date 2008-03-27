@@ -12,6 +12,8 @@ c     ******************************************************************
 c
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: DENSEREF
+C
       IMPLICIT NONE
       common /rev23/ PLOSS, iwelpt
       INTEGER MXWEL2, NODES, IBOUND, NCOL, NROW, NBOTM, NLAY, IUHUF,
@@ -35,9 +37,6 @@ C     ------------------------------------------------------------------
      &          HANI(NCOL,NROW,NLAY), HK(NODES), HKCC(NCOL,NROW,NLAY),
      &          LAYHDT(NLAY), TRPY(NLAY)
 C
-C--SEAWAT:
-	REAL DENSEREF,DENSESLP,DENSEMIN,DENSEMAX
-	INCLUDE 'vdf.inc'
 C
       zero = 1.0D-20
 c
@@ -208,7 +207,7 @@ c_______________________________________________________________________________
 c
       SUBROUTINE VDF1MNW1bd(MNWsite,nwell2,mxwel2,vbnm,vbvl,msum,delt,
      +        well2,ibound,hnew,ncol,nrow,nodes,nstp,kstp,kper,iwl2cb,
-     +             icbcfl,buff,iout,iowell2,totim,Hdry)
+     +             icbcfl,buff,iout,iowell2,totim,Hdry,PERTIM)
 C     VERSION 20030710 KJH
 c
 c----- MNW1 by K.J. Halford        1/31/98
@@ -218,13 +217,15 @@ c     ******************************************************************
 c
 c        specifications:
 c     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: DENSEREF
+C
       IMPLICIT NONE
       common /rev23/ PLOSS, iwelpt
       INTEGER MXWEL2, MSUM , NODES, IBOUND, IBD, NAUX, NLAY, N, M,
      &        IGRP1, M2, IGRP2, IMULT, IL,M IR, IC, NE, IOCH, IWELPT,
      &        IOBYND, IIN, IOQSUM, IOC, NWELVL, IOUT, ICBCFL, IWL2CB,
      &        KPER, KSTP, NSTP, NROW, NCOL, NWELL2, IOWELL2, IFRL, IR
-      REAL HDRY, VBVL, BUFF, PERTIM, TOTIM, DELT
+      REAL HDRY, VBVL, BUFF, PERTIM, TOTIM, DELT, q2, WELL2SP
       DOUBLE PRECISION HWELL, PLOSS
       double precision well2
       double precision zero,ratin,ratout,qwsum,qsum,qwbar,DryTest,q,
@@ -238,17 +239,14 @@ c     ------------------------------------------------------------------
 c
       character*16 text,vbnm(msum),AUXTXT(5)
       character*32 MNWsite
-C--SEAWAT:
-	REAL DENSEREF,DENSESLP,DENSEMIN,DENSEMAX
-	INCLUDE 'vdf.inc'
 C
 c             ----+----1----+-
       text = '             MNW'
       zero = 1.D-25
 c     ------------------------------------------------------------------
 c
-C--SEAWAT: MOVED TO TOP SO NLAY IS AVAILABLE
-        nlay = nodes / ncol / nrow
+cljk moved this line from below
+      nlay = nodes / ncol / nrow
 c  clear ratin and ratout accumulators.
       ratin=0.D0
       ratout=0.D0
@@ -454,8 +452,7 @@ c -----print the summed rates to auxillary file if requested .
 c
 c  ----- END  MULTI-NODE reporting section -------------
 c
-C--SEAWAT: MOVED NLAY CALCULATION TO BEGINNING OF ROUTINE
-C        nlay = nodes / ncol / nrow
+cljk        nlay = nodes / ncol / nrow
 c6------if cell-by-cell flows will be saved call ubudsv to record them
         if( abs(iwl2cb).gt.0 .and. icbcfl.ne.0 ) then           !! BooBoo Fix--July 10,2003  KJH
           ioc = abs(iwl2cb)
@@ -464,7 +461,13 @@ c6------if cell-by-cell flows will be saved call ubudsv to record them
             do m = 1, nwell2
               n = ifrl( well2(1,m) )
               q = well2(3,m)
-              call UBDSVB(ioc,ncol, nrow,n,1,1,Q,well2(1,m),
+              q2=well2(17,m)
+cljk          call UBDSVB(ioc,ncol, nrow,n,1,1,Q,well2(1,m),
+Cerb 8/24/07  call UBDSVB(ioc,ncol, nrow,n,1,1,Q2,well2(1,m),
+Cerb 8/24/07  UBDSVB requires REAL arguments; defined WELL2SP so that it gets
+Cerb          promoted w/o loss of precision when using DP compiler option
+              WELL2SP = well2(1,m)  
+              call UBDSVB(ioc,ncol, nrow,n,1,1,Q2,WELL2SP,
      +                    NWELVL,NAUX,5,IBOUND,NLAY)
             enddo
           else                  !!  Write full 3D array

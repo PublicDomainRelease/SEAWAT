@@ -3,31 +3,21 @@ U.S. Geological Survey                                             seawat(1)
 
 
 NAME
-     SEAWAT-2000 - Three-dimensional variable-density ground-water flow model
+     SEAWAT - Three-dimensional variable-density ground-water flow model
 
-ABSTRACT
-SEAWAT-2000 is the latest release of the SEAWAT computer program for simulation
-of three-dimensional, variable-density, transient ground-water flow in porous 
-media. SEAWAT-2000 was designed by combining a modified version of MODFLOW-2000 
-and MT3DMS into a single computer program. The code was developed using the 
-MODFLOW-2000 concept of a process, which is defined as “part of the code that 
-solves a fundamental equation by a specified numerical method.” SEAWAT-2000 contains
-all of the processes distributed with MODFLOW-2000 and also includes the Variable-
-Density Flow Process (as an alternative to the constant-density Ground-Water Flow 
-Process) and the Integrated MT3DMS Transport Process. Processes may be active or 
-inactive, depending on simulation objectives; however, not all processes are 
-compatible. For example, the Sensitivity and Parameter Estimation Processes are 
-not compatible with the Variable-Density Flow and Integrated MT3DMS Transport 
-Processes. The SEAWAT-2000 computer code was tested with the common variable-
-density benchmark problems and also with problems representing evaporation from 
-a salt lake and rotation of immiscible fluids.
-
-METHOD
-The variable-density ground-water flow equation is solved using a finite-
-difference approximation similar to the one solved by MODFLOW-2000.  The solute-
-transport equation is solved using one of the approaches available with MT3DMS.
 
 HISTORY
+
+SEAWAT Version 4.00.00 2008/03/28 - First release of SEAWAT Version 4.  SEAWAT
+now contains capability to simulate simultaneous solute and heat transport.  This
+SEAWAT version contains MODFLOW Version 1.18.00 and MT3DMS Version 5.2.  This
+SEAWAT version also contains fixes for several bugs found in previous SEAWAT 
+versions: (1) groundwater fluxes for perched water table conditions with strong 
+density variations were not calculated properly; (2) in the budget calculations, 
+there was an error in the flux calculated for the front face of constant head cells; 
+(3) for mixed steady state and transient simulations, if the first stress period
+was specified as steady state, all remaining stress periods were simulated as steady 
+state.
 
 SEAWAT-2000 Version 3.13.00 2006/04/21 - This version of SEAWAT was updated with
 MODFLOW Version 1.16.00.  Additionally, ETS and DRT are now compatible with the
@@ -98,8 +88,8 @@ names longer than 6 characters, Fortran 90 statements for dynamic memory
 allocation, a call to SUBROUTINE GETARG to retrieve command-line arguments, and
 two calls to DATE_AND_TIME, which is a Fortran 90 intrinsic subroutine. Generally, 
 the program is easily installed on most computer systems.  The code has been used on 
-DOS-based 386 or greater computers having a math coprocessor and 4 mb of memory.  Parts
-of the GMG solver are written in the C programming language.
+DOS-based 386 or greater computers having a math coprocessor and 4 mb of memory.  
+Parts of the GMG solver are written in the C programming language.
 
 PROCESSES
 GLO1 -- Global Process
@@ -162,14 +152,18 @@ these additional packages may not be compatible with the VDF Process.
 
 DOCUMENTATION
 
-The basic documentation is contained in the following two reports:
+The basic documentation is contained in the following three reports:
+
+Langevin, C.D., Thorne, D.T., Jr., Dausman, A.M., Sukop, M.C., and Guo, W., 2007, 
+SEAWAT Version 4: A Computer Program for Simulation of Multi-Species Solute and Heat 
+Transport: U.S. Geological Survey Techniques and Methods. Book 6, Chapter A22, 39 p.
 
 Langevin, C.D., Shoemaker, W.B., and Guo, W., 2003, MODFLOW-2000, the U.S. Geological
 Survey Modular Ground-Water Model--Documentation of the SEAWAT-2000 Version with the
 Variable-Density Flow Process (VDF) and the Integrated MT3DMS Transport Process (IMT):
 U.S. Geological Survey OPen-File Report 03-426, 43 p.
 
-Guo, W., and Langevin, C.D., User's guide to SEAWAT: A computer program for simulation
+Guo, W., and Langevin, C.D., 2002, User's guide to SEAWAT: A computer program for simulation
 of three-dimensional variable-density ground-water flow: Techniques of Water-Resources 
 Investigations of the U.S. Geological Survey, Book 6, Chapter A7, 77 p.
 
@@ -184,18 +178,6 @@ U.S. Geological Survey
 3110 SW 9th Avenue
 Fort Lauderdale, FL 33312
 langevin@usgs.gov
-
-Barclay Shoemaker
-U.S. Geological Survey
-3110 SW 9th Avenue
-Fort Lauderdale, FL 33312
-bshoemak@usgs.gov
-
-Weixing Guo
-CDM Missimer
-8140 College Parkway, Suite 202
-Fort Myers, Florida
-guow@cdm.com
 
 
 See

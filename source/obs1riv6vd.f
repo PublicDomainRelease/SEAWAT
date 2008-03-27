@@ -4,7 +4,7 @@ C=======================================================================
       SUBROUTINE OBS1RIV6FMVD(NQ,NQOB,NQCL,IQOB,QCLS,IBT,MXRIVR,NRIVER
      &                      ,RIVR,HNEW,NCOL,NROW,NLAY,IOUT,IBOUND,
      &                      NHT,OBSNAM,H,TOFF,WTQ,NDMH,ITS,NQAR,NQCAR,
-     &                      NQTAR,NRIVVL,ND,PS,ELEV,HSALT,MTDNCONC,
+     &                      NQTAR,NRIVVL,ND,
      &                      MXSS,NSS,SS,NCOMP,SSMC)
 C     VERSION 19981020 ERB
 C     ******************************************************************
@@ -14,30 +14,25 @@ CBARC--SEAWAT: MODIFIED FOR VARIABLE DENSITY FLOW
 C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
-CBARC--SEAWAT: ADD PS, ELEV
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS,ELEV,HSALT
+C
       REAL C, FACT, H, HB, QCLS, RBOT, RIVR,
-     &     TOFF, WTQ, ZERO, PS, ELEV
+     &     TOFF, WTQ, ZERO
       INTEGER I, IBOUND, IBT, IBT1, IFLAG, II, IOUT, IQ,
      &        IQOB, IRBOT, ITS, J, JJ, JRBOT, K, KK, KRBOT,
      &        MXRIVR, N, NB, NBN, NC, NC1, NC2, NCOL, NDMH, NHT,
      &        NLAY, NQ, NQCL, NQOB, NRIVER, NROW, NT,
      &        NT1, NT2
       CHARACTER*12 OBSNAM(ND)
-CBARC--SEAWAT: ADD HSALT
-      DOUBLE PRECISION HH, HHNEW, HNEW(NCOL,NROW,NLAY),
-     &                 HSALT(NCOL,NROW,NLAY)
-CBARC--SEAWAT: ADD PS,ELEV
+      DOUBLE PRECISION HH, HHNEW, HNEW(NCOL,NROW,NLAY)
       DIMENSION RIVR(NRIVVL,MXRIVR), IBOUND(NCOL,NROW,NLAY),
      &          IBT(2,NQAR), NQOB(NQAR), NQCL(NQAR), IQOB(NQTAR),
-     &          QCLS(5,NQCAR), H(ND), TOFF(ND), WTQ(NDMH,NDMH),
-     &          PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
-CBARC--SEAWAT: ADD COMMON AND AUX. VARIABLES
+     &          QCLS(5,NQCAR), H(ND), TOFF(ND), WTQ(NDMH,NDMH)
+C--SEAWAT: ADD AUX VARIABLES
       COMMON /RIVCOM/RIVAUX(5)
       CHARACTER*16 RIVAUX
-	INCLUDE 'vdf.inc'
-CBARC--SEAWAT:MT3DMS 
+C--SEAWAT: DIMENSION MT3DMS ARRAYS 
 	DIMENSION SS(7,MXSS),SSMC(NCOMP,MXSS)
-
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
   500 FORMAT (/,
@@ -116,7 +111,7 @@ C	            RBDTHK=1.0
 	            RBDTHK=ABS(RBOT-ELEV(J,I,K))
 	            IF(LOCRBDTHK.GT.0) RBDTHK=RIVR(LOCRBDTHK,NB)
 CBARC--SEAWAT: SET RIVER DENSITY
-                  IF(MTDNCONC.EQ.0) THEN
+                  IF(MT3DRHOFLG.EQ.0) THEN
 	             LOCRIVDEN=0
 	             DO IC=1,5
 	              IF(RIVAUX(IC).EQ.'RIVDEN') LOCRIVDEN=IC+6
@@ -124,9 +119,8 @@ CBARC--SEAWAT: SET RIVER DENSITY
 	             RIVDENS=PS(J,I,K)
 	             IF(LOCRIVDEN.GT.0) RIVDENS=RIVR(LOCRIVDEN,NB)
 	            ELSE
-	             IF(MTDNCONC.GT.0) RIVDENS=SSMDENSE(J,I,K,4,MXSS,
-     &                           NSS,SS,NCOMP,SSMC,MTDNCONC)	
-					PRINT*, RIVDENS
+	             IF(MT3DRHOFLG.NE.0) RIVDENS=SSMDENSE(J,I,K,4,MXSS,
+     &                           NSS,SS,NCOMP,SSMC)	
 				ENDIF
 CBARC--SEAWAT: COMPUTE RHOAVG
                   RHOAVG=(RIVDENS+PS(J,I,K))/2

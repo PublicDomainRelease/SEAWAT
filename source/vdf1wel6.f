@@ -1,6 +1,6 @@
 
       SUBROUTINE VDF1WEL6FM(NWELLS,MXWELL,RHS,WELL,IBOUND,
-     1        NCOL,NROW,NLAY,NWELVL,PS,MTDNCONC,MXSS,NSS,SS,
+     1        NCOL,NROW,NLAY,NWELVL,MXSS,NSS,SS,
      2        NCOMP,SSMC,NSSVL)
 C
 C-----VERSION 11JAN2000 GWF1WEL6FM
@@ -12,13 +12,14 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS
+C
       DIMENSION RHS(NCOL,NROW,NLAY),WELL(NWELVL,MXWELL),
      1            IBOUND(NCOL,NROW,NLAY)
 C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),SS(NSSVL,MXSS),SSMC(NCOMP,MXSS)
+      DIMENSION SS(NSSVL,MXSS),SSMC(NCOMP,MXSS)
       CHARACTER*16 WELAUX
       COMMON /WELCOM/WELAUX(5)
-	INCLUDE 'vdf.inc'
 C     ------------------------------------------------------------------
 C1------IF NUMBER OF WELLS <= 0 THEN RETURN.
       IF(NWELLS.LE.0) RETURN
@@ -40,8 +41,8 @@ C--SEAWAT: MODIFY TO CONSERVE MASS
 		IF(Q.GT.0) THEN
 			DENSE=DENSEREF  
 			IF(LOCWELDENS.GT.0) DENSE=WELL(LOCWELDENS,L)
-			IF(MTDNCONC.GT.0) DENSE=SSMDENSE(IC,IR,IL,2,MXSS,NSS,SS,
-     &                                    NCOMP,SSMC,MTDNCONC)
+			IF(MT3DRHOFLG.NE.0) DENSE=SSMDENSE(IC,IR,IL,2,MXSS,NSS,SS,
+     &                                    NCOMP,SSMC)
 		ENDIF
 C
 C2A-----IF THE CELL IS INACTIVE THEN BYPASS PROCESSING.
@@ -62,7 +63,7 @@ C3------RETURN
 
       SUBROUTINE VDF1WEL6BD(NWELLS,MXWELL,VBNM,VBVL,MSUM,WELL,IBOUND,
      1        DELT,NCOL,NROW,NLAY,KSTP,KPER,IWELCB,ICBCFL,BUFF,IOUT,
-     2        PERTIM,TOTIM,NWELVL,IWELAL,IAUXSV,PS,MTDNCONC,MXSS,NSS,SS,
+     2        PERTIM,TOTIM,NWELVL,IWELAL,IAUXSV,MXSS,NSS,SS,
      2        NCOMP,SSMC,NSSVL)
 C-----VERSION 05JUNE2000 GWF1WEL6BD
 C     ******************************************************************
@@ -72,6 +73,8 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS
+C
       COMMON /WELCOM/WELAUX(5)
       CHARACTER*16 WELAUX
       CHARACTER*16 VBNM(MSUM),TEXT
@@ -80,8 +83,7 @@ C     ------------------------------------------------------------------
       DOUBLE PRECISION RATIN,RATOUT,QQ
       DATA TEXT /'           WELLS'/
 C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),SS(NSSVL,MXSS),SSMC(NCOMP,MXSS)
-	INCLUDE 'vdf.inc'
+      DIMENSION SS(NSSVL,MXSS),SSMC(NCOMP,MXSS)
 C     ------------------------------------------------------------------
 C
 C1------CLEAR RATIN AND RATOUT ACCUMULATORS, AND SET CELL-BY-CELL
@@ -136,8 +138,8 @@ C5C-----GET FLOW RATE FROM WELL LIST.
       IF(Q.GT.0) THEN
          DENSE=DENSEREF  
          IF(LOCWELDENS.GT.0) DENSE=WELL(LOCWELDENS,L)
-         IF(MTDNCONC.GT.0) DENSE=SSMDENSE(IC,IR,IL,2,MXSS,NSS,SS,
-     &                   NCOMP,SSMC,MTDNCONC)
+         IF(MT3DRHOFLG.NE.0) DENSE=SSMDENSE(IC,IR,IL,2,MXSS,NSS,SS,
+     &                   NCOMP,SSMC)
       ENDIF
       QQ=Q*DENSE
 C

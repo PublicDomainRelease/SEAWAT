@@ -3,7 +3,7 @@ C=======================================================================
      &                      NROW,
      &                      NLAY,IOUT,IBOUND,NHT,OBSNAM,H,TOFF,MXDRN,
      &                      NDRAIN,DRAI,WTQ,NDMH,ITS,NQAR,NQCAR,NQTAR,
-     &                      NDRNVL,ND,PS,ELEV,HSALT)
+     &                      NDRNVL,ND)
 C     VERSION 19981020 ERB
 C     ******************************************************************
 C     CALCULATE SIMULATED EQUIVALENTS TO OBSERVED FLOWS FOR THE DRAIN
@@ -12,26 +12,21 @@ C--SEAWAT: MODIFIED FOR VARIABLE DENSITY FLOW
 C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: DENSEREF,PS,ELEV,HSALT
+C
       REAL C, DRAI, FACT, H, HB, QCLS, TOFF, WTQ, ZERO
-C--SEAWAT: ADD PS, ELEV,
-      REAL ELEV,PS
       INTEGER I, IBOUND, IBT, IBT1, IFLAG, II, IOUT, IQ, IQOB, IRBOT,
      &        ITS, J, JJ, JRBOT, K, KK, KRBOT, MXDRN, N, NB, NBN, NC,
      &        NC1, NC2, NCOL, NDMH, NDRAIN, NHT, NLAY, NQ, NQCL, NQOB,
      &        NROW, NT, NT1, NT2
       CHARACTER*12 OBSNAM(ND)
-CBARC--SEAWAT: ADD HSALT
-      DOUBLE PRECISION HH, HHNEW, HNEW(NCOL,NROW,NLAY),
-     &                 HSALT(NCOL,NROW,NLAY)
-CBARC--SEAWAT: ADD PS, ELEV 
+      DOUBLE PRECISION HH, HHNEW, HNEW(NCOL,NROW,NLAY)
       DIMENSION IBOUND(NCOL,NROW,NLAY), IBT(2,NQAR), NQOB(NQAR),
      &          NQCL(NQAR), IQOB(NQTAR), QCLS(5,NQCAR), H(ND),
-     &          TOFF(ND), DRAI(NDRNVL,MXDRN), WTQ(NDMH,NDMH),
-     &          PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
+     &          TOFF(ND), DRAI(NDRNVL,MXDRN), WTQ(NDMH,NDMH)
 CBARC--SEAWAT: ADD COMMON AND AUX. VARIABLES
       COMMON /DRNCOM/DRNAUX(5)
       CHARACTER*16 DRNAUX
-	INCLUDE 'vdf.inc'
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
   500 FORMAT (/,
@@ -58,6 +53,11 @@ C-------INITIALIZE VARIABLES
       NC = 0
       NT1 = 1
       JRBOT = 0
+C--SEAWAT: GET ZDRN IF AUX IS SPECIFIED
+	LOCZDRN=0
+	DO IC=1,5
+	 IF(DRNAUX(IC).EQ.'DRNBELEV') LOCZDRN=IC+5
+	ENDDO
 C-------LOOP THROUGH BOUNDARY FLOWS
       DO 60 IQ = 1, NQ
         IBT1 = IBT(1,IQ)
@@ -100,12 +100,7 @@ C-------------ASSIGN VARIABLE VALUES
 CBARC--SEAWAT: ASSUME DENSITY OF DRAIN IS PS(J,I,K)
 CBARC--SEAWAT: BUMP HB TO FRESHWATER EQUIVALENT
                   HB=FEHEAD(HB,PS(J,I,K),ELEV(J,I,K))
-CBARC--SEAWAT: GET ZDRN IF AUX IS SPECIFIED
-	            LOCZDRN=0
-	            DO IC=1,5
-	             IF(DRNAUX(IC).EQ.'DRNBELEV') LOCZDRN=IC+5
-	            ENDDO
-	            ZDRN=ELEV(J,I,K)
+                  ZDRN=ELEV(J,I,K)
 	            IF(LOCZDRN.GT.0) ZDRN=DRAI(LOCZDRN,NB)
                   C = DRAI(5,NB)
 C-------------CALCULATE FLOWS

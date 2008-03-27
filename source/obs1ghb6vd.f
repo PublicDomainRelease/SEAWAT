@@ -1,11 +1,10 @@
-
-
+C
 C=======================================================================
       SUBROUTINE OBS1GHB6FMVD(NQ,NQOB,NQCL,IQOB,QCLS,IBT,MXBND,NBOUND
      &                      ,BNDS,HNEW,NCOL,NROW,NLAY,IOUT,IBOUND,NHT,
      &                      OBSNAM,H,TOFF,ITS,NQAR,NQCAR,NQTAR,NGHBVL,
-     &                      ND,WTQ,NDMH,PS,ELEV,HSALT,MTDNCONC,MXSS,NSS,
-     &                      SS,NCOMP,SSMC)
+     &                      ND,WTQ,NDMH,
+     &                      MXSS,NSS,SS,NCOMP,SSMC)
 C     VERSION 19981020 ERB
 C     ******************************************************************
 C     CALCULATE SIMULATED EQUIVALENTS TO OBSERVED FLOWS FOR THE GENERAL 
@@ -13,28 +12,21 @@ C     HEAD BOUNDARY PACKAGE
 C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
-CBARC--SEAWAT: ADD PS,ELEV
-      REAL BNDS, C, FACT, H, HB, QCLS, TOFF, ZERO, PS, ELEV
-
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS,ELEV,HSALT
+C
+      REAL BNDS, C, FACT, H, HB, QCLS, TOFF, ZERO
       INTEGER I, IBOUND, IBT, IBT1, IFLAG, II, IOUT, IQ, IQOB, ITS, J,
      &        JJ, K, KK, MXBND, N, NB, NBN, NBOUND, NC, NC1, NC2, NCOL,
      &        NHT, NLAY, NQ, NQCL, NQOB, NROW, NT, NT1, NT2
       CHARACTER*12 OBSNAM(ND)
-CBARC--SEAWAT: ADD HSALT
-      DOUBLE PRECISION HH, HHNEW,HNEW(NCOL,NROW,NLAY),
-     &                 HSALT(NCOL,NROW,NLAY)
-CBARC--SEAWAT: ADD PS,ELEV
+      DOUBLE PRECISION HH, HHNEW,HNEW(NCOL,NROW,NLAY)
       DIMENSION BNDS(NGHBVL,MXBND), IBOUND(NCOL,NROW,NLAY), IBT(2,NQAR),
      &          NQOB(NQAR), NQCL(NQAR), IQOB(NQTAR), QCLS(5,NQCAR),
-     &          H(ND), TOFF(ND), WTQ(NDMH,NDMH),
-     &          PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
-CBARC--SEAWAT: ADD COMMON AND AUX. VARIABLES
-	INCLUDE 'vdf.inc'
+     &          H(ND), TOFF(ND), WTQ(NDMH,NDMH)
       COMMON /GHBCOM/GHBAUX(5)
       CHARACTER*16 GHBAUX
-CBARC--SEAWAT:MT3DMS 
+C--SEAWAT: DIMENSION MT3DMS ARRAYS
 	DIMENSION SS(7,MXSS),SSMC(NCOMP,MXSS)
-
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
   505 FORMAT (/,' OBS#',I6,', ID ',A4,', TIME STEP ',I5)
@@ -51,6 +43,11 @@ C-------INITIALIZE VARIABLES
       ZERO = 0.0
       NC = 0
       NT1 = 1
+C--SEAWAT: DETERMINE IF GHBELEV IN AUXILIARY VARIABLE
+      LOCGHBELEV=0
+      DO IC=1,5
+       IF(GHBAUX(IC).EQ.'GHBELEV') LOCGHBELEV=IC+5
+      ENDDO 
 C-------LOOP THROUGH BOUNDARY FLOWS
       DO 60 IQ = 1, NQ
         IBT1 = IBT(1,IQ)
@@ -92,16 +89,10 @@ C-------------ASSIGN VARIABLE VALUES
 CBARC--SEAWAT: BUMP HB TO FE
                   HB=FEHEAD(HB,PS(J,I,K),ELEV(J,I,K))
                   C = BNDS(5,NB)
-
-CBARC--SEAWAT: SET GHBELEV
-	           LOCGHBELEV=0
-	           DO IC=1,5
-	            IF(GHBAUX(IC).EQ.'GHBELEV') LOCGHBELEV=IC+5
-	           ENDDO 
                  GHBELEV=ELEV(J,I,K)
 	           IF(LOCGHBELEV.GT.0) GHBELEV=BNDS(LOCGHBELEV,NB)
 CBARC--SEAWAT: SET GHBDENS 
-                 IF(MTDNCONC.EQ.0) THEN
+                 IF(MT3DRHOFLG.EQ.0) THEN
 	            LOCGHBDENS=0
 	            DO IC=1,5
 	             IF(GHBAUX(IC).EQ.'GHBDENS') LOCGHBDENS=IC+5
@@ -110,8 +101,8 @@ CBARC--SEAWAT: SET GHBDENS
 	            IF(LOCGHBDENS.GT.0) GHBDENS=BNDS(LOCGHBDENS,NB)
 CBARC--SET GHBDENS USING SSM PACKAGE
 	           ELSE
-	            IF(MTDNCONC.GT.0) GHBDENS=SSMDENSE(J,I,K,5,MXSS,NSS,
-     &                           SS,NCOMP,SSMC,MTDNCONC)
+	            IF(MT3DRHOFLG.NE.0) GHBDENS=SSMDENSE(J,I,K,5,MXSS,NSS,
+     &                           SS,NCOMP,SSMC)
                  ENDIF
 CBARC--SEAWAT: SET RHOAVG
 	          RHOAVG=(PS(J,I,K)+GHBDENS)/2

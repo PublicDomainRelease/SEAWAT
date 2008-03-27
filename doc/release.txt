@@ -1,0 +1,20 @@
+release.txt
+
+                           SEAWAT Release Notes
+
+     This file describes changes introduced into SEAWAT Version 4 with each
+official release; these changes may substantially affect users. In this file, 
+packages and processes are referred to by their 3-or 4-character 
+abbreviation.
+
+NOTE: Any use of trade, product or firm names is for descriptive purposes 
+      only and does not imply endorsement by the U.S. Government.
+
+
+
+o Version 4.00 3/28/2008:
+
+This is the first public release of the SEAWAT Version 4 program, which is 
+documented in Langevin et al. (2007).  In addition to the new features, this 
+release contains fixes for several bugs found in earlier SEAWAT Versions.
+

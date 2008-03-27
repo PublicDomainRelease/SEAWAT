@@ -1,3 +1,4 @@
+! Time of File Save by ERB: 6/15/2006 12:56PM
 C     Last change:  ERB  29 Aug 2002    1:22 pm
       SUBROUTINE GLO1BAS6DF(INUNIT,IUNIT,CUNIT,IREWND,NIUNIT,IOUTG,IOUT,
      1                    VERSION,NCOL,NROW,NLAY,NPER,ITMUNI,ISUMGX,
@@ -65,6 +66,12 @@ C  Initialize parameter definition variables.
         IPLOC(2,N)=0
         IACTIVE(N)=0
    10 CONTINUE
+      DO N=1,MXMLT
+        MLTNAM(N) = ' '
+      ENDDO
+      DO N=1,MXZON
+        ZONNAM(N) = ' '
+      ENDDO
 C
 C------Check for existence of discretization file
       INDIS=IUNIT(IUDIS)
@@ -741,8 +748,7 @@ C6------GO BACK AND READ NEXT RECORD.
       IF(NFILE.LE.1) THEN
          IF(NFILE.EQ.0) THEN
             WRITE(IOUTG,60) SPACES(1:INDENT),VERSION(1:LENVER)
-C--SEAWAT: CHANGED TO READ SEAWAT-2000
-60          FORMAT(34X,'SEAWAT-2000',/,
+60          FORMAT(34X,'SEAWAT Version 4',/,
      &             6X,'U.S. GEOLOGICAL SURVEY MODULAR',
      &             ' FINITE-DIFFERENCE GROUND-WATER FLOW MODEL',/,
      &             A,'VERSION ',A,/)

@@ -2,27 +2,27 @@ C=======================================================================
       SUBROUTINE OBS1BAS6FFMVD(NQ,NQOB,NQCL,IQOB,QCLS,IBT,HNEW,NCOL,
      &                       NROW,NLAY,IBOUND,NHT,H,TOFF,ITS,NQAR,NQCAR,
      &                       NQTAR,ICHFLG,CR,CC,CV,BOTM,NBOTM,LAYHDT,ND,
-     &                       IOUT,KKPER,PS,ELEV,DELR,DELC)
+     &                       IOUT,KKPER,DELR,DELC)
 C     VERSION 20011114 ERB
 C     ******************************************************************
 C     CALCULATE SIMULATED EQUIVALENTS TO OBSERVED CONSTANT-HEAD FLOWS
 C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
-CBARC--SEAWAT: ADD PS,ELEV,DELR,DELC
-      REAL FACT, H, QCLS, TOFF, ZERO, PS, ELEV, DELR, DELC
+      USE VDFMODULE,   ONLY: PS,ELEV
+C
+      REAL FACT, H, QCLS, TOFF, ZERO
       INTEGER I, IBOUND, IBT, IBT1, IOUT, IQ, IQOB, ITS, J, K, LAYHDT,
      &        N, NC, NC1, NC2, NCOL, NHT, NLAY, NQ, NQCL, NQOB, NROW,
      &        NT, NT1, NT2
-      DOUBLE PRECISION HNEW(NCOL,NROW,NLAY), RATE
-
-CBARC--SEAWAT: ADD PS,ELEV,DELR,DELC
+      DOUBLE PRECISION HNEW(NCOL,NROW,NLAY),RATE
       DIMENSION IBOUND(NCOL,NROW,NLAY), IBT(2,NQAR), NQOB(NQAR),
      &          NQCL(NQAR), IQOB(NQTAR), QCLS(5,NQCAR), H(ND), TOFF(ND),
      &          CR(NCOL,NROW,NLAY), CC(NCOL,NROW,NLAY),
      &          CV(NCOL,NROW,NLAY), BOTM(NCOL,NROW,0:NBOTM),
-     &          LAYHDT(NLAY),PS(NCOL,NROW,NLAY), ELEV(NCOL,NROW,NLAY),
-     &          DELR(NCOL), DELC(NROW)   
+     &          LAYHDT(NLAY)
+C--SEAWAT: DIMENSION DELR,DELC
+      DIMENSION DELR(NCOL),DELC(NROW)
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
   500 FORMAT(/,
@@ -58,7 +58,7 @@ C----------LOOP THROUGH CELLS.
 C-------------CALL SUBROUTINE TO CALCULATE CONSTANT-HEAD FLOW FOR CELL
               CALL SOBS1BAS6FFLWVD(J,I,K,ICHFLG,IBOUND,HNEW,CR,CC,CV,
      &                          BOTM,NBOTM,NCOL,NROW,NLAY,RATE,LAYHDT,
-     &                          PS,ELEV,DELR,DELC)
+     &                          DELR,DELC)
 C-------------SUM VALUES FROM INDIVIDUAL CELLS.
 C----------------CALCULATE FACTOR FOR TEMPORAL INTERPOLATION
    20         FACT = 1.0
@@ -80,27 +80,26 @@ C
       END
 C=======================================================================
       SUBROUTINE SOBS1BAS6FFLWVD(J,I,K,ICHFLG,IBOUND,HNEW,CR,CC,CV,
-     &                        BOTM,NBOTM,NCOL,NROW,NLAY,RATE,LAYHDT,PS,
-     &                        ELEV,DELR,DELC)
+     &                        BOTM,NBOTM,NCOL,NROW,NLAY,RATE,LAYHDT,
+     &                        DELR,DELC)
 C     VERSION 20010924 ERB
 C     ******************************************************************
 C     CALCULATE CONSTANT-HEAD BOUNDARY FLOW FOR A GIVEN CELL
 C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: DENSEREF,PS,ELEV
+c
       INTEGER LAYHDT
       DOUBLE PRECISION HNEW,HD,X1,X2,X3,X4,X5,X6,RATE
 C
-CBARC--SEAWAT: ADD PS,ELEV,DELR,DELC
+C--SEAWAT: ADD DELR,DELC
       DIMENSION HNEW(NCOL,NROW,NLAY), IBOUND(NCOL,NROW,NLAY),
      1     CR(NCOL,NROW,NLAY), CC(NCOL,NROW,NLAY),
      2     CV(NCOL,NROW,NLAY), BOTM(NCOL,NROW,0:NBOTM), LAYHDT(NLAY),
-     3     PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY),DELR(NCOL),DELC(NROW)
+     3     DELR(NCOL),DELC(NROW)
 C
       COMMON /DISCOM/LBOTM(999),LAYCBD(999)
-CBARC--SEAWAT: ADD COMMON 
-	INCLUDE 'vdf.inc'
-
 C     ------------------------------------------------------------------
 C
 C6------CLEAR VALUES FOR FLOW RATE THROUGH EACH FACE OF CELL.
@@ -177,7 +176,7 @@ CVDF***USE VD FORM OF DARCYS LAW
 	D4=CC(J,I,K)*(AVGDENS-DENSEREF)/DENSEREF*(ELEV(J,I+1,K)-
      &    ELEV(J,I,K))
 	HDIFF=HNEW(J,I+1,K)-HNEW(J,I,K)
-      X4=-1*(CC(J,I+1,K)*HDIFF+D4)
+      X4=-1*(CC(J,I,K)*HDIFF+D4)
 C      HDIFF=HNEW(J,I,K)-HNEW(J,I+1,K)
 C      X4=HDIFF*CC(J,I,K)
 C
@@ -200,6 +199,17 @@ C11-----CALCULATE FLOW THROUGH THE UPPER FACE.
 C  122 HDIFF=HD-HNEW(J,I,K-1)
 C      X5=HDIFF*CV(J,I,K-1)
 C
+C--SEAWAT: CHECK AND CORRECT FOR DEWATERED CASE
+	IF(LAYHDT(K).GT.0) THEN
+	  HS2=SALTHEAD(HNEW(J,I,K),PS(J,I,K),ELEV(J,I,K))
+	  BOT1=BOTM(J,I,LBOTM(K)-1)
+	  IF(HS2.LT.BOT1) THEN
+	      HS1=SALTHEAD(HNEW(J,I,K-1),PS(J,I,K-1),ELEV(J,I,K-1))
+	      X5=-1*PS(J,I,K-1)/DENSEREF*CV(J,I,K-1)*(HS1-BOT1)
+	  ENDIF
+	ENDIF
+C--SEAWAT: END DEWATERED CORRECTION
+C
 C12-----CALCULATE FLOW THROUGH THE LOWER FACE.
   150 IF(K.EQ.NLAY) GO TO 180
       IF(IBOUND(J,I,K+1).EQ.0) GO TO 180
@@ -218,6 +228,17 @@ C12-----CALCULATE FLOW THROUGH THE LOWER FACE.
       X6=-1*(CV(J,I,K)*HDIFF+D6)
 C  152 HDIFF=HNEW(J,I,K)-HD
 C      X6=HDIFF*CV(J,I,K)
+C
+C--CHECK AND CORRECT FOR DEWATERED CASE
+	IF(LAYHDT(K+1).GT.0) THEN
+	  HS2=SALTHEAD(HNEW(J,I,K+1),PS(J,I,K+1),ELEV(J,I,K+1))
+	  BOT1=BOTM(J,I,LBOTM(K+1)-1)
+	  IF(HS2.LT.BOT1) THEN
+	      HS1=SALTHEAD(HNEW(J,I,K),PS(J,I,K),ELEV(J,I,K))
+	      X6=-1*PS(J,I,K)/DENSEREF*CV(J,I,K)*(BOT1-HS1)
+	  ENDIF
+	ENDIF
+C--SEAWAT: END DEWATERED CORRECTION
 C
 C13-----SUM THE FLOWS THROUGH SIX FACES OF CONSTANT HEAD CELL
  180  RATE=X1+X2+X3+X4+X5+X6

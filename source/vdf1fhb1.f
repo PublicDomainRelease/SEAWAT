@@ -1,7 +1,7 @@
       SUBROUTINE VDF1FHB1AD(HNEW,HOLD,NCOL,NROW,NLAY,ITRSS,TOTIM,DELT,
      & BDTIM,NBDTIM,FLWRAT,BDFV,BDHV,NFLW,SBHED,IHDLOC,NHED,
      & NFHBX1,NFHBX2,IFHBD3,IFHBD4,IFHBD5,IFHBSS,
-     & NHEDDIM,NFLWDIM,NBDHVDIM,PS,ELEV)
+     & NHEDDIM,NFLWDIM,NBDHVDIM)
 C
 C------VERSION 0000 10JAN1997 GWF1FHB1AD
 C     ******************************************************************
@@ -11,16 +11,15 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: PS,ELEV
       COMMON /FHBCOM/ FHBXNM(10),FHBXWT(10)
       CHARACTER*16 FHBXNM
       DOUBLE PRECISION HNEW
 C
-C--SEAWAT: ADD ADDITIONAL ARRAYS (PS AND ELEV)
       DIMENSION BDTIM(NBDTIM),FLWRAT(IFHBD3,NFLWDIM),
      &          BDFV(IFHBD4,NFLWDIM),BDHV(NBDHVDIM,NHEDDIM),
      &          SBHED(IFHBD5,NHEDDIM),IHDLOC(4,NHEDDIM),
-     &          HNEW(NCOL,NROW,NLAY),HOLD(NCOL,NROW,NLAY),
-     &          PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
+     &          HNEW(NCOL,NROW,NLAY),HOLD(NCOL,NROW,NLAY)
 C     ------------------------------------------------------------------
 C
 C1------IF THIS IS A STEADY-STATE SIMULATION OR A TRANSIENT SIMULATION
@@ -49,7 +48,8 @@ C--SEAWAT:         HOLD(J,I,K)=SBHED(1,NH)
          IF(NFHBX2.LT.1) GO TO 10
          DO 8 NX=1,NFHBX2
          N2=1+NX*NBDTIM
-         BDHV(NX,NF)=SBHED(N2,NF)
+c         BDHV(NX,NF)=SBHED(N2,NF) bug fix 9/19/2006 GZH/ERB
+         BDHV(NX,NH)=SBHED(N2,NH)
  8       CONTINUE
  10      CONTINUE
          RETURN
@@ -195,8 +195,7 @@ C11------RETURN
       RETURN
       END
       SUBROUTINE VDF1FHB1FM(RHS,IBOUND,IFLLOC,BDFV,NFLW,NCOL,NROW,NLAY,
-     &                   IFHBD4,NFLWDIM,PS,MTDNCONC,MXSS,NSS,SS,NCOMP,
-     &                   SSMC,NSSVL)
+     &                   IFHBD4,NFLWDIM,MXSS,NSS,SS,NCOMP,SSMC,NSSVL)
 C
 C-----VERSION 0000 10JAN1997 GWF1FHB1FM
 C
@@ -207,11 +206,12 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS
+C
       DIMENSION RHS(NCOL,NROW,NLAY),IBOUND(NCOL,NROW,NLAY),
      1            IFLLOC(4,NFLWDIM),BDFV(IFHBD4,NFLWDIM)
 C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-	DIMENSION PS(NCOL,NROW,NLAY),SS(NSSVL,MXSS),SSMC(NCOMP,MXSS)
-	INCLUDE 'vdf.inc'
+	DIMENSION SS(NSSVL,MXSS),SSMC(NCOMP,MXSS)
 C     ------------------------------------------------------------------
 C
 C1------PROCESS EACH SPECIFIED-FLOW LOCATION IN THE LIST.
@@ -229,8 +229,8 @@ C--SEAWAT: DETERMINE DENSITY
 	IF(Q.LE.0) DENSE=PS(IC,IR,IL)
 	IF(Q.GT.0) THEN
 		DENSE=DENSEREF  
-		IF(MTDNCONC.GT.0) DENSE=SSMDENSE(IC,IR,IL,23,MXSS,NSS,SS,
-     &                            NCOMP,SSMC,MTDNCONC)
+		IF(MT3DRHOFLG.NE.0) DENSE=SSMDENSE(IC,IR,IL,23,MXSS,NSS,SS,
+     &                            NCOMP,SSMC)
 	ENDIF
 C1B-----IF THE CELL IS VARIABLE HEAD THEN SUBTRACT Q FROM
 C       THE RHS ACCUMULATOR.
@@ -242,8 +242,8 @@ C2------RETURN
       RETURN
       END
       SUBROUTINE VDF1FHB1BD(IFLLOC,BDFV,NFLW,VBNM,VBVL,MSUM,IBOUND,DELT,
-     &      NCOL,NROW,NLAY,KSTP,KPER,IFHBCB,ICBCFL,BUFF,IOUT,IFHBD4,
-     &      NFLWDIM,PS,MTDNCONC,MXSS,NSS,SS,NCOMP,SSMC,NSSVL)
+     &      NCOL,NROW,NLAY,KSTP,KPER,IFHBCB,ICBCFL,PERTIM,TOTIM,
+     &      BUFF,IOUT,IFHBD4,NFLWDIM,MXSS,NSS,SS,NCOMP,SSMC,NSSVL)
 C
 C-----VERSION 0000 10JAN1997 GWF1FHB1BD
 C     ******************************************************************
@@ -253,6 +253,8 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS
+C
       CHARACTER*16 VBNM(MSUM),TEXT
       DOUBLE PRECISION RATIN,RATOUT,QQ
       DIMENSION VBVL(4,MSUM),IBOUND(NCOL,NROW,NLAY),
@@ -260,8 +262,7 @@ C     ------------------------------------------------------------------
 C
       DATA TEXT/' SPECIFIED FLOWS'/
 C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),SS(NSSVL,MXSS),SSMC(NCOMP,MXSS)
-	INCLUDE 'vdf.inc'
+      DIMENSION SS(NSSVL,MXSS),SSMC(NCOMP,MXSS)
 C     ------------------------------------------------------------------
 C
 C1------CLEAR RATIN AND RATOUT ACCUMULATORS.
@@ -304,8 +305,8 @@ C--SEAWAT: DETERMINE DENSE
       IF(Q.LE.0) DENSE=PS(IC,IR,IL)
       IF(Q.GT.0) THEN
          DENSE=DENSEREF  
-         IF(MTDNCONC.GT.0) DENSE=SSMDENSE(IC,IR,IL,23,MXSS,NSS,SS,
-     &                   NCOMP,SSMC,MTDNCONC)
+         IF(MT3DRHOFLG.NE.0) DENSE=SSMDENSE(IC,IR,IL,23,MXSS,NSS,SS,
+     &                   NCOMP,SSMC)
       ENDIF
       QQ=Q*DENSE
 C

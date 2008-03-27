@@ -2,7 +2,7 @@ C=======================================================================
       SUBROUTINE OBS1DRT1FMVD(NQ,NQOB,NQCL,IQOB,QCLS,IBT,HNEW,NCOL,
      &                      NROW,NLAY,IOUT,IBOUND,NHT,OBSNAM,H,TOFF,
      &                      MXDRT,NDRTCL,DRTF,WTQ,NDMH,ITS,NQAR,NQCAR,
-     &                      NQTAR,NDRTVL,ND,PS,ELEV)
+     &                      NQTAR,NDRTVL,ND)
 C     VERSION 20000620 ERB
 C     ******************************************************************
 C     CALCULATE SIMULATED EQUIVALENTS TO OBSERVED FLOWS FOR THE DRAIN
@@ -10,6 +10,8 @@ C     RETURN PACKAGE
 C     ******************************************************************
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: DENSEREF,PS,ELEV
+C
       REAL C, DRTF, FACT, H, HB, QCLS, TOFF, WTQ, ZERO
       INTEGER I, IBOUND, IBT, IBT1, IFLAG, II, IOUT, IQ, IQOB, IRBOT,
      &        ITS, J, JJ, JRBOT, K, KK, KRBOT, MXDRT, N, NB, NBN, NC,
@@ -21,9 +23,6 @@ C     ------------------------------------------------------------------
      &          NQCL(NQAR), IQOB(NQTAR), QCLS(5,NQCAR), H(ND),
      &          TOFF(ND), DRTF(NDRTVL,MXDRT), WTQ(NDMH,NDMH)
       INCLUDE 'param.inc'
-C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
-	INCLUDE 'vdf.inc'
 C--SEAWAT: INCLUDE AUXILIARY VARIABLES
       COMMON /DRTCOM/DRTAUX(5)
       CHARACTER*16 DRTAUX

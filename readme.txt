@@ -1,6 +1,6 @@
 README.TXT
 
-SEAWAT-2000 - Version: 3.13.00 04/21/2006
+SEAWAT - Version: 4.00.00 03/28/2008
 Three-dimensional variable-density finite-difference ground-water flow model
 
 NOTE: Any use of trade, product or firm names is for descriptive purposes only 
@@ -13,7 +13,7 @@ See the file doc/seawat.txt for descriptions, references, and additional
 contacts for this software.  Instructions for installation, execution, and 
 testing are provided below.
 
-This version of SEAWAT is referred to as SEAWAT-2000 to distinguish it from
+This version of SEAWAT is referred to as SEAWAT Version 4 to distinguish it from
 older versions.  See the file doc\seawat.txt for descriptions, references, and 
 additional contacts for this software.  Instructions for installation, 
 execution, and testing are provided below.
@@ -30,7 +30,7 @@ F. TESTING
 A. DISTRIBUTION FILE
 The following zip file is for use on personal computers:
 
-     SWT2K_V3_13.zip
+     SWT_V4_00.zip
 
 The distribution file contains:
      Compiled runfiles and source code for SEAWAT
@@ -45,7 +45,7 @@ which the files should be restored.  The following subdirectory structure will
 be created under the specified directory:
 
 |
-|--swt2k_v3_13
+|--swt2k_v4_00
 |     |doc; documentation files
 |     |examples; example files 
 |     |     |1_box; test cases for box problems
@@ -62,15 +62,21 @@ be created under the specified directory:
 |     |     |4_hydrocoin; test case for hydrocoin problem
 |     |     |5_saltlake; test case for saltlake problem
 |     |     |6_rotation; test case for rotation problem
+|     |     |7_swtv4_ex; test case presented in SEAWAT Version 4 documentation
 |     |exe; compiled executables
+|     |Intel; Solution file and project workspace files for compiling with
+|     |       the Intel Fortran compiler within the Microsoft Visual Studio 2005
+|     |       environment
 |     |source; source code
 
-It is recommended that no user files are kept in the swt2k_v3_13 directory 
-structure.  If you do plan to put files in the swt2k_v3_13 directory structure, do 
+It is recommended that no user files are kept in the swt2k_v4_00 directory 
+structure.  If you do plan to put files in the swt2k_v4_00 directory structure, do 
 so only by creating subdirectories.
 
-Included in directory swt2k_v3_13\doc is Portable Document Format (PDF) version of 
-the SEAWAT user's manual (OFR 01-434).
+Included in directory swt2k_v4_00\doc is a Portable Document Format (PDF) versions of: 
+1.  The original SEAWAT user's manual (TWRI_6_A7)
+2.  The SEAWAT-2000 User's manual (OFR_03-426)
+3.  The SEAWAT Version 4 user manual (TM_6_A22)
 
 The PDF file is readable and printable on various computer platforms using 
 Acrobat Reader from Adobe.  The Acrobat Reader is freely available from the 
@@ -81,42 +87,41 @@ following World Wide Web sites:
 C. COMPILING
 
 Although executable versions of the programs are provided, the source code of 
-the SEAWAT program is provided in the swt2k_v3_13\source directory so that the 
+the SEAWAT program is provided in the swt2k_v4_00\source directory so that the 
 program can be recompiled if necessary.  However, no support can be provided for 
-users generating their own versions of the software.  In general, SEAWAT-2000 
+users generating their own versions of the software.  In general, SEAWAT 
 should be compiled for serial processing (as opposed to parallel processing).
 For serial-processing mode, all source files are contained in the source directory
 except one.  In addition to the files in the source directory, the file para-non.f 
 in the source/serial directory must be compiled.
 
-SEAWAT-2000 is now distributed with the GMG solver, which is primarily written in
+SEAWAT is distributed with the GMG solver, which is primarily written in
 the C programming language.  For issues related to compiling and linking with the
 GMG solver, please refer to: 
 http://water.usgs.gov/nrp/gwsoftware/modflow2000/MFDOC/Compiling.html
 
-For those using the Compaq Visual Fortran compiler, the workspace files are included
-in the CVF-Compiler folder under the source folder.  These files can be copied to
-source folder and used with CVF for compiling SEAWAT-2000.
+For those using the Intel Fortran compiler, the Microsoft Visual Studio 2005
+solution file is included in the Intel folder under the swt_v4 folder.
 
-IMPORTANT: For the SEAWAT-2000 program to operate correctly, the program must be
+IMPORTANT: For the SEAWAT program to operate correctly, the program must be
 compiled such that all real variables are defined as double precision.  The program 
 may not work correctly using the default option (single precision) in most compilers.
 
 D. INSTALLING
 
 There are no special instructions for installing the SEAWAT program provided 
-that users run the program using the approach outlined in the SEAWAT-2000 
+that users run the program using the approach outlined in the SEAWAT 
 documentation.  
 
 E. RUNNING THE SOFTWARE
 
-The data arrays in SEAWAT are dynamically allocated, so models are not limited 
+Most of the data arrays in SEAWAT are dynamically allocated, so models are not limited 
 by hard-coded array limits. However, it is best to have enough random-access 
 memory (RAM) available to hold all of the required data.  If there is less 
 available RAM than this, the program will use virtual memory, but this slows 
 computations significantly.
 
-The swt2k runfile for use on personal computers uses a different 
+The swt_v4 runfile for use on personal computers uses a different 
 structure for unformatted files than has been used in earlier versions 
 of MODFLOW distributed by the USGS.  Unformatted files generally have 
 a structure that is compiler specific.  MODFLOW-2000 Versions prior to
@@ -131,14 +136,16 @@ used in a following simulation as initial heads.  Both simulations must
 be run using a version of MODFLOW or SEAWAT that uses the same unformatted 
 file structure.
 
-The structure of unformatted files used in SEAWAT-2000 is the same as that
+The structure of unformatted files used in SEAWAT Version 4 is the same as that
 used in the previous versions of SEAWAT.  The structure is specified using
 the FORM='BINARY' option with the file OPEN statement.  Therefore it will
 be easier for others to use different compilers when compiling
 applications that use or generate unformatted files.
 
-The swt2k runfile in the exe subdirectory was compiled with the Compaq Visual
-FORTRAN compiler (Version 6.6B).
+The swt_v4 runfiles in the exe subdirectory was compiled with the Intel
+FORTRAN compiler (Version 10.1).  The swt_v4x64.exe runfile was compiled 
+for 64-bit Windows operating systems.  This executable is optimized specifically 
+for Intel processors and likely will not work with other processor types.  
 
 F. TESTING
 

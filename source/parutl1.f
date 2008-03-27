@@ -572,8 +572,8 @@ C  Check for list too large
         IF((LSTSUM-1) .GT. MXLST) THEN
           WRITE(IOUT,134) LSTSUM-1,MXLST
   134     FORMAT(1X,'EXCEEDED THE MAXIMUM NUMBER OF LIST ENTRIES:'/
-     1          1X,I5,' list entries have been specified'/
-     2          1X,'The maximum number of list entries is',I5)
+     1          1X,I10,' list entries have been specified'/
+     2          1X,'The maximum number of list entries is',I10)
           CALL USTOP(' ')
         END IF
         IF((INAMLOC-1).GT.MXINST) THEN

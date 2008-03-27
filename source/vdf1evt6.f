@@ -1,7 +1,7 @@
-
+C
       SUBROUTINE VDF1EVT6FM(NEVTOP,IEVT,EVTR,EXDP,SURF,RHS,HCOF,
-     1                  IBOUND,HNEW,NCOL,NROW,NLAY,PS,ELEV,MTDNCONC,
-     2                  CEVT,CNEW,NCOMP)
+     1                  IBOUND,HNEW,NCOL,NROW,NLAY,
+     2                  CEVT,NCOMP)
 C
 C-----VERSION 14DEC2000 GWF1EVT6FM
 C     ******************************************************************
@@ -11,15 +11,15 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS,ELEV
+C
       DOUBLE PRECISION HNEW,HH,SS,XX,DD
       DIMENSION IEVT(NCOL,NROW),EVTR(NCOL,NROW),EXDP(NCOL,NROW),
      1          SURF(NCOL,NROW),RHS(NCOL,NROW,NLAY),
      2          HCOF(NCOL,NROW,NLAY),IBOUND(NCOL,NROW,NLAY),
      3          HNEW(NCOL,NROW,NLAY)
 C--SEAWAT: DIMENSION ADDITIONAL VARIABLES
-      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY),
-     1          CEVT(NCOL,NROW,NCOMP),CNEW(NCOL,NROW,NLAY,NCOMP)
-	INCLUDE 'vdf.inc'
+      DIMENSION CEVT(NCOL,NROW,NCOMP)
 C     ------------------------------------------------------------------
 C
 C1------PROCESS EACH HORIZONTAL CELL LOCATION
@@ -32,6 +32,7 @@ C2------FOR OPTION 2, THE LAYER IS SPECIFIED IN IEVT.
          IL=1
       ELSE IF(NEVTOP.EQ.2) THEN
          IL=IEVT(IC,IR)
+         IF(IL.EQ.0) GO TO 10  ! ERB 1/11/07
       ELSE
 C
 C3------FOR OPTION 3, FIND UPPERMOST ACTIVE CELL.
@@ -40,17 +41,16 @@ C3------FOR OPTION 3, FIND UPPERMOST ACTIVE CELL.
     3    CONTINUE
          IL=1
       END IF
-
 C
 C4------IF THE CELL IS EXTERNAL IGNORE IT.
     4 IF(IBOUND(IC,IR,IL).LE.0)GO TO 10
-C--SEAWAT: SET DENSE
-      DENSE=DENSEREF
-      IF(MTDNCONC.GT.0) THEN
-		DENSE=PS(IC,IR,IL)
-		IF(CEVT(IC,IR,MTDNCONC).LT.CNEW(IC,IR,IL,MTDNCONC))
-     &		DENSE=CALCDENS(CEVT(IC,IR,MTDNCONC))
-      ENDIF
+C--SEAWAT: DETERMINE DENSE VALUE OF WITHDRAWN ET FLUID
+            DENSE=DENSEREF
+            IF(MT3DRHOFLG.NE.0) THEN
+		        DENSE=PS(IC,IR,IL)
+		        DENSEEVT=CALCDENS(IC,IR,IL,CEVT(IC,IR,1:NCOMP))
+		        IF(DENSEEVT.LT.DENSE) DENSE=DENSEEVT
+            ENDIF
       C=EVTR(IC,IR)
       S=SURF(IC,IR)
       SS=S
@@ -86,11 +86,10 @@ C
 C8------RETURN
       RETURN
       END
-
+C
       SUBROUTINE VDF1EVT6BD(NEVTOP,IEVT,EVTR,EXDP,SURF,IBOUND,HNEW,
      1           NCOL,NROW,NLAY,DELT,VBVL,VBNM,MSUM,KSTP,KPER,
-     2           IEVTCB,ICBCFL,BUFF,IOUT,PERTIM,TOTIM,PS,ELEV,MTDNCONC,
-     3           CEVT,CNEW,NCOMP)
+     2           IEVTCB,ICBCFL,BUFF,IOUT,PERTIM,TOTIM,CEVT,NCOMP)
 C-----VERSION 14DEC2000 GWF1EVT6BD
 C     ******************************************************************
 C     CALCULATE VOLUMETRIC BUDGET FOR EVAPOTRANSPIRATION
@@ -99,6 +98,8 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: MT3DRHOFLG,DENSEREF,PS,ELEV
+C
       CHARACTER*16 VBNM(MSUM),TEXT
       DOUBLE PRECISION HNEW,RATOUT,QQ,HH,SS,DD,XX,HHCOF,RRHS
       DIMENSION IEVT(NCOL,NROW),EVTR(NCOL,NROW),EXDP(NCOL,NROW),
@@ -107,9 +108,7 @@ C     ------------------------------------------------------------------
 C
       DATA TEXT /'              ET'/
 C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY),
-     1          CEVT(NCOL,NROW,NCOMP),CNEW(NCOL,NROW,NLAY,NCOMP)
- 	INCLUDE 'vdf.inc'
+      DIMENSION CEVT(NCOL,NROW,NCOMP)
 C     ------------------------------------------------------------------
 C
 C1------CLEAR THE RATE ACCUMULATOR.
@@ -135,6 +134,7 @@ C4------FOR OPTION 2, THE LAYER IS SPECIFIED IN IEVT.
          IL=1
       ELSE IF(NEVTOP.EQ.2) THEN
          IL=IEVT(IC,IR)
+         IF(IL.EQ.0) GO TO 10  ! ERB 1/11/07
       ELSE
 
 C
@@ -149,13 +149,13 @@ C5------FOR OPTION 3, FIND UPPERMOST ACTIVE CELL.
 C
 C6------IF CELL IS EXTERNAL THEN IGNORE IT.
       IF(IBOUND(IC,IR,IL).LE.0)GO TO 10
-C--SEAWAT: SET DENSE
-      DENSE=DENSEREF
-      IF(MTDNCONC.GT.0) THEN
-		DENSE=PS(IC,IR,IL)
-		IF(CEVT(IC,IR,MTDNCONC).LT.CNEW(IC,IR,IL,MTDNCONC))
-     &		DENSE=CALCDENS(CEVT(IC,IR,MTDNCONC))
-      ENDIF
+C--SEAWAT: DETERMINE DENSE VALUE OF WITHDRAWN ET FLUID
+            DENSE=DENSEREF
+            IF(MT3DRHOFLG.NE.0) THEN
+		        DENSE=PS(IC,IR,IL)
+		        DENSEEVT=CALCDENS(IC,IR,IL,CEVT(IC,IR,1:NCOMP))
+		        IF(DENSEEVT.LT.DENSE) DENSE=DENSEEVT
+            ENDIF
       C=EVTR(IC,IR)
       S=SURF(IC,IR)
       SS=S

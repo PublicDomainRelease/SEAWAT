@@ -1,7 +1,7 @@
       SUBROUTINE VDF1DRT1FM(NDRTCL,MXDRT,DRTF,HNEW,HCOF,RHS,IBOUND,
-     &                      NCOL,NROW,NLAY,NDRTVL,IDRTFL,PS,ELEV)
+     &                      NCOL,NROW,NLAY,NDRTVL,IDRTFL)
 C
-C-----VERSION 20000620 ERB
+C-----VERSION 20060606 ERB
 C     ******************************************************************
 C     ADD DRAIN-RETURN FLOW TO SOURCE TERMS FOR BOTH DRAIN-RETURN CELLS
 C     AND RECIPIENT CELLS
@@ -9,14 +9,13 @@ C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: DENSEREF,PS,ELEV
+C
       DOUBLE PRECISION HNEW,EEL
 C
       DIMENSION DRTF(NDRTVL,MXDRT),HNEW(NCOL,NROW,NLAY),
      &         RHS(NCOL,NROW,NLAY),IBOUND(NCOL,NROW,NLAY),
      &         HCOF(NCOL,NROW,NLAY)
-C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
-	INCLUDE 'vdf.inc'
 C--SEAWAT: INCLUDE AUXILIARY VARIABLES
       COMMON /DRTCOM/DRTAUX(5)
       CHARACTER*16 DRTAUX
@@ -73,17 +72,18 @@ C        RHS(IC,IR,IL)=RHS(IC,IR,IL)-C*EL
           IF (ILR.NE.0) THEN
             IRR = DRTF(7,L)
             ICR = DRTF(8,L)
-            RFPROP = DRTF(9,L)
-            H = HNEW(IC,IR,IL)
+            IF (IBOUND(ICR,IRR,ILR) .GT. 0) THEN
+              RFPROP = DRTF(9,L)
+              H = HNEW(IC,IR,IL)
 C--SEAWAT: CALCULATE DRAIN FLUX USING VARIABLE DENSITY EQUATION
-            QMASS=PS(IC,IR,IL)*C*(EEL-H-
+              QMASS=PS(IC,IR,IL)*C*(EEL-H-
      &         (PS(IC,IR,IL)-DENSEREF)/DENSEREF*(ELEV(IC,IR,IL)-ZDRT))
 C            RHS(ICR,IRR,ILR) = RHS(ICR,IRR,ILR)
 C     &                         - RFPROP*C*(H-EL)
 C--SEAWAT: FLIPPED SIGN BECAUSE QMASS USES (EEL-H)
-            RHS(ICR,IRR,ILR) = RHS(ICR,IRR,ILR)
+              RHS(ICR,IRR,ILR) = RHS(ICR,IRR,ILR)
      &                         + RFPROP*QMASS
-
+            ENDIF
           ENDIF
         ENDIF
   100 CONTINUE
@@ -95,14 +95,16 @@ C=======================================================================
       SUBROUTINE VDF1DRT1BD(NDRTCL,MXDRT,VBNM,VBVL,MSUM,DRTF,DELT,HNEW,
      &                      NCOL,NROW,NLAY,IBOUND,KSTP,KPER,IDRTCB,
      &                      ICBCFL,BUFF,IOUT,PERTIM,TOTIM,NDRTVL,IDRTAL,
-     &                      IDRTFL,NRFLOW,IAUXSV,PS,ELEV)
-C-----VERSION 20040113 ERB
+     &                      IDRTFL,NRFLOW,IAUXSV)
+C-----VERSION 20060606 ERB
 C     ******************************************************************
 C     CALCULATE VOLUMETRIC BUDGET FOR DRAIN-RETURN CELLS
 C     ******************************************************************
 C
 C        SPECIFICATIONS:
 C     ------------------------------------------------------------------
+      USE VDFMODULE,   ONLY: DENSEREF,PS,ELEV
+C
       COMMON /DRTCOM/DRTAUX(5)
       CHARACTER*16 DRTAUX
       CHARACTER*16 VBNM(MSUM),TEXT
@@ -112,9 +114,6 @@ C
      &          IBOUND(NCOL,NROW,NLAY),BUFF(NCOL,NROW,NLAY)
 C
       DATA TEXT /'    DRAINS (DRT)'/
-C--SEAWAT: DIMENSION ADDITIONAL ARRAYS
-      DIMENSION PS(NCOL,NROW,NLAY),ELEV(NCOL,NROW,NLAY)
-	INCLUDE 'vdf.inc'
 C     ------------------------------------------------------------------
 C
 C1------INITIALIZE CELL-BY-CELL FLOW TERM FLAG (IBD) AND
@@ -167,6 +166,7 @@ C5A-----GET LAYER, ROW & COLUMN OF CELL CONTAINING DRAIN.
           ILR = DRTF(6,L)
           IRR = DRTF(7,L)
           ICR = DRTF(8,L)
+          IF (IBOUND(ICR,IRR,ILR) .LE. 0) ILR = 0
         END IF
 C
 C5B-----IF CELL IS NO-FLOW OR CONSTANT-HEAD, IGNORE IT.
