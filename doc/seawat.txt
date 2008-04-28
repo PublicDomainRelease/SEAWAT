@@ -8,6 +8,10 @@ NAME
 
 HISTORY
 
+SEAWAT Version 4.00.01 2008/04/29 - This version of SEAWAT contains a fix for a
+minor programming error that may have caused the dcdt term of the flow equation
+to be too large.
+
 SEAWAT Version 4.00.00 2008/03/28 - First release of SEAWAT Version 4.  SEAWAT
 now contains capability to simulate simultaneous solute and heat transport.  This
 SEAWAT version contains MODFLOW Version 1.18.00 and MT3DMS Version 5.2.  This

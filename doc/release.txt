@@ -12,7 +12,13 @@ NOTE: Any use of trade, product or firm names is for descriptive purposes
 
 
 
-o Version 4.00 3/28/2008:
+o Version 4.00.01 4/29/2008:
+
+Corrected a programming error caused by implementation of the flow field 
+update control option.  The error resulted in dcdt terms that were too
+large.  
+
+o Version 4.00.00 3/28/2008:
 
 This is the first public release of the SEAWAT Version 4 program, which is 
 documented in Langevin et al. (2007).  In addition to the new features, this 

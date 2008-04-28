@@ -1,6 +1,6 @@
 README.TXT
 
-SEAWAT - Version: 4.00.00 03/28/2008
+SEAWAT - Version: 4.00.01 04/29/2008
 Three-dimensional variable-density finite-difference ground-water flow model
 
 NOTE: Any use of trade, product or firm names is for descriptive purposes only 
@@ -30,7 +30,7 @@ F. TESTING
 A. DISTRIBUTION FILE
 The following zip file is for use on personal computers:
 
-     SWT_V4_00.zip
+     SWT_V4_00_01.zip
 
 The distribution file contains:
      Compiled runfiles and source code for SEAWAT
@@ -45,7 +45,7 @@ which the files should be restored.  The following subdirectory structure will
 be created under the specified directory:
 
 |
-|--swt2k_v4_00
+|--swt_v4_00_01
 |     |doc; documentation files
 |     |examples; example files 
 |     |     |1_box; test cases for box problems
@@ -69,11 +69,11 @@ be created under the specified directory:
 |     |       environment
 |     |source; source code
 
-It is recommended that no user files are kept in the swt2k_v4_00 directory 
+It is recommended that no user files are kept in the swt_v4_00 directory 
 structure.  If you do plan to put files in the swt2k_v4_00 directory structure, do 
 so only by creating subdirectories.
 
-Included in directory swt2k_v4_00\doc is a Portable Document Format (PDF) versions of: 
+Included in directory swt_v4_00\doc is a Portable Document Format (PDF) versions of: 
 1.  The original SEAWAT user's manual (TWRI_6_A7)
 2.  The SEAWAT-2000 User's manual (OFR_03-426)
 3.  The SEAWAT Version 4 user manual (TM_6_A22)
@@ -87,7 +87,7 @@ following World Wide Web sites:
 C. COMPILING
 
 Although executable versions of the programs are provided, the source code of 
-the SEAWAT program is provided in the swt2k_v4_00\source directory so that the 
+the SEAWAT program is provided in the swt_v4_00\source directory so that the 
 program can be recompiled if necessary.  However, no support can be provided for 
 users generating their own versions of the software.  In general, SEAWAT 
 should be compiled for serial processing (as opposed to parallel processing).
