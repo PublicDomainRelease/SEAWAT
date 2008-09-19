@@ -1,6 +1,6 @@
 README.TXT
 
-SEAWAT - Version: 4.00.01 04/29/2008
+SEAWAT - Version: 4.00.02 09/19/2008
 Three-dimensional variable-density finite-difference ground-water flow model
 
 NOTE: Any use of trade, product or firm names is for descriptive purposes only 
@@ -45,7 +45,7 @@ which the files should be restored.  The following subdirectory structure will
 be created under the specified directory:
 
 |
-|--swt_v4_00_01
+|--swt_v4_00_02
 |     |doc; documentation files
 |     |examples; example files 
 |     |     |1_box; test cases for box problems

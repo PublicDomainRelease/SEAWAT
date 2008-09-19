@@ -8,6 +8,10 @@ NAME
 
 HISTORY
 
+SEAWAT Version 4.00.02 2008/04/29 - This version of SEAWAT contains fixes for two
+memory conflicts.  The first was in the MNW Package.  The second was between
+the OBS Process and the Integrated MT3DMS Process.
+
 SEAWAT Version 4.00.01 2008/04/29 - This version of SEAWAT contains a fix for a
 minor programming error that may have caused the dcdt term of the flow equation
 to be too large.

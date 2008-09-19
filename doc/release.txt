@@ -12,6 +12,13 @@ NOTE: Any use of trade, product or firm names is for descriptive purposes
 
 
 
+o Version 4.00.02 4/29/2008:
+
+Corrected two programming errors, both related to memory conflicts.  The MNW
+Package may not have worked correctly in previous versions of SEAWAT Version
+4.  Also, the OBS Process may have had a memory conflict with the MT3DMS
+Process.
+
 o Version 4.00.01 4/29/2008:
 
 Corrected a programming error caused by implementation of the flow field 

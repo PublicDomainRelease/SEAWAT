@@ -396,8 +396,8 @@ C***********************************************************************
       ! Visual Fortran 9.0 and MS Visual C++ .NET 2003.  It should
       ! be treated as a comment by other compilers.
 C--SEAWAT: NOTE THAT TO COMPILE FOR X64, USE THE SECOND DEC ATTRIBUTE STATEMENT
-      !DEC$ ATTRIBUTES ALIAS:'_resprint' :: RESPRINT
-c      !DEC$ ATTRIBUTES ALIAS:'resprint' :: RESPRINT
+       !DEC$ ATTRIBUTES ALIAS:'_resprint' :: RESPRINT
+C      !DEC$ ATTRIBUTES ALIAS:'resprint' :: RESPRINT
       IMPLICIT NONE
       INTEGER IOUT,I
       DOUBLEPRECISION RES,CFAC

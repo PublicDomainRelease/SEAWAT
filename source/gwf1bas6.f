@@ -237,7 +237,7 @@ C
 C     ------------------------------------------------------------------
 C
 C-------INCREMENT TIME-STEP COUNTER
-      ITS = ITS+1
+C--SEAWAT: THIS IS INCREMENTED IN MAIN      ITS = ITS+1
 C
 C1------IF NOT FIRST TIME STEP THEN CALCULATE TIME STEP LENGTH.
       IF(KSTP.NE.1) DELT=TSMULT*DELT
