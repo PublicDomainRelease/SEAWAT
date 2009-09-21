@@ -26,7 +26,7 @@ C
       COMMON /GHBCOM/GHBAUX(5)
       CHARACTER*16 GHBAUX
 C--SEAWAT: DIMENSION MT3DMS ARRAYS
-	DIMENSION SS(7,MXSS),SSMC(NCOMP,MXSS)
+      DIMENSION SS(7,MXSS),SSMC(NCOMP,MXSS)
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
   505 FORMAT (/,' OBS#',I6,', ID ',A4,', TIME STEP ',I5)
@@ -47,7 +47,15 @@ C--SEAWAT: DETERMINE IF GHBELEV IN AUXILIARY VARIABLE
       LOCGHBELEV=0
       DO IC=1,5
        IF(GHBAUX(IC).EQ.'GHBELEV') LOCGHBELEV=IC+5
-      ENDDO 
+      ENDDO
+      LOCGHBDENS=0
+      DO IC=1,5
+       IF(GHBAUX(IC).EQ.'GHBDENS') LOCGHBDENS=IC+5
+      ENDDO
+      LOCGHBSSMDENSE=0
+      DO I=1,5
+        IF(GHBAUX(I).EQ.'GHBSSMDENSE') LOCGHBSSMDENSE=I+5
+      ENDDO
 C-------LOOP THROUGH BOUNDARY FLOWS
       DO 60 IQ = 1, NQ
         IBT1 = IBT(1,IQ)
@@ -58,7 +66,7 @@ C----------WAS THERE A MEASUREMENT AT THIS BOUNDARY THIS TIME STEP?
           IF (IQOB(NT).EQ.ITS .OR. 
      &        (IQOB(NT).EQ.ITS-1.AND.TOFF(NHT+NT).GT.ZERO)) THEN
 C----------ASSIGN VARIABLES ACCORDING TO BOUNDARY TYPE
-	      KRBOT=0
+            KRBOT=0
             NBN = NBOUND
 C----------LOOP THROUGH CELLS.
             NC1 = NC + 1
@@ -90,27 +98,25 @@ CBARC--SEAWAT: BUMP HB TO FE
                   HB=FEHEAD(HB,PS(J,I,K),ELEV(J,I,K))
                   C = BNDS(5,NB)
                  GHBELEV=ELEV(J,I,K)
-	           IF(LOCGHBELEV.GT.0) GHBELEV=BNDS(LOCGHBELEV,NB)
-CBARC--SEAWAT: SET GHBDENS 
-                 IF(MT3DRHOFLG.EQ.0) THEN
-	            LOCGHBDENS=0
-	            DO IC=1,5
-	             IF(GHBAUX(IC).EQ.'GHBDENS') LOCGHBDENS=IC+5
-	            ENDDO 
-	            GHBDENS=PS(J,I,K)
-	            IF(LOCGHBDENS.GT.0) GHBDENS=BNDS(LOCGHBDENS,NB)
-CBARC--SET GHBDENS USING SSM PACKAGE
-	           ELSE
-	            IF(MT3DRHOFLG.NE.0) GHBDENS=SSMDENSE(J,I,K,5,MXSS,NSS,
-     &                           SS,NCOMP,SSMC)
-                 ENDIF
+                 IF(LOCGHBELEV.GT.0) GHBELEV=BNDS(LOCGHBELEV,NB)
+C--SEAWAT: SET GHBDENS 
+                 GHBDENS=PS(J,I,K)
+                 IF(LOCGHBDENS.GT.0) GHBDENS=BNDS(LOCGHBDENS,NB)
+                IF(MT3DRHOFLG.NE.0) THEN
+                    IF(LOCGHBSSMDENSE.GT.0) THEN
+                        GHBDENS=BNDS(LOCGHBSSMDENSE,L)
+                    ELSE
+                        GHBDENS=SSMDENSE(IC,IR,IL,5,MXSS,NSS,SS,NCOMP,
+     &                                   SSMC)
+                    ENDIF
+                ENDIF
 CBARC--SEAWAT: SET RHOAVG
-	          RHOAVG=(PS(J,I,K)+GHBDENS)/2
+                RHOAVG=(PS(J,I,K)+GHBDENS)/2
 C-------------CALCULATE FLOWS
 CBARC--SEAWAT: USE VD FORM DARCY'S LAW
 C                  HH = C*(HB-HHNEW)
                    HH=C*(HB-HHNEW+(RHOAVG-DENSEREF)/DENSEREF*
-     &                (GHBELEV-ELEV(J,I,K)))	
+     &                (GHBELEV-ELEV(J,I,K)))
                   GOTO 20
                 ENDIF
    10         CONTINUE
@@ -133,7 +139,7 @@ C-----------CHECK FOR DISCONNECTED OBSERVATIONS
               WTQ(NT,NT) = -WTQ(NT,NT)
               WRITE (IOUT,535)
             ENDIF
-		ENDIF
+        ENDIF
    40   CONTINUE
 C-------UPDATE COUNTERS
    50   NC = NC + NQCL(IQ)

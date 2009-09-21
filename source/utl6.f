@@ -952,7 +952,7 @@ C     ------------------------------------------------------------------
       CHARACTER*16 TEXT
       CHARACTER*200 FNAME
 C--SEAWAT: NEED REAL*4 VARIABLE FOR READING BINARY INPUT
-	REAL*4 T
+      REAL*4 T
       DATA NUNOPN/99/
       INCLUDE 'openspec.inc'
 C     ------------------------------------------------------------------
@@ -1063,12 +1063,12 @@ C--SEAWAT:  READ AS SINGLE PRECISION REAL
 C      READ(LOCAT) KSTP,KPER,PERTIM,TOTIM,TEXT,NCOL,NROW,ILAY
 C      READ(LOCAT) A
       READ(LOCAT) KSTP,KPER,T,T,TEXT,NCOL,NROW,ILAY
-	DO I=1,NROW
-	DO J=1,NCOL
-		READ(LOCAT) T
-		A(J,I)=T
-	ENDDO
-	ENDDO
+      DO I=1,NROW
+      DO J=1,NCOL
+        READ(LOCAT) T
+        A(J,I)=T
+      ENDDO
+      ENDDO
 C
 C5------IF CNSTNT NOT ZERO THEN MULTIPLY ARRAY VALUES BY CNSTNT.
   300 IF(ICLOSE.NE.0) CLOSE(UNIT=LOCAT)

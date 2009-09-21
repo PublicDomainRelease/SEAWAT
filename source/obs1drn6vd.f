@@ -54,10 +54,10 @@ C-------INITIALIZE VARIABLES
       NT1 = 1
       JRBOT = 0
 C--SEAWAT: GET ZDRN IF AUX IS SPECIFIED
-	LOCZDRN=0
-	DO IC=1,5
-	 IF(DRNAUX(IC).EQ.'DRNBELEV') LOCZDRN=IC+5
-	ENDDO
+      LOCZDRN=0
+      DO IC=1,5
+       IF(DRNAUX(IC).EQ.'DRNBELEV') LOCZDRN=IC+5
+      ENDDO
 C-------LOOP THROUGH BOUNDARY FLOWS
       DO 60 IQ = 1, NQ
         IBT1 = IBT(1,IQ)
@@ -101,7 +101,7 @@ CBARC--SEAWAT: ASSUME DENSITY OF DRAIN IS PS(J,I,K)
 CBARC--SEAWAT: BUMP HB TO FRESHWATER EQUIVALENT
                   HB=FEHEAD(HB,PS(J,I,K),ELEV(J,I,K))
                   ZDRN=ELEV(J,I,K)
-	            IF(LOCZDRN.GT.0) ZDRN=DRAI(LOCZDRN,NB)
+                  IF(LOCZDRN.GT.0) ZDRN=DRAI(LOCZDRN,NB)
                   C = DRAI(5,NB)
 C-------------CALCULATE FLOWS
 CBARC--USE VD FORM DARCY'S LAW
@@ -109,8 +109,8 @@ C                  HH = C*(HB-HHNEW)
                    HH=C*(HB-HHNEW-(DENSEREF-PS(J,I,K))/DENSEREF*
      &                (ELEV(J,I,K)-ZDRN))
 CBARC--SALTHEAD COMPARISON
-C				IF (HHNEW.LE.RBOT) THEN
-				IF (HSALT(J,I,K).LE.HB) THEN
+C                IF (HHNEW.LE.RBOT) THEN
+                IF (HSALT(J,I,K).LE.HB) THEN
                     HH = 0.0
                     IF (JRBOT.EQ.0) WRITE (IOUT,500)
                     JRBOT = 1

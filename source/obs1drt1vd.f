@@ -69,10 +69,10 @@ C----------LOOP THROUGH CELLS.
             NC2 = NC + NQCL(IQ)
             NB = 0
 C--SEAWAT: GET ZDRT IF AUX IS SPECIFIED
-		LOCZDRT=0
-		DO I=1,5
-			IF(DRTAUX(I).EQ.'DRTBELEV') LOCZDRT=I+5
-		ENDDO
+        LOCZDRT=0
+        DO I=1,5
+            IF(DRTAUX(I).EQ.'DRTBELEV') LOCZDRT=I+5
+        ENDDO
             DO 30 N = NC1, NC2
               K = QCLS(1,N)
               I = QCLS(2,N)
@@ -98,12 +98,12 @@ C-------------ASSIGN VARIABLE VALUES
                   C = DRTF(5,NB)
 C
 C--SEAWAT: SET ELEVATION THAT DRT HEAD IS REFERENCED FROM
-		        ZDRT=ELEV(J,I,K)
-		        IF(LOCZDRT.GT.0) ZDRT=DRTF(LOCZDRT,NB)
+                ZDRT=ELEV(J,I,K)
+                IF(LOCZDRT.GT.0) ZDRT=DRTF(LOCZDRT,NB)
 C-------------CALCULATE FLOWS
 C--SEAWAT: USE VARIABLE-DENSITY FORM OF DARCY'S LAW
 C                  HH = C*(HB-HHNEW)
-	    HH=C*(FEHEAD(HB,PS(J,I,K),ZDRT)-HHNEW-
+          HH=C*(FEHEAD(HB,PS(J,I,K),ZDRT)-HHNEW-
      &       (PS(J,I,K)-DENSEREF)/DENSEREF*(ZDRT-ELEV(J,I,K)))
                   IF (SALTHEAD(HHNEW,PS(J,I,K),ELEV(J,I,K)).LE.HB) THEN
                     HH = 0.0

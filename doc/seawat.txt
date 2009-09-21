@@ -8,7 +8,27 @@ NAME
 
 HISTORY
 
-SEAWAT Version 4.00.02 2008/04/29 - This version of SEAWAT contains fixes for two
+SEAWAT Version 4.00.03 2009/09/21 - This version of SEAWAT contains fixes for 
+a variety of issues encountered since version 4.00.02:  (1) the GMG solver 
+had problems converging for problems with rewetting (thanks to Kim Gordon for 
+helping identify this problem); (2) the program was updated with MODFLOW 
+Version 1.18.01; (3) there was an error in a conditional statement in the DRT 
+package that may have affected calculated DRT fluxes; (4) the MNW fluxes 
+passed to MT3DMS were offset by one transport time step; (5) the BCF package 
+had problems with rewetting, which was caused by the use of HDRY in a 
+calculation (thanks to Vincent Post for finding this error); (6) an error was 
+corrected in the HUF2 package; (7) if fluid density was specified as a 
+function of pressure, densities were incorrectly updated for cells that had 
+rewet; (8) all tabs were removed from the SEAWAT source code. An additional 
+feature was added to SEAWAT to improve runtimes for variable-density flow and 
+solute transport models with many rivers, wells, and/or general-head 
+boundaries.  Density is stored with the package array by specifying an 
+AUXILIARY variable in the respective flow package using the name WELSSMDENSE, 
+RIVSSMDENSE, or GHBSSMDENSE. With this feature, the boundary density is 
+calculated only once for each MODFLOW time step and stored in the package array.
+This storage occurs right after the SSM routine reads the boundary concentrations.
+
+SEAWAT Version 4.00.02 2008/09/19 - This version of SEAWAT contains fixes for two
 memory conflicts.  The first was in the MNW Package.  The second was between
 the OBS Process and the Integrated MT3DMS Process.
 
@@ -147,6 +167,7 @@ DSP -- Dispersion
 SSM -- Source/Sink Mixing 
 RCT -- Reaction 
 GCG -- Generalized Conjugate Gradient Solver
+TOB -- Transport Observations
 OBS -- Observation
 HOB -- Hydraulic-Head Observation
 GHOB -- General-Head Boundary Observation
@@ -192,3 +213,8 @@ See
 http://water.usgs.gov/software/ordering_documentation.html
 for information on ordering printed copies of USGS publications.
 
+Disclaimer
+
+This program is public domain and is released on the condition that neither the U.S 
+Geological Survey nor the United States Government may be held liable for any damages 
+resulting from their authorized or unauthorized use. See also User Rights.

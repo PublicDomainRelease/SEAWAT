@@ -32,7 +32,7 @@ C--SEAWAT: ADD AUX VARIABLES
       COMMON /RIVCOM/RIVAUX(5)
       CHARACTER*16 RIVAUX
 C--SEAWAT: DIMENSION MT3DMS ARRAYS 
-	DIMENSION SS(7,MXSS),SSMC(NCOMP,MXSS)
+      DIMENSION SS(7,MXSS),SSMC(NCOMP,MXSS)
       INCLUDE 'param.inc'
 C     ------------------------------------------------------------------
   500 FORMAT (/,
@@ -61,6 +61,18 @@ C-------INITIALIZE VARIABLES
       NC = 0
       NT1 = 1
       JRBOT = 0
+      LOCRBDTHK=0
+      DO IC=1,5
+        IF(RIVAUX(IC).EQ.'RBDTHK') LOCRBDTHK=IC+6
+      ENDDO
+      LOCRIVDEN=0
+      DO IC=1,5
+        IF(RIVAUX(IC).EQ.'RIVDEN') LOCRIVDEN=IC+6
+      ENDDO
+      LOCRIVSSMDENSE=0
+      DO I=1,5
+        IF(RIVAUX(I).EQ.'RIVSSMDENSE') LOCRIVSSMDENSE=I+6
+      ENDDO
 C-------LOOP THROUGH BOUNDARY FLOWS
       DO 60 IQ = 1, NQ
         IBT1 = IBT(1,IQ)
@@ -102,26 +114,20 @@ C-------------ASSIGN VARIABLE VALUES
                   HB = RIVR(4,NB)
                   C = RIVR(5,NB)
                   RBOT = RIVR(6,NB)
-CBARC--SEAWAT:SET RIVER BED THICKNESS
-	            LOCRBDTHK=0
-	            DO IC=1,5
-	             IF(RIVAUX(IC).EQ.'RBDTHK') LOCRBDTHK=IC+6
-	            ENDDO   
-C	            RBDTHK=1.0
-	            RBDTHK=ABS(RBOT-ELEV(J,I,K))
-	            IF(LOCRBDTHK.GT.0) RBDTHK=RIVR(LOCRBDTHK,NB)
-CBARC--SEAWAT: SET RIVER DENSITY
-                  IF(MT3DRHOFLG.EQ.0) THEN
-	             LOCRIVDEN=0
-	             DO IC=1,5
-	              IF(RIVAUX(IC).EQ.'RIVDEN') LOCRIVDEN=IC+6
-	             ENDDO   
-	             RIVDENS=PS(J,I,K)
-	             IF(LOCRIVDEN.GT.0) RIVDENS=RIVR(LOCRIVDEN,NB)
-	            ELSE
-	             IF(MT3DRHOFLG.NE.0) RIVDENS=SSMDENSE(J,I,K,4,MXSS,
-     &                           NSS,SS,NCOMP,SSMC)	
-				ENDIF
+C--SEAWAT: SET RIVER BED THICKNESS
+                  RBDTHK=ABS(RBOT-ELEV(J,I,K))
+                  IF(LOCRBDTHK.GT.0) RBDTHK=RIVR(LOCRBDTHK,NB)
+C--SEAWAT: SET RIVER DENSITY
+                  RIVDENS=PS(J,I,K)
+                  IF(LOCRIVDEN.GT.0) RIVDENS=RIVR(LOCRIVDEN,NB)
+                  IF(MT3DRHOFLG.NE.0) THEN
+                    IF(LOCRIVSSMDENSE.GT.0) THEN
+                        RIVDENS=RIVR(LOCRIVSSMDENSE,L)
+                    ELSE
+                        RIVDENS=SSMDENSE(IC,IR,IL,4,MXSS,NSS,SS,NCOMP,
+     &                                   SSMC)
+                    ENDIF
+                  ENDIF
 CBARC--SEAWAT: COMPUTE RHOAVG
                   RHOAVG=(RIVDENS+PS(J,I,K))/2
 CBARC--SEAWAT: COMPUTE HB AS FE 

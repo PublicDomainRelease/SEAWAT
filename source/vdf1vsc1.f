@@ -129,55 +129,55 @@ C     ------------------------------------------------------------------
       CHARACTER*24 ANAME(4)
       DATA ANAME(1) /'   VISCOSITY LAYER INDEX'/
       DATA ANAME(2) /'         FLUID VISCOSITY'/
-	DATA ANAME(3) /'           CONCENTRATION'/
+      DATA ANAME(3) /'           CONCENTRATION'/
 C-----------------------------------------------------------------------
 
 C     POPULATE FLUID VISCOSITY ARRAY (MU)
       IF(MT3DMUFLG.EQ.0) THEN
-		READ(IN,*) INVISC
-		WRITE(IOUT,'(//)')
-		WRITE(IOUT,500) INVISC
-		IF(INVISC.LT.0) WRITE(IOUT,510)
-		IF(INVISC.EQ.0) WRITE(IOUT,520)
-		IF(INVISC.GT.0) WRITE(IOUT,530)
-		IF(INVISC.EQ.2) WRITE(IOUT,540)
-C		IF FIRST STRESS PERIOD, BUT INVISC LESS THAN ZERO, SET TO VISCREF
-		IF (INVISC.LT.0.AND.KKPER.EQ.1) THEN
-			DO K=1,NLAY
-			DO I=1,NROW
-			DO J=1,NCOL
-				IF(IBOUND(J,I,K).NE.0)
-     &				MU(J,I,K)=VISCREF
-			ENDDO
-			ENDDO
-			ENDDO
-		ENDIF
-C		IF INVISC EQUAL TO ZERO, SET TO VISCREF
-		IF (INVISC.EQ.0) THEN
-			DO K=1,NLAY
-			DO I=1,NROW
-			DO J=1,NCOL
-				IF(IBOUND(J,I,K).NE.0)
-     &				MU(J,I,K)=VISCREF
-			ENDDO
-			ENDDO
-			ENDDO
-		ENDIF
-C		IF INVISC GREATER THAN ZERO, THEN READ VISC ARRAY
-		ITEMP=2
-		IF(INVISC.EQ.2) ITEMP=3
-		IF(INVISC.GT.0) THEN
-			DO K=1,NLAY
-				CALL U2DREL(MU(1,1,K),ANAME(ITEMP),NROW,NCOL,K,IN,
+        READ(IN,*) INVISC
+        WRITE(IOUT,'(//)')
+        WRITE(IOUT,500) INVISC
+        IF(INVISC.LT.0) WRITE(IOUT,510)
+        IF(INVISC.EQ.0) WRITE(IOUT,520)
+        IF(INVISC.GT.0) WRITE(IOUT,530)
+        IF(INVISC.EQ.2) WRITE(IOUT,540)
+C       IF FIRST STRESS PERIOD, BUT INVISC LESS THAN ZERO, SET TO VISCREF
+        IF (INVISC.LT.0.AND.KKPER.EQ.1) THEN
+            DO K=1,NLAY
+            DO I=1,NROW
+            DO J=1,NCOL
+                IF(IBOUND(J,I,K).NE.0)
+     &             MU(J,I,K)=VISCREF
+            ENDDO
+            ENDDO
+            ENDDO
+        ENDIF
+C       IF INVISC EQUAL TO ZERO, SET TO VISCREF
+        IF (INVISC.EQ.0) THEN
+            DO K=1,NLAY
+            DO I=1,NROW
+            DO J=1,NCOL
+                IF(IBOUND(J,I,K).NE.0)
+     &             MU(J,I,K)=VISCREF
+            ENDDO
+            ENDDO
+            ENDDO
+        ENDIF
+C       IF INVISC GREATER THAN ZERO, THEN READ VISC ARRAY
+        ITEMP=2
+        IF(INVISC.EQ.2) ITEMP=3
+        IF(INVISC.GT.0) THEN
+            DO K=1,NLAY
+                CALL U2DREL(MU(1,1,K),ANAME(ITEMP),NROW,NCOL,K,IN,
      +                        IOUT)
-			ENDDO
-		ENDIF
-C		IF INVISC EQUAL TO 2, THEN CONVERT VISCOSITY ARRAY USING LINEAR EQUATION
-		IF (INVISC.EQ.2) THEN
-		    DO K=1,NLAY
-		    DO I=1,NROW
-		    DO J=1,NCOL
-		        IF(IBOUND(J,I,K).NE.0) 
+            ENDDO
+        ENDIF
+C       IF INVISC EQUAL TO 2, THEN CONVERT VISCOSITY ARRAY USING LINEAR EQUATION
+        IF (INVISC.EQ.2) THEN
+            DO K=1,NLAY
+            DO I=1,NROW
+            DO J=1,NCOL
+                IF(IBOUND(J,I,K).NE.0) 
      +             MU(J,I,K)=VISCREF+DMUDC(1)*(MU(J,I,K)-CMUREF(1))
             ENDDO
             ENDDO

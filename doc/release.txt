@@ -12,7 +12,14 @@ NOTE: Any use of trade, product or firm names is for descriptive purposes
 
 
 
-o Version 4.00.02 4/29/2008:
+o Version 4.00.03 9/21/2009:
+
+Corrected several programming errors and implemented an indexing option that
+may improve computational efficiency for variable-density solute transport 
+models with numerous rivers, wells, and general-head boundaries.  Program 
+updated with MODFLOW Version 1.18.01.
+
+o Version 4.00.02 9/19/2008:
 
 Corrected two programming errors, both related to memory conflicts.  The MNW
 Package may not have worked correctly in previous versions of SEAWAT Version
