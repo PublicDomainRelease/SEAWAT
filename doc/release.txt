@@ -12,6 +12,16 @@ NOTE: Any use of trade, product or firm names is for descriptive purposes
 
 
 
+o Version 4.00.04 2/7/2011:
+
+Corrected a programming error in the Drain Observation package and in the
+Transport Obserservation Package.  There were reports that the SEAWAT 
+executable would not run on the Windows 7 operating system.  These executable
+programs were compiled with Intel Visual Fortran Composer to fix that 
+problem.  The distribution now includes a makefile, which can be used with
+Intel Visual Fortran Composer to create executables using the NMAKE 
+command.
+
 o Version 4.00.03 9/21/2009:
 
 Corrected several programming errors and implemented an indexing option that

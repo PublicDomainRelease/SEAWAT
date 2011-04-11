@@ -110,7 +110,7 @@ C                  HH = C*(HB-HHNEW)
      &                (ELEV(J,I,K)-ZDRN))
 CBARC--SALTHEAD COMPARISON
 C                IF (HHNEW.LE.RBOT) THEN
-                IF (HSALT(J,I,K).LE.HB) THEN
+                IF (HSALT(J,I,K).LE.DRAI(4,NB)) THEN
                     HH = 0.0
                     IF (JRBOT.EQ.0) WRITE (IOUT,500)
                     JRBOT = 1

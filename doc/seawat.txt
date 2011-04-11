@@ -8,6 +8,17 @@ NAME
 
 HISTORY
 
+SEAWAT Version 4.00.04 2011/02/07 - This version of SEAWAT contains fixes for
+a problem in the Drain Observation Package and in the Transport Observation
+Package.  In some instances, the Drain Observation Package would report a non-
+zero drain flux for a drain that was not receiving water from the aquifer.  The
+error was in the Observation Process and not in the head solution or reported
+water budgets.  There was also a name conflict in the common statement for the
+Transport Observation Package.  It is unclear if this error had any effect on
+simulation results.  The 32 and 64-bit executables released with this
+distribution were compiled using Intel Visual Fortran Composer, which allows
+the programs to run on the Windows 7 operating system.
+
 SEAWAT Version 4.00.03 2009/09/21 - This version of SEAWAT contains fixes for 
 a variety of issues encountered since version 4.00.02:  (1) the GMG solver 
 had problems converging for problems with rewetting (thanks to Kim Gordon for 
@@ -204,8 +215,8 @@ Operation:
 
 Christian Langevin
 U.S. Geological Survey
-3110 SW 9th Avenue
-Fort Lauderdale, FL 33312
+411 National Center
+Reston, VA 20192
 langevin@usgs.gov
 
 

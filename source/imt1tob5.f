@@ -604,7 +604,8 @@ C
      &          crch(ncol,nrow,ncomp),cevt(ncol,nrow,ncomp),
      &          irch(ncol,nrow),ievt(ncol,nrow),
      &          delr(ncol),delc(nrow),dh(ncol,nrow,nlay)
-      COMMON   /FC/FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
+C--SEAWAT: CHANGED COMMON NAME FC TO FCMT3D TO AVOID CONFLICT WITH SUBROUTINE
+      COMMON   /FCMT3D/FWEL,FDRN,FRCH,FEVT,FRIV,FGHB,
      &          FSTR,FRES,FFHB,FIBS,FTLK,FLAK,FMNW,FDRT,FETS,FUSR     
 c
 c--print headers to output file
