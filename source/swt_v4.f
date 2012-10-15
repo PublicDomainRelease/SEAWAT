@@ -11,9 +11,8 @@ C                    For technical support contact:                    %
 C                                                                      %
 C                        Christian Langevin                            %
 C                      U.S. Geological Survey                          %
-C                  Florida Integrated Science Center                   %
-C                          3110 SW 9th Avenue                          %
-C                      Fort Lauderdale, FL 33315                       %
+C                        411 National Center                           %
+C                         Reston, VA 20192                             %
 C                     E-Mail: langevin@usgs.gov                        %
 C                                                                      %
 C                                                                      %
@@ -75,6 +74,12 @@ C--SEAWAT:  LANGEVIN 02/07/2011 RECOMPILED USING INTEL VISUAL FORTRAN
 C--SEAWAT:    COMPOSER.  THE PREVIOUSLY RELEASED VERSION OF SEAWAT WOULD 
 C--SEAWAT:    NOT RUN ON WINDOWS 7.  ALSO FIXED A BUG IN THE DRAIN
 C--SEAWAT:    OBSERVATION PACKAGE.
+C--SEAWAT:  LANGEVIN 09/18/2012 FIXED ERRORS IN CHD AND GHB.  ADDED
+C--SEAWAT:    VDF1DA ROUTINE TO DEALLOCATE MEMORY.  PROGRAMMED MT3D
+C--SEAWAT:    WELL RECIRCULATION OPTION TO WORK WITH VDF.  CORRECTED
+C--SEAWAT:    FLOW STORAGE BUG IN MT3D.
+C--SEAWAT:  LANGEVIN 10/09/2012 FIXED THE RECIRC BUG FOUND BY THEO
+C--SEAWAT:    OLSTHOORN.
 C
 ! Time of File Save by ERB: 6/29/2006 12:33PM
 C     ******************************************************************
@@ -158,7 +163,7 @@ c      USE DFLIB
      1                       RHOCR,RHOCC,RHOCV,FIRSTDT
 C--SEAWAT:-----ASSIGN VERSION NUMBER AND DATE
       CHARACTER*40 VERSION,VERSIONMF,VERSIONMT
-      PARAMETER (VERSION  ='4.00.04 02/07/2011')
+      PARAMETER (VERSION  ='4.00.05 10/19/2012')
       PARAMETER (VERSIONMF='1.18.01 06/20/2008')
       PARAMETER (VERSIONMT='5.20    10/30/2006')
 C
@@ -2476,7 +2481,7 @@ C--SEAWAT: FORMULATE MATRIX COEFFICIENTS
      &           Y(LTDELR),Y(LTDELC),Y(LCDH),IY(LTIRCH),Y(LTRECH),
      &           Y(LTCRCH),IY(LTIEVT),Y(LTEVTR),Y(LTCEVT),MXSS,NTSS,
      &           Y(LCSSM),Y(LCSSMC),Y(LCSSG),Y(LCQSTO),Y(LCCNEW),ISS,
-     &           Y(LCAGC),Y(LCRHSGC),NODES,UPDLHS,MIXELM)
+     &           Y(LCAGC),Y(LCRHSGC),NODES,UPDLHS,MIXELM,Y(LCCOLD))
                 IF(iUnitTRNOP(4).GT.0) 
      &           CALL IMT1RCT5FM(NCOL,NROW,NLAY,NCOMP,ICOMP,
      &           IY(LCIB),Y(LTPR),Y(LTDELR),Y(LTDELC),Y(LCDH),ISOTHM,
@@ -3054,7 +3059,7 @@ C--SEAWAT: CALCULATE MASS BUDGETS FOR IMPLICIT SCHEMES
      &         Y(LTDELR),Y(LTDELC),Y(LCDH),IY(LTIRCH),Y(LTRECH),
      &         Y(LTCRCH),IY(LTIEVT),Y(LTEVTR),Y(LTCEVT),MXSS,NTSS,
      &         Y(LCSSM),Y(LCSSMC),Y(LCSSG),Y(LCQSTO),Y(LCCNEW),
-     &         Y(LCRETA),DTRANS,ISS,RMASIO)
+     &         Y(LCRETA),DTRANS,ISS,RMASIO,Y(LCCOLD))
               IF(iUnitTRNOP(4).GT.0) 
      &         CALL IMT1RCT5BD(NCOL,NROW,NLAY,NCOMP,ICOMP,
      &         IY(LCIB),Y(LTPR),Y(LTDELR),Y(LTDELC),Y(LCDH),DTRANS,
@@ -4110,7 +4115,10 @@ C       DEALLOCATE STATEMENTS
 C--SEAWAT: DEALLOCATE MT3DMS ARRAYS
       DEALLOCATE (Y,IY)
       if(iUnitTRNOP(11).GT.0) deallocate (cobsnam,fobsnam)
-
+C
+C--SEAWAT: DEALLOCATE VDF MEMORY
+      CALL VDF1DA()
+C
 C       DEALLOCATE (DA) PROCEDURE
         IF(IUNIT(54).GT.0) CALL GWF1SUB1DA()
       IF(IUNIT(42).GT.0) CALL GMG1DA()

@@ -5,8 +5,8 @@
 		<Platform Name="x64"/></Platforms>
 	<Configurations>
 		<Configuration Name="Debug|Win32" DeleteExtensionsOnClean="*.obj;*.mod;*.pdb;*.asm;*.map;*.dyn;*.dpi;*.tmp;*.log;*.ilk;*.exe;$(TargetPath)">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Interfaces="true" RealKIND="realKIND8" CommonElementAlignment="alignCommonEightBytes" FloatingPointExceptionHandling="fpe0" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/" Traceback="true" NullPointerCheck="true" UninitializedVariablesCheck="true" DescriptorDataTypeCheck="true" DescriptorDataSizeCheck="true"/>
-				<Tool Name="VFLinkerTool" AdditionalOptions="/stack:0x5f5e100" OutputFile="$(OUTDIR)/swt_v4.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" ProgramDatabaseFile="$(OUTDIR)/swt2k.pdb" SubSystem="subSystemConsole"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" RealKIND="realKIND8" CommonElementAlignment="alignCommonEightBytes" FloatingPointExceptionHandling="fpe0" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/" Traceback="true" NullPointerCheck="true" DescriptorDataTypeCheck="true" DescriptorDataSizeCheck="true" Interfaces="true"/>
+				<Tool Name="VFLinkerTool" AdditionalOptions="/stack:0x5f5e100" OutputFile="$(OUTDIR)/swt_v4.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" IgnoreDefaultLibraryNames="LIBCMT.LIB" GenerateDebugInformation="true" ProgramDatabaseFile="$(OUTDIR)/swt2k.pdb" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true" HeaderFileName="$(InputName).h" TypeLibraryName="$(IntDir)/$(InputName).tlb"/>
 				<Tool Name="VFCustomBuildTool"/>
@@ -16,7 +16,7 @@
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|Win32" DeleteExtensionsOnClean="*.obj;*.mod;*.pdb;*.asm;*.map;*.dyn;*.dpi;*.tmp;*.log;*.ilk;*.exe;$(TargetPath)">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" HeapArrays="0" RealKIND="realKIND8" CommonElementAlignment="alignCommonEightBytes" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/"/>
-				<Tool Name="VFLinkerTool" OutputFile="$(OUTDIR)/swt_v4.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFLinkerTool" OutputFile="$(OUTDIR)/swt_v4.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" IgnoreDefaultLibraryNames="libcmt.lib" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true" HeaderFileName="$(InputName).h" TypeLibraryName="$(IntDir)/$(InputName).tlb"/>
 				<Tool Name="VFCustomBuildTool"/>
@@ -36,7 +36,7 @@
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|x64" DeleteExtensionsOnClean="*.obj;*.mod;*.pdb;*.asm;*.map;*.dyn;*.dpi;*.tmp;*.log;*.ilk;*.exe;$(TargetPath)">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" Optimization="optimizeFull" HeapArrays="0" RealKIND="realKIND8" CommonElementAlignment="alignCommonEightBytes" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/"/>
-				<Tool Name="VFLinkerTool" OutputFile="$(OUTDIR)/swt_v4x64.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFLinkerTool" OutputFile="$(OUTDIR)/swt_v4x64.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" IgnoreDefaultLibraryNames="LIBCMT.LIB" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true" HeaderFileName="$(InputName).h" TypeLibraryName="$(IntDir)/$(InputName).tlb"/>
 				<Tool Name="VFCustomBuildTool"/>

@@ -13,3 +13,10 @@ C--SEAWAT: NOTE THAT TO COMPILE FOR X64, USE THE SECOND DEC ATTRIBUTE STATEMENT
       !DEC$ ATTRIBUTES ALIAS:'_resprint' :: RESPRINT
 c      !DEC$ ATTRIBUTES ALIAS:'resprint' :: RESPRINT
 
+
+This folder also contains Makefile.mac, which was provided by Theo Olsthoorn for
+compiling SEAWAT with gfortran on a mac.  Note that when compiling with some
+operating systems and some compilers, it may be necessary to edit some of the 
+source files.  For example, changes may be required to openspec.inc and filespec.inc
+to ensure that binary files are handled correctly.
+

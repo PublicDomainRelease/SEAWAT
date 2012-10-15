@@ -1,0 +1,154 @@
+# Makefile example for compiling GMG and linking GMG to SEAWAT Version 4_00_04 and 4_00_05:
+# Theo Olsthoorn (Oct 16, 2012)
+# gfortran 4.7.2 (Sep 2012), contained in gcc 4.7.2. From hpc.sourceforge.net (gcc-4.7-bin.tar.gz)
+# installation instructions see hpc.sourceforge.net
+
+
+PROGRAM = swt_v4.mac
+
+# MFLABBIN is specific to mfLab, contains all binaries
+MFLABBIN =~/GRWMODELS/mflab/bin/
+
+# gfortran compile flags
+FCFLAGS= -Ofast -fdefault-real-8 -fdefault-double-8 -fno-align-commons
+FC= gfortran
+
+CFLAGS = -D_UF -Ofast
+CC = gfortran
+
+LINKER = gfortran
+LFLAGS =
+
+# GMG objects with source written in c
+GMG = r_vector.o\
+      SOLVERS.o\
+      CCFD.o\
+      MF2KGMG.o 
+
+# Libraries (use -lgfortran to resolve all symbols at link time (static link))
+SYSLIBS =
+USRLIB  =  -lgfortran
+
+#  Seawat objects (Order is important)
+OBJECTS = \
+	mhc1.o          \
+    gwf1bas6.o      \
+    gwf1lpf1.o      \
+    gwf1bcf6.o      \
+    gwf1huf2.o      \
+    gmg1.o          \
+    vdf1.o          \
+    vdf1vsc1.o      \
+    vdf1bcf6.o      \
+    vdf1lpf1.o      \
+    obs1drn6vd.o    \
+    vdf1lmt6.o      \
+    obs1riv6vd.o    \
+    vdf1ets1.o      \
+    vdf1chd6.o      \
+    vdf1evt6.o      \
+    obs1drt1vd.o    \
+    swt_v4.o        \
+    vdf1mnw1.o      \
+    vdf1drn6.o      \
+    vdf1wel6.o      \
+    vdf1fhb1.o      \
+    vdf1rch6.o      \
+    vdf1drt1.o      \
+    obs1bas6vd.o    \
+    vdf1ghb6.o      \
+    obs1ghb6vd.o    \
+    vdf1riv6.o      \
+    vdf1huf2.o      \
+    gwf1sub1.o      \
+    gwf1swt1.o      \
+    gwf1ghb6.o      \
+    hufutl2.o       \
+    obs1adv2.o      \
+    parutl1.o       \
+    sen1rch6.o      \
+    gwf1mnw1.o      \
+    imt1gcg5.o      \
+    sen1chd6.o      \
+    sip5.o          \
+    gwf1drt1.o      \
+    imt1utl5.o      \
+    sen1evt6.o      \
+    gwf1hfb6.o      \
+    hydmod.o        \
+    obs1bas6.o      \
+    pcg2.o          \
+    sen1riv6.o      \
+    gutsdaf.o       \
+    gwf1rch6.o      \
+    obs1drt1.o      \
+    sen1drn6.o      \
+    sor5.o          \
+    gwf1ets1.o      \
+    lmg1.o          \
+    obs1str6.o      \
+    sen1ghb6.o      \
+    ctime.o         \
+    imt1adv5.o      \
+    pes1bas6.o      \
+    sen1str6.o      \
+    gwf1res1.o      \
+    sen1drt1.o      \
+    gwf1evt6.o      \
+    lmt6.o          \
+    sen1hfb6.o      \
+    daf1.o          \
+    gwf1ibs6.o      \
+    imt1btn5.o      \
+    pes1gau1.o      \
+    sen1wel6.o      \
+    gwf1riv6.o      \
+    imt1rct5.o      \
+    obs1ghb6.o      \
+    utl6.o          \
+    gwf1fhb1.o      \
+    memchk.o        \
+    sen1huf2.o      \
+    de45.o          \
+    gwf1lak3.o      \
+    imt1dsp5.o      \
+    rtedaf.o        \
+    gwf1chd6.o      \
+    gwf1sfr2.o      \
+    imt1ssm5.o      \
+    gwf1gag5.o      \
+    gwf1wel6.o      \
+    para-non.o      \
+    sen1lpf1.o      \
+    glo1bas6.o      \
+    imt1fmi5.o      \
+    obs1drn6.o      \
+    sen1bas6.o      \
+    gwf1drn6.o      \
+    gwf1str6.o      \
+    imt1tob5.o      \
+    obs1riv6.o      \
+    sen1ets1.o      \
+    vdf1bas6.o
+
+
+all: $(PROGRAM)
+
+$(PROGRAM): $(OBJECTS) $(GMG)
+	$(LINKER) $(LFLAGS) -o $(PROGRAM) $(OBJECTS) $(GMG) $(USRLIB) $(SYSLIBS)
+	cp $(PROGRAM) $(MFLABBIN)
+	ls -l $(MFLABBIN)/$(PROGRAM)
+
+%.o: %.f90
+	$(FC) $(FCFLAGS) -c $<
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $<
+
+%.o: %.f
+	$(FC) $(FCFLAGS) -c $<
+
+# use make clean to remove .o and .mod files
+clean:
+	rm -f *.o *.mod
+

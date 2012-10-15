@@ -1,6 +1,6 @@
 README.TXT
 
-SEAWAT - Version: 4.00.04 2/7/2011
+SEAWAT - Version: 4.00.05 10/19/2012
 Three-dimensional variable-density finite-difference ground-water flow model
 
 NOTE: Any use of trade, product or firm names is for descriptive purposes only 
@@ -30,7 +30,7 @@ F. TESTING
 A. DISTRIBUTION FILE
 The following zip file is for use on personal computers:
 
-     SWT_V4_00_04.zip
+     SWT_V4_00_05.zip
 
 The distribution file contains:
      Compiled runfiles and source code for SEAWAT
@@ -45,7 +45,7 @@ which the files should be restored.  The following subdirectory structure will
 be created under the specified directory:
 
 |
-|--swt_v4_00_04
+|--swt_v4_00_05
 |     |doc; documentation files
 |     |examples; example files 
 |     |     |1_box; test cases for box problems
@@ -65,7 +65,7 @@ be created under the specified directory:
 |     |     |7_swtv4_ex; test case presented in SEAWAT Version 4 documentation
 |     |exe; compiled executables (32 and 64-bit)
 |     |Intel; Solution file and project workspace files for compiling with
-|     |       the Intel Fortran compiler within the Microsoft Visual Studio 2008
+|     |       the Intel Fortran compiler within the Microsoft Visual Studio 2010
 |     |       environment
 |     |make; Makefile that can be used to compile SEAWAT provided that the source
 |     |      folder is contained in the same folder as the make folder.
@@ -102,7 +102,7 @@ the C programming language.  For issues related to compiling and linking with th
 GMG solver, please refer to: 
 http://water.usgs.gov/nrp/gwsoftware/modflow2000/MFDOC/Compiling.html
 
-For those using the Intel Fortran compiler, the Microsoft Visual Studio 2008
+For those using the Intel Fortran compiler, the Microsoft Visual Studio 2010
 solution file is included in the Intel folder under the swt_v4 folder.
 
 IMPORTANT: For the SEAWAT program to operate correctly, the program must be
@@ -145,7 +145,7 @@ be easier for others to use different compilers when compiling
 applications that use or generate unformatted files.
 
 The swt_v4 runfiles in the exe subdirectory was compiled with the Intel
-FORTRAN compiler (Version 11.1.065).  The swt_v4x64.exe runfile was compiled 
+Visual Fortran Compiler (XE 13.0.0.089).  The swt_v4x64.exe runfile was compiled 
 for 64-bit Windows operating systems.  This executable is optimized specifically 
 for Intel processors and likely will not work with other processor types.  
 

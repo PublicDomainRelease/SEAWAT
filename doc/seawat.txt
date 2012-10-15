@@ -8,6 +8,22 @@ NAME
 
 HISTORY
 
+SEAWAT Version 4.00.05 2012/10/19 - This version of SEAWAT contains fixes for
+a problem in the Time-Varying Constant Head Package when the CHDDENSOPT=2
+option is used.  A fix was implemented for the General-Head Boundary Package
+in which an incorrect density value was used in the budget routine.  A routine
+was added to deallocate the memory for VDF variables.  The MT3DMS well
+recirculation option did not work with previous SEAWAT versions.  This capability
+is now supported in the present SEAWAT version.  MT3DMS contains an error
+for solute calculations involving large changes in water storage and large 
+time steps.  This error is fixed in the present SEAWAT version.  Also, an
+additional mass storage term, "MASS STOR (FLOW MODEL)" is printed to the 
+listing file, which contains the mass change due to changes in water storage.
+MT3D included this term in the total mass sum, but did not write it to the 
+listing file.  Lastly, the density equation of state written to the listing
+file did not print correctly if the MT3DMS species numbers were not ordered 
+sequentially.  (Thanks to T.N. Olsthoorn for identifying many of these issues.)
+
 SEAWAT Version 4.00.04 2011/02/07 - This version of SEAWAT contains fixes for
 a problem in the Drain Observation Package and in the Transport Observation
 Package.  In some instances, the Drain Observation Package would report a non-

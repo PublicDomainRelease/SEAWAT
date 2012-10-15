@@ -11,6 +11,12 @@ NOTE: Any use of trade, product or firm names is for descriptive purposes
       only and does not imply endorsement by the U.S. Government.
 
 
+o Version 4.00.05 10/19/2012:
+
+Corrected programming errors in the variable density parts of the CHD and
+GHB packages.  Added a routine to deallocate memory for VDF variables.
+Corrected an MT3DMS programming error related to changes in water storage.
+Added suppport for MT3DMS recirculation wells.
 
 o Version 4.00.04 2/7/2011:
 
